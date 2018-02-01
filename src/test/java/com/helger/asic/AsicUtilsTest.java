@@ -17,13 +17,12 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class AsicUtilsTest
+public final class AsicUtilsTest
 {
+  private static final Logger log = LoggerFactory.getLogger (AsicUtilsTest.class);
 
-  private static Logger log = LoggerFactory.getLogger (AsicUtilsTest.class);
-
-  private final AsicReaderFactory asicReaderFactory = AsicReaderFactory.newFactory ();
-  private final AsicWriterFactory asicWriterFactory = AsicWriterFactory.newFactory ();
+  private final AsicReaderFactory m_aAsicReaderFactory = AsicReaderFactory.newFactory ();
+  private final AsicWriterFactory m_aAsicWriterFactory = AsicWriterFactory.newFactory ();
   private final SignatureHelper signatureHelper = new SignatureHelper (getClass ().getResourceAsStream ("/keystore.jks"),
                                                                        "changeit",
                                                                        null,
@@ -61,19 +60,19 @@ public class AsicUtilsTest
   {
     // Create first container
     final ByteArrayOutputStream source1 = new ByteArrayOutputStream ();
-    asicWriterFactory.newContainer (source1)
-                     .add (new ByteArrayInputStream (fileContent1.getBytes ()),
-                           "content1.txt",
-                           MimeType.forString ("text/plain"))
-                     .sign (signatureHelper);
+    m_aAsicWriterFactory.newContainer (source1)
+                        .add (new ByteArrayInputStream (fileContent1.getBytes ()),
+                              "content1.txt",
+                              MimeType.forString ("text/plain"))
+                        .sign (signatureHelper);
 
     // Create second container
     final ByteArrayOutputStream source2 = new ByteArrayOutputStream ();
-    asicWriterFactory.newContainer (source2)
-                     .add (new ByteArrayInputStream (fileContent2.getBytes ()),
-                           "content2.txt",
-                           MimeType.forString ("text/plain"))
-                     .sign (signatureHelper);
+    m_aAsicWriterFactory.newContainer (source2)
+                        .add (new ByteArrayInputStream (fileContent2.getBytes ()),
+                              "content2.txt",
+                              MimeType.forString ("text/plain"))
+                        .sign (signatureHelper);
 
     // Combine containers
     final ByteArrayOutputStream target = new ByteArrayOutputStream ();
@@ -82,41 +81,41 @@ public class AsicUtilsTest
                        new ByteArrayInputStream (source2.toByteArray ()));
 
     // Read container (asic)
-    final IAsicReader asicReader = asicReaderFactory.open (new ByteArrayInputStream (target.toByteArray ()));
-
-    ByteArrayOutputStream fileStream;
+    try (final IAsicReader asicReader = m_aAsicReaderFactory.open (new ByteArrayInputStream (target.toByteArray ())))
     {
-      assertEquals (asicReader.getNextFile (), "content1.txt");
+      ByteArrayOutputStream fileStream;
+      {
+        assertEquals (asicReader.getNextFile (), "content1.txt");
 
-      fileStream = new ByteArrayOutputStream ();
-      asicReader.writeFile (fileStream);
-      assertEquals (fileStream.toString (), fileContent1);
+        fileStream = new ByteArrayOutputStream ();
+        asicReader.writeFile (fileStream);
+        assertEquals (fileStream.toString (), fileContent1);
+      }
+
+      {
+        assertEquals (asicReader.getNextFile (), "content2.txt");
+
+        fileStream = new ByteArrayOutputStream ();
+        asicReader.writeFile (fileStream);
+        assertEquals (fileStream.toString (), fileContent2);
+      }
+
+      assertNull (asicReader.getNextFile ());
     }
-
-    {
-      assertEquals (asicReader.getNextFile (), "content2.txt");
-
-      fileStream = new ByteArrayOutputStream ();
-      asicReader.writeFile (fileStream);
-      assertEquals (fileStream.toString (), fileContent2);
-    }
-
-    assertNull (asicReader.getNextFile ());
-
-    asicReader.close ();
 
     // Read container (zip)
-    final ZipInputStream zipInputStream = new ZipInputStream (new ByteArrayInputStream (target.toByteArray ()));
-    assertEquals (zipInputStream.getNextEntry ().getName (), "mimetype");
-    assertEquals (zipInputStream.getNextEntry ().getName (), "content1.txt");
-    assertEquals (zipInputStream.getNextEntry ().getName (), "META-INF/asicmanifest1.xml");
-    assertTrue (AsicUtils.PATTERN_CADES_SIGNATURE.matcher (zipInputStream.getNextEntry ().getName ()).matches ());
-    assertEquals (zipInputStream.getNextEntry ().getName (), "content2.txt");
-    assertEquals (zipInputStream.getNextEntry ().getName (), "META-INF/asicmanifest2.xml");
-    assertTrue (AsicUtils.PATTERN_CADES_SIGNATURE.matcher (zipInputStream.getNextEntry ().getName ()).matches ());
-    assertEquals (zipInputStream.getNextEntry ().getName (), "META-INF/manifest.xml");
-    assertNull (zipInputStream.getNextEntry ());
-    zipInputStream.close ();
+    try (final ZipInputStream zipInputStream = new ZipInputStream (new ByteArrayInputStream (target.toByteArray ())))
+    {
+      assertEquals (zipInputStream.getNextEntry ().getName (), "mimetype");
+      assertEquals (zipInputStream.getNextEntry ().getName (), "content1.txt");
+      assertEquals (zipInputStream.getNextEntry ().getName (), "META-INF/asicmanifest1.xml");
+      assertTrue (AsicUtils.PATTERN_CADES_SIGNATURE.matcher (zipInputStream.getNextEntry ().getName ()).matches ());
+      assertEquals (zipInputStream.getNextEntry ().getName (), "content2.txt");
+      assertEquals (zipInputStream.getNextEntry ().getName (), "META-INF/asicmanifest2.xml");
+      assertTrue (AsicUtils.PATTERN_CADES_SIGNATURE.matcher (zipInputStream.getNextEntry ().getName ()).matches ());
+      assertEquals (zipInputStream.getNextEntry ().getName (), "META-INF/manifest.xml");
+      assertNull (zipInputStream.getNextEntry ());
+    }
   }
 
   @Test
@@ -124,58 +123,58 @@ public class AsicUtilsTest
   {
     // Create first container
     final ByteArrayOutputStream source1 = new ByteArrayOutputStream ();
-    asicWriterFactory.newContainer (source1)
-                     .add (new ByteArrayInputStream (fileContent1.getBytes ()),
-                           "content1.txt",
-                           MimeType.forString ("text/plain"))
-                     .sign (signatureHelper);
+    m_aAsicWriterFactory.newContainer (source1)
+                        .add (new ByteArrayInputStream (fileContent1.getBytes ()),
+                              "content1.txt",
+                              MimeType.forString ("text/plain"))
+                        .sign (signatureHelper);
 
     // Create second container
     final ByteArrayOutputStream source2 = new ByteArrayOutputStream ();
-    asicWriterFactory.newContainer (source2)
-                     .add (new ByteArrayInputStream (fileContent2.getBytes ()),
-                           "content2.txt",
-                           MimeType.forString ("text/plain"))
-                     .sign (signatureHelper);
+    m_aAsicWriterFactory.newContainer (source2)
+                        .add (new ByteArrayInputStream (fileContent2.getBytes ()),
+                              "content2.txt",
+                              MimeType.forString ("text/plain"))
+                        .sign (signatureHelper);
 
     // Rewrite source2 to remove META-INF/manifest.xml
-    final ByteArrayOutputStream source2simpler = new ByteArrayOutputStream ();
-    final AsicInputStream source2input = new AsicInputStream (new ByteArrayInputStream (source2.toByteArray ()));
-    final AsicOutputStream source2output = new AsicOutputStream (source2simpler);
-
-    ZipEntry zipEntry;
-    while ((zipEntry = source2input.getNextEntry ()) != null)
+    try (final ByteArrayOutputStream source2simpler = new ByteArrayOutputStream ())
     {
-      if (!zipEntry.getName ().equals ("META-INF/manifest.xml"))
+      try (final AsicInputStream source2input = new AsicInputStream (new ByteArrayInputStream (source2.toByteArray ()));
+           final AsicOutputStream source2output = new AsicOutputStream (source2simpler))
       {
-        source2output.putNextEntry (zipEntry);
-        AsicUtils.copyStream (source2input, source2output);
-        source2output.closeEntry ();
-        source2input.closeEntry ();
+        ZipEntry zipEntry;
+        while ((zipEntry = source2input.getNextEntry ()) != null)
+        {
+          if (!zipEntry.getName ().equals ("META-INF/manifest.xml"))
+          {
+            source2output.putNextEntry (zipEntry);
+            AsicUtils.copyStream (source2input, source2output);
+            source2output.closeEntry ();
+            source2input.closeEntry ();
+          }
+        }
+      }
+
+      // Combine containers
+      final ByteArrayOutputStream target = new ByteArrayOutputStream ();
+      AsicUtils.combine (target,
+                         new ByteArrayInputStream (source1.toByteArray ()),
+                         new ByteArrayInputStream (source2simpler.toByteArray ()));
+
+      // Read container (zip)
+      try (final ZipInputStream zipInputStream = new ZipInputStream (new ByteArrayInputStream (target.toByteArray ())))
+      {
+        assertEquals (zipInputStream.getNextEntry ().getName (), "mimetype");
+        assertEquals (zipInputStream.getNextEntry ().getName (), "content1.txt");
+        assertEquals (zipInputStream.getNextEntry ().getName (), "META-INF/asicmanifest1.xml");
+        assertTrue (AsicUtils.PATTERN_CADES_SIGNATURE.matcher (zipInputStream.getNextEntry ().getName ()).matches ());
+        assertEquals (zipInputStream.getNextEntry ().getName (), "content2.txt");
+        assertEquals (zipInputStream.getNextEntry ().getName (), "META-INF/asicmanifest2.xml");
+        assertTrue (AsicUtils.PATTERN_CADES_SIGNATURE.matcher (zipInputStream.getNextEntry ().getName ()).matches ());
+        assertNull (zipInputStream.getNextEntry ());
       }
     }
-
-    source2output.close ();
-    source2input.close ();
-    source2simpler.close ();
-
-    // Combine containers
-    final ByteArrayOutputStream target = new ByteArrayOutputStream ();
-    AsicUtils.combine (target,
-                       new ByteArrayInputStream (source1.toByteArray ()),
-                       new ByteArrayInputStream (source2simpler.toByteArray ()));
-
-    // Read container (zip)
-    final ZipInputStream zipInputStream = new ZipInputStream (new ByteArrayInputStream (target.toByteArray ()));
-    assertEquals (zipInputStream.getNextEntry ().getName (), "mimetype");
-    assertEquals (zipInputStream.getNextEntry ().getName (), "content1.txt");
-    assertEquals (zipInputStream.getNextEntry ().getName (), "META-INF/asicmanifest1.xml");
-    assertTrue (AsicUtils.PATTERN_CADES_SIGNATURE.matcher (zipInputStream.getNextEntry ().getName ()).matches ());
-    assertEquals (zipInputStream.getNextEntry ().getName (), "content2.txt");
-    assertEquals (zipInputStream.getNextEntry ().getName (), "META-INF/asicmanifest2.xml");
-    assertTrue (AsicUtils.PATTERN_CADES_SIGNATURE.matcher (zipInputStream.getNextEntry ().getName ()).matches ());
-    assertNull (zipInputStream.getNextEntry ());
-    zipInputStream.close ();
   }
 
   @Test
@@ -183,21 +182,21 @@ public class AsicUtilsTest
   {
     // Create first container
     final ByteArrayOutputStream source1 = new ByteArrayOutputStream ();
-    asicWriterFactory.newContainer (source1)
-                     .add (new ByteArrayInputStream (fileContent1.getBytes ()),
-                           "content1.txt",
-                           MimeType.forString ("text/plain"))
-                     .setRootEntryName ("content1.txt")
-                     .sign (signatureHelper);
+    m_aAsicWriterFactory.newContainer (source1)
+                        .add (new ByteArrayInputStream (fileContent1.getBytes ()),
+                              "content1.txt",
+                              MimeType.forString ("text/plain"))
+                        .setRootEntryName ("content1.txt")
+                        .sign (signatureHelper);
 
     // Create second container
     final ByteArrayOutputStream source2 = new ByteArrayOutputStream ();
-    asicWriterFactory.newContainer (source2)
-                     .add (new ByteArrayInputStream (fileContent2.getBytes ()),
-                           "content2.txt",
-                           MimeType.forString ("text/plain"))
-                     .setRootEntryName ("content2.txt")
-                     .sign (signatureHelper);
+    m_aAsicWriterFactory.newContainer (source2)
+                        .add (new ByteArrayInputStream (fileContent2.getBytes ()),
+                              "content2.txt",
+                              MimeType.forString ("text/plain"))
+                        .setRootEntryName ("content2.txt")
+                        .sign (signatureHelper);
 
     // Combine containers
     try
@@ -241,39 +240,39 @@ public class AsicUtilsTest
                        new ByteArrayInputStream (source2.toByteArray ()));
 
     // Read container (asic)
-    final IAsicReader asicReader = asicReaderFactory.open (new ByteArrayInputStream (target.toByteArray ()));
-
-    ByteArrayOutputStream fileStream;
+    try (final IAsicReader asicReader = m_aAsicReaderFactory.open (new ByteArrayInputStream (target.toByteArray ())))
     {
-      assertEquals (asicReader.getNextFile (), "content1.txt");
+      ByteArrayOutputStream fileStream;
+      {
+        assertEquals (asicReader.getNextFile (), "content1.txt");
 
-      fileStream = new ByteArrayOutputStream ();
-      asicReader.writeFile (fileStream);
-      assertEquals (fileStream.toString (), fileContent1);
+        fileStream = new ByteArrayOutputStream ();
+        asicReader.writeFile (fileStream);
+        assertEquals (fileStream.toString (), fileContent1);
+      }
+
+      {
+        assertEquals (asicReader.getNextFile (), "content2.txt");
+
+        fileStream = new ByteArrayOutputStream ();
+        asicReader.writeFile (fileStream);
+        assertEquals (fileStream.toString (), fileContent2);
+      }
+
+      assertNull (asicReader.getNextFile ());
     }
-
-    {
-      assertEquals (asicReader.getNextFile (), "content2.txt");
-
-      fileStream = new ByteArrayOutputStream ();
-      asicReader.writeFile (fileStream);
-      assertEquals (fileStream.toString (), fileContent2);
-    }
-
-    assertNull (asicReader.getNextFile ());
-
-    asicReader.close ();
 
     // Read container (zip)
-    final ZipInputStream zipInputStream = new ZipInputStream (new ByteArrayInputStream (target.toByteArray ()));
-    assertEquals (zipInputStream.getNextEntry ().getName (), "mimetype");
-    assertEquals (zipInputStream.getNextEntry ().getName (), "content1.txt");
-    assertEquals (zipInputStream.getNextEntry ().getName (), "META-INF/signatures1.xml");
-    assertEquals (zipInputStream.getNextEntry ().getName (), "content2.txt");
-    assertEquals (zipInputStream.getNextEntry ().getName (), "META-INF/signatures2.xml");
-    assertEquals (zipInputStream.getNextEntry ().getName (), "META-INF/manifest.xml");
-    assertNull (zipInputStream.getNextEntry ());
-    zipInputStream.close ();
+    try (final ZipInputStream zipInputStream = new ZipInputStream (new ByteArrayInputStream (target.toByteArray ())))
+    {
+      assertEquals (zipInputStream.getNextEntry ().getName (), "mimetype");
+      assertEquals (zipInputStream.getNextEntry ().getName (), "content1.txt");
+      assertEquals (zipInputStream.getNextEntry ().getName (), "META-INF/signatures1.xml");
+      assertEquals (zipInputStream.getNextEntry ().getName (), "content2.txt");
+      assertEquals (zipInputStream.getNextEntry ().getName (), "META-INF/signatures2.xml");
+      assertEquals (zipInputStream.getNextEntry ().getName (), "META-INF/manifest.xml");
+      assertNull (zipInputStream.getNextEntry ());
+    }
   }
 
   // Making Cobertura happy!

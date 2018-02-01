@@ -8,17 +8,16 @@ import com.helger.asic.jaxb.asic.AsicFile;
 import com.helger.asic.jaxb.asic.AsicManifest;
 import com.helger.asic.jaxb.asic.Certificate;
 
-class ManifestVerifier
+public class ManifestVerifier
 {
+  private final EMessageDigestAlgorithm m_eMD;
 
-  private final EMessageDigestAlgorithm messageDigestAlgorithm;
-
-  private final AsicManifest asicManifest = new AsicManifest ();
-  private final Map <String, AsicFile> asicManifestMap = new HashMap <> ();
+  private final AsicManifest m_aAsicManifest = new AsicManifest ();
+  private final Map <String, AsicFile> m_aAsicManifestMap = new HashMap <> ();
 
   public ManifestVerifier (final EMessageDigestAlgorithm messageDigestAlgorithm)
   {
-    this.messageDigestAlgorithm = messageDigestAlgorithm;
+    m_eMD = messageDigestAlgorithm;
   }
 
   public void update (final String filename, final byte [] digest, final String sigReference)
@@ -32,14 +31,12 @@ class ManifestVerifier
                       final String digestAlgorithm,
                       final String sigReference)
   {
-    if (messageDigestAlgorithm != null &&
-        digestAlgorithm != null &&
-        !digestAlgorithm.equals (messageDigestAlgorithm.getUri ()))
+    if (m_eMD != null && digestAlgorithm != null && !digestAlgorithm.equals (m_eMD.getUri ()))
       throw new IllegalStateException (String.format ("Wrong digest method for file %s: %s",
                                                       filename,
                                                       digestAlgorithm));
 
-    AsicFile asicFile = asicManifestMap.get (filename);
+    AsicFile asicFile = m_aAsicManifestMap.get (filename);
 
     if (asicFile == null)
     {
@@ -48,8 +45,8 @@ class ManifestVerifier
       asicFile.setDigest (digest);
       asicFile.setVerified (false);
 
-      asicManifest.getFile ().add (asicFile);
-      asicManifestMap.put (filename, asicFile);
+      m_aAsicManifest.getFile ().add (asicFile);
+      m_aAsicManifestMap.put (filename, asicFile);
     }
     else
     {
@@ -68,23 +65,23 @@ class ManifestVerifier
 
   public void addCertificate (final Certificate certificate)
   {
-    this.asicManifest.getCertificate ().add (certificate);
+    this.m_aAsicManifest.getCertificate ().add (certificate);
   }
 
   public void setRootFilename (final String filename)
   {
-    asicManifest.setRootfile (filename);
+    m_aAsicManifest.setRootfile (filename);
   }
 
   public void verifyAllVerified ()
   {
-    for (final AsicFile asicFile : asicManifest.getFile ())
+    for (final AsicFile asicFile : m_aAsicManifest.getFile ())
       if (!asicFile.isVerified ())
         throw new IllegalStateException (String.format ("File not verified: %s", asicFile.getName ()));
   }
 
   public AsicManifest getAsicManifest ()
   {
-    return asicManifest;
+    return m_aAsicManifest;
   }
 }

@@ -137,8 +137,7 @@ public abstract class AbstractAsicReader implements Closeable
     m_bContentIsWritten = true;
 
     m_aMD.reset ();
-    // Why wrapping??
-    return new InputStreamWrapper (new DigestInputStream (m_aZipInputStream, m_aMD));
+    return new DigestInputStream (m_aZipInputStream, m_aMD);
   }
 
   @Override

@@ -1,16 +1,14 @@
 package com.helger.asic;
 
 import java.io.File;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
+
+import com.helger.commons.io.resource.ClassPathResource;
 
 /**
  * @author steinar Date: 21.07.15 Time: 18.48
  */
-public class TestUtil
+public final class TestUtil
 {
-
   public static final String KEY_STORE_RESOURCE_NAME = "keystore.jks";
   public static final String BII_SAMPLE_MESSAGE_XML = "bii-trns081.xml";
 
@@ -20,28 +18,12 @@ public class TestUtil
    * <p/>
    * The key store provides a private key and a certificate, which is used for
    * testing purposes.
+   *
+   * @return File
    */
   public static File keyStoreFile ()
   {
-    String pathname = "src/test/resources/keystore.jks";
-
-    URL keyStoreResourceURL = TestUtil.class.getClassLoader ().getResource (KEY_STORE_RESOURCE_NAME);
-    try
-    {
-      URI uri = keyStoreResourceURL.toURI ();
-
-      File file = new File (uri);
-      if (!file.canRead ())
-      {
-        throw new IllegalStateException ("Unable to locate " + KEY_STORE_RESOURCE_NAME + " in class path");
-      }
-      return file;
-
-    }
-    catch (URISyntaxException e)
-    {
-      throw new IllegalStateException ("Unable to convert URL of keystore " + KEY_STORE_RESOURCE_NAME + " into a URI");
-    }
+    return new ClassPathResource (KEY_STORE_RESOURCE_NAME).getAsFile ();
   }
 
   public static String keyStorePassword ()

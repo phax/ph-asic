@@ -7,9 +7,9 @@ public enum ESignatureMethod
 
   private EMessageDigestAlgorithm m_eMD;
 
-  ESignatureMethod (final EMessageDigestAlgorithm messageDigestAlgorithm)
+  private ESignatureMethod (final EMessageDigestAlgorithm messageDigestAlgorithm)
   {
-    this.m_eMD = messageDigestAlgorithm;
+    m_eMD = messageDigestAlgorithm;
   }
 
   public EMessageDigestAlgorithm getMessageDigestAlgorithm ()

@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.KeyPair;
@@ -41,7 +42,6 @@ import org.bouncycastle.operator.DigestCalculatorProvider;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.bouncycastle.operator.jcajce.JcaDigestCalculatorProviderBuilder;
-import org.bouncycastle.util.Store;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -69,15 +69,16 @@ public class BouncyCastleSignatureTest
   public void createSignature () throws Exception
   {
 
-    final List certList = new ArrayList ();
-    final CMSProcessableByteArray msg = new CMSProcessableByteArray ("Hello world".getBytes ());
+    final CMSProcessableByteArray msg = new CMSProcessableByteArray ("Hello world".getBytes (StandardCharsets.ISO_8859_1));
     // generateKeyPairAndCertificate();
-    keyPair = getKeyPair (); // Reads private key and certificate from our own
-                             // keystore
+    // Reads private key and certificate from our own
+    // keystore
+    keyPair = getKeyPair ();
 
     final String keyAlgorithm = keyPair.getPrivate ().getAlgorithm ();
 
-    final Store jcaCertStore = new JcaCertStore (certList);
+    final List <?> certList = new ArrayList <> ();
+    final JcaCertStore jcaCertStore = new JcaCertStore (certList);
     final CMSSignedDataGenerator cmsSignedDataGenerator = new CMSSignedDataGenerator ();
     final String signatureAlgorithm = "SHA1with" + keyAlgorithm;
     final ContentSigner sha1Signer = new JcaContentSignerBuilder (signatureAlgorithm).setProvider (BouncyCastleProvider.PROVIDER_NAME)
@@ -91,9 +92,7 @@ public class BouncyCastleSignatureTest
     cmsSignedDataGenerator.addCertificates (jcaCertStore);
     final CMSSignedData sigData = cmsSignedDataGenerator.generate (msg, false);
 
-    final byte [] bytes = Base64.encodeBytesToBytes (sigData.getEncoded ());
-    log.debug (new String (bytes));
-
+    log.info (Base64.encodeBytes (sigData.getEncoded ()));
   }
 
   void generateKeyPairAndCertificate () throws NoSuchProviderException,

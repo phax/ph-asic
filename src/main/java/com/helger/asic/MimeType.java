@@ -10,16 +10,16 @@ public class MimeType
     return new MimeType (mimeType);
   }
 
-  private String mimeType;
+  private String m_sMimeType;
 
   private MimeType (String mimeType)
   {
-    this.mimeType = mimeType;
+    this.m_sMimeType = mimeType;
   }
 
   @Override
   public String toString ()
   {
-    return mimeType;
+    return m_sMimeType;
   }
 }

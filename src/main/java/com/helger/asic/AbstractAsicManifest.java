@@ -35,8 +35,5 @@ public abstract class AbstractAsicManifest
     return m_aMD;
   }
 
-  /**
-   * @inheritDoc
-   */
   public abstract void add (String filename, MimeType mimeType);
 }

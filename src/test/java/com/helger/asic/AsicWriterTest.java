@@ -133,27 +133,32 @@ public class AsicWriterTest
 
     log.info ("Generated file " + archiveOutputFile);
 
-    final ZipFile zipFile = new ZipFile (archiveOutputFile);
-    final Enumeration <? extends ZipEntry> entries = zipFile.entries ();
-
+    try (final ZipFile zipFile = new ZipFile (archiveOutputFile))
     {
-      int matchCount = 0;
-      while (entries.hasMoreElements ())
+      final Enumeration <? extends ZipEntry> entries = zipFile.entries ();
+
       {
-        final ZipEntry entry = entries.nextElement ();
-        final String name = entry.getName ();
-        if (BII_ENVELOPE_XML.equals (name))
+        int matchCount = 0;
+        while (entries.hasMoreElements ())
         {
-          matchCount++;
+          final ZipEntry entry = entries.nextElement ();
+          final String name = entry.getName ();
+          if (BII_ENVELOPE_XML.equals (name))
+          {
+            matchCount++;
+          }
+          if (BII_MESSAGE_XML.equals (name))
+          {
+            matchCount++;
+          }
+          log.info ("Found " + name);
+          try (final InputStream stream = zipFile.getInputStream (entry))
+          {
+            // empty
+          }
         }
-        if (BII_MESSAGE_XML.equals (name))
-        {
-          matchCount++;
-        }
-        log.info ("Found " + name);
-        final InputStream stream = zipFile.getInputStream (entry);
+        assertEquals ("Number of items in archive did not match", matchCount, 2);
       }
-      assertEquals ("Number of items in archive did not match", matchCount, 2);
     }
 
     try
@@ -161,9 +166,9 @@ public class AsicWriterTest
       asicWriter.add (biiEnvelopeFile);
       fail ("Exception expected");
     }
-    catch (final Exception e)
+    catch (final IllegalStateException e)
     {
-      assertTrue (e instanceof IllegalStateException);
+      // okay
     }
 
     try
@@ -173,9 +178,9 @@ public class AsicWriterTest
                                             TestUtil.privateKeyPassword ()));
       fail ("Exception expected");
     }
-    catch (final Exception e)
+    catch (final IllegalStateException e)
     {
-      assertTrue (e instanceof IllegalStateException);
+      // ignore
     }
 
     final AsicVerifier asicVerifier = asicVerifierFactory.verify (archiveOutputFile);

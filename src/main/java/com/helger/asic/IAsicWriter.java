@@ -121,6 +121,7 @@ public interface IAsicWriter
    *        explicitly identifies the MIME type of the entry.
    * @return reference to this AsicWriter
    * @throws IOException
+   *         on IO error
    */
   default IAsicWriter add (final Path path, final String entryName, final MimeType mimeType) throws IOException
   {
@@ -135,9 +136,17 @@ public interface IAsicWriter
    * Adds the contents of an input stream into the ASiC archive, under a given
    * entry name and explicitly identifying the MIME type.
    *
-   * @see #add(Path, String, MimeType)
+   * @param inputStream
+   *        Input stream to add
+   * @param entryName
+   *        the archive entry name to be used.
+   * @param mimeType
+   *        explicitly identifies the MIME type of the entry.
+   * @return reference to this AsicWriter
+   * @throws IOException
+   *         on IO error
    */
-  IAsicWriter add (InputStream inputStream, String filename, MimeType mimeType) throws IOException;
+  IAsicWriter add (InputStream inputStream, String entryName, MimeType mimeType) throws IOException;
 
   /**
    * Specifies which entry (file) represents the "root" document, i.e. which

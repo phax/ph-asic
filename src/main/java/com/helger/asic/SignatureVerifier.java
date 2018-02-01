@@ -17,10 +17,12 @@ import com.helger.asic.jaxb.asic.Certificate;
  */
 public class SignatureVerifier
 {
-
   private static final Logger logger = LoggerFactory.getLogger (SignatureHelper.class);
 
-  private static JcaSimpleSignerInfoVerifierBuilder jcaSimpleSignerInfoVerifierBuilder = new JcaSimpleSignerInfoVerifierBuilder ().setProvider (BCHelper.getProvider ());
+  private static JcaSimpleSignerInfoVerifierBuilder s_aJcaSimpleSignerInfoVerifierBuilder = new JcaSimpleSignerInfoVerifierBuilder ().setProvider (BCHelper.getProvider ());
+
+  private SignatureVerifier ()
+  {}
 
   public static Certificate validate (final byte [] data, final byte [] signature)
   {
@@ -39,7 +41,7 @@ public class SignatureVerifier
                                                                                    .next ();
         logger.info (x509Certificate.getSubject ().toString ());
 
-        if (signerInformation.verify (jcaSimpleSignerInfoVerifierBuilder.build (x509Certificate)))
+        if (signerInformation.verify (s_aJcaSimpleSignerInfoVerifierBuilder.build (x509Certificate)))
         {
           certificate = new Certificate ();
           certificate.setCertificate (x509Certificate.getEncoded ());

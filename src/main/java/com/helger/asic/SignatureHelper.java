@@ -13,6 +13,8 @@ import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 import java.util.Collections;
 
+import javax.annotation.Nullable;
+
 import org.bouncycastle.cert.jcajce.JcaCertStore;
 import org.bouncycastle.cms.CMSProcessableByteArray;
 import org.bouncycastle.cms.CMSSignedData;
@@ -37,24 +39,27 @@ import com.helger.commons.base64.Base64;
  */
 public class SignatureHelper
 {
-
   private static final Logger logger = LoggerFactory.getLogger (SignatureHelper.class);
 
-  protected final Provider provider;
-
-  protected final JcaDigestCalculatorProviderBuilder jcaDigestCalculatorProviderBuilder;
-
-  protected X509Certificate x509Certificate;
-
-  protected java.security.cert.Certificate [] certificateChain;
-
-  protected KeyPair keyPair;
-
-  protected JcaContentSignerBuilder jcaContentSignerBuilder;
+  private final Provider m_aProvider;
+  private final JcaDigestCalculatorProviderBuilder m_aJcaDigestCalculatorProviderBuilder;
+  private X509Certificate m_aX509Certificate;
+  private Certificate [] m_aCertificateChain;
+  private KeyPair m_aKeyPair;
+  private JcaContentSignerBuilder m_aJcaContentSignerBuilder;
 
   /**
    * Loads the keystore and obtains the private key, the public key and the
    * associated certificate
+   *
+   * @param keyStoreFile
+   *        file holding the JKS keystore.
+   * @param keyStorePassword
+   *        password of the key store itself
+   * @param keyPassword
+   *        password protecting the private key
+   * @throws IOException
+   *         on IO error
    */
   public SignatureHelper (final File keyStoreFile,
                           final String keyStorePassword,
@@ -75,6 +80,8 @@ public class SignatureHelper
    *        the alias referencing the private and public key pair.
    * @param keyPassword
    *        password protecting the private key
+   * @throws IOException
+   *         on IO error
    */
   public SignatureHelper (final File keyStoreFile,
                           final String keyStorePassword,
@@ -84,7 +91,8 @@ public class SignatureHelper
     this (BCHelper.getProvider ());
     try (InputStream inputStream = Files.newInputStream (keyStoreFile.toPath ()))
     {
-      loadCertificate (loadKeyStore (inputStream, keyStorePassword), keyAlias, keyPassword);
+      final KeyStore aKS = loadKeyStore (inputStream, keyStorePassword);
+      loadCertificate (aKS, keyAlias, keyPassword);
     }
   }
 
@@ -109,13 +117,13 @@ public class SignatureHelper
     loadCertificate (loadKeyStore (keyStoreStream, keyStorePassword), keyAlias, keyPassword);
   }
 
-  protected SignatureHelper (final Provider provider)
+  protected SignatureHelper (@Nullable final Provider aProvider)
   {
-    this.provider = provider;
+    m_aProvider = aProvider;
 
-    jcaDigestCalculatorProviderBuilder = new JcaDigestCalculatorProviderBuilder ();
-    if (provider != null)
-      jcaDigestCalculatorProviderBuilder.setProvider (provider);
+    m_aJcaDigestCalculatorProviderBuilder = new JcaDigestCalculatorProviderBuilder ();
+    if (aProvider != null)
+      m_aJcaDigestCalculatorProviderBuilder.setProvider (aProvider);
   }
 
   protected KeyStore loadKeyStore (final InputStream keyStoreStream, final String keyStorePassword)
@@ -137,24 +145,24 @@ public class SignatureHelper
     }
   }
 
-  protected void loadCertificate (final KeyStore keyStore, String keyAlias, final String keyPassword)
+  protected void loadCertificate (final KeyStore keyStore, final String keyAlias, final String keyPassword)
   {
     try
     {
-      if (keyAlias == null)
-        keyAlias = keyStore.aliases ().nextElement ();
-      x509Certificate = (X509Certificate) keyStore.getCertificate (keyAlias);
+      final String sKeyAlias = keyAlias != null ? keyAlias : keyStore.aliases ().nextElement ();
+      m_aX509Certificate = (X509Certificate) keyStore.getCertificate (sKeyAlias);
 
-      certificateChain = keyStore.getCertificateChain (keyAlias);
+      m_aCertificateChain = keyStore.getCertificateChain (sKeyAlias);
 
-      final Key key = keyStore.getKey (keyAlias, keyPassword.toCharArray ());
+      final Key key = keyStore.getKey (sKeyAlias, keyPassword.toCharArray ());
       final PrivateKey privateKey = (PrivateKey) key;
 
-      keyPair = new KeyPair (x509Certificate.getPublicKey (), privateKey);
+      m_aKeyPair = new KeyPair (m_aX509Certificate.getPublicKey (), privateKey);
 
-      jcaContentSignerBuilder = new JcaContentSignerBuilder (String.format ("SHA1with%s", privateKey.getAlgorithm ()));
-      if (provider != null)
-        jcaContentSignerBuilder.setProvider (provider);
+      m_aJcaContentSignerBuilder = new JcaContentSignerBuilder (String.format ("SHA1with%s",
+                                                                               privateKey.getAlgorithm ()));
+      if (m_aProvider != null)
+        m_aJcaContentSignerBuilder.setProvider (m_aProvider);
     }
     catch (final Exception e)
     {
@@ -175,14 +183,14 @@ public class SignatureHelper
   {
     try
     {
-      final DigestCalculatorProvider digestCalculatorProvider = jcaDigestCalculatorProviderBuilder.build ();
-      final ContentSigner contentSigner = jcaContentSignerBuilder.build (keyPair.getPrivate ());
+      final DigestCalculatorProvider digestCalculatorProvider = m_aJcaDigestCalculatorProviderBuilder.build ();
+      final ContentSigner contentSigner = m_aJcaContentSignerBuilder.build (m_aKeyPair.getPrivate ());
       final SignerInfoGenerator signerInfoGenerator = new JcaSignerInfoGeneratorBuilder (digestCalculatorProvider).build (contentSigner,
-                                                                                                                          x509Certificate);
+                                                                                                                          m_aX509Certificate);
 
       final CMSSignedDataGenerator cmsSignedDataGenerator = new CMSSignedDataGenerator ();
       cmsSignedDataGenerator.addSignerInfoGenerator (signerInfoGenerator);
-      cmsSignedDataGenerator.addCertificates (new JcaCertStore (Collections.singletonList (x509Certificate)));
+      cmsSignedDataGenerator.addCertificates (new JcaCertStore (Collections.singletonList (m_aX509Certificate)));
       final CMSSignedData cmsSignedData = cmsSignedDataGenerator.generate (new CMSProcessableByteArray (data), false);
 
       logger.debug (Base64.encodeBytes (cmsSignedData.getEncoded ()));
@@ -196,11 +204,11 @@ public class SignatureHelper
 
   X509Certificate getX509Certificate ()
   {
-    return x509Certificate;
+    return m_aX509Certificate;
   }
 
   Certificate [] getCertificateChain ()
   {
-    return certificateChain;
+    return m_aCertificateChain;
   }
 }

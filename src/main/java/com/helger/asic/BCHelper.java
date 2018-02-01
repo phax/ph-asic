@@ -8,19 +8,20 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 /**
  * @author erlend
  */
-class BCHelper
+public final class BCHelper
 {
   private static final Provider PROVIDER;
 
   static
   {
-    if (Security.getProvider (BouncyCastleProvider.PROVIDER_NAME) != null)
+    Provider p = Security.getProvider (BouncyCastleProvider.PROVIDER_NAME);
+    if (p != null)
     {
-      PROVIDER = Security.getProvider (BouncyCastleProvider.PROVIDER_NAME);
+      PROVIDER = p;
     }
     else
     {
-      PROVIDER = new BouncyCastleProvider ();
+      PROVIDER = p = new BouncyCastleProvider ();
       Security.addProvider (PROVIDER);
     }
   }

@@ -39,7 +39,7 @@ import com.helger.xsds.xmldsig.TransformsType;
 import com.helger.xsds.xmldsig.X509DataType;
 import com.helger.xsds.xmldsig.X509IssuerSerialType;
 
-class XadesAsicManifest extends AbstractAsicManifest
+public class XadesAsicManifest extends AbstractAsicManifest
 {
 
   private static JAXBContext jaxbContext; // Thread safe
@@ -298,10 +298,10 @@ class XadesAsicManifest extends AbstractAsicManifest
     return new SignatureValueType ();
   }
 
-  public static void extractAndVerify (String xml, final ManifestVerifier manifestVerifier)
+  public static void extractAndVerify (final String sXml, final ManifestVerifier manifestVerifier)
   {
     // Updating namespace
-    xml = xml.replace ("http://uri.etsi.org/02918/v1.1.1#", "http://uri.etsi.org/02918/v1.2.1#");
+    String xml = sXml.replace ("http://uri.etsi.org/02918/v1.1.1#", "http://uri.etsi.org/02918/v1.2.1#");
     xml = xml.replace ("http://uri.etsi.org/2918/v1.2.1#", "http://uri.etsi.org/02918/v1.2.1#");
     xml = xml.replaceAll ("http://www.w3.org/2000/09/xmldsig#sha", "http://www.w3.org/2001/04/xmlenc#sha");
 

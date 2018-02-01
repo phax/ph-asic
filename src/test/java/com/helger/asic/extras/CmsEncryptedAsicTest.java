@@ -27,12 +27,9 @@ import com.helger.asic.IAsicReader;
 import com.helger.asic.IAsicWriter;
 import com.helger.asic.MimeType;
 import com.helger.asic.SignatureHelper;
-import com.helger.asic.extras.CmsEncryptedAsicReader;
-import com.helger.asic.extras.CmsEncryptedAsicWriter;
 
-public class CmsEncryptedAsicTest
+public final class CmsEncryptedAsicTest
 {
-
   @Test
   public void simple () throws Exception
   {
@@ -72,45 +69,47 @@ public class CmsEncryptedAsicTest
     final PrivateKey privateKey = (PrivateKey) keyStore.getKey ("selfsigned", "changeit".toCharArray ());
 
     // Open content of ByteArrayOutputStream for reading
-    final IAsicReader asicReader = AsicReaderFactory.newFactory ()
-                                                   .open (new ByteArrayInputStream (byteArrayOutputStream.toByteArray ()));
-    // Encapsulate ASiC archive to enable reading encrypted content
-    final CmsEncryptedAsicReader reader = new CmsEncryptedAsicReader (asicReader, privateKey);
+    try (final IAsicReader asicReader = AsicReaderFactory.newFactory ()
+                                                         .open (new ByteArrayInputStream (byteArrayOutputStream.toByteArray ())))
+    {
+      // Encapsulate ASiC archive to enable reading encrypted content
+      try (final CmsEncryptedAsicReader reader = new CmsEncryptedAsicReader (asicReader, privateKey))
+      {
+        // Read plain file
+        assertEquals (reader.getNextFile (), "simple.bmp");
+        final ByteArrayOutputStream file1 = new ByteArrayOutputStream ();
+        reader.writeFile (file1);
 
-    // Read plain file
-    assertEquals (reader.getNextFile (), "simple.bmp");
-    final ByteArrayOutputStream file1 = new ByteArrayOutputStream ();
-    reader.writeFile (file1);
+        // Read encrypted file
+        assertEquals (reader.getNextFile (), "encrypted.bmp");
+        final ByteArrayOutputStream file2 = new ByteArrayOutputStream ();
+        reader.writeFile (file2);
 
-    // Read encrypted file
-    assertEquals (reader.getNextFile (), "encrypted.bmp");
-    final ByteArrayOutputStream file2 = new ByteArrayOutputStream ();
-    reader.writeFile (file2);
+        // Read encrypted file 2
+        assertEquals (reader.getNextFile (), "encrypted2.bmp");
+        final ByteArrayOutputStream file3 = new ByteArrayOutputStream ();
+        reader.writeFile (file3);
 
-    // Read encrypted file 2
-    assertEquals (reader.getNextFile (), "encrypted2.bmp");
-    final ByteArrayOutputStream file3 = new ByteArrayOutputStream ();
-    reader.writeFile (file3);
+        // Read encrypted file 3
+        assertEquals (reader.getNextFile (), "encrypted3.xml");
+        final ByteArrayOutputStream file4 = new ByteArrayOutputStream ();
+        reader.writeFile (file4);
 
-    // Read encrypted file 3
-    assertEquals (reader.getNextFile (), "encrypted3.xml");
-    final ByteArrayOutputStream file4 = new ByteArrayOutputStream ();
-    reader.writeFile (file4);
+        // Verify both files contain the same data
+        assertArrayEquals (file2.toByteArray (), file1.toByteArray ());
 
-    // Verify both files contain the same data
-    assertArrayEquals (file2.toByteArray (), file1.toByteArray ());
+        // Verify no more files are found
+        assertNull (reader.getNextFile ());
 
-    // Verify no more files are found
-    assertNull (reader.getNextFile ());
+        // Verify certificate used for signing of ASiC is the same as the one
+        // used
+        // for signing
+        assertArrayEquals (reader.getAsicManifest ().getCertificate ().get (0).getCertificate (),
+                           certificate.getEncoded ());
 
-    // Verify certificate used for signing of ASiC is the same as the one used
-    // for signing
-    assertArrayEquals (reader.getAsicManifest ().getCertificate ().get (0).getCertificate (),
-                       certificate.getEncoded ());
-
-    assertEquals (reader.getAsicManifest ().getRootfile (), "encrypted.bmp");
-
-    asicReader.close ();
+        assertEquals (reader.getAsicManifest ().getRootfile (), "encrypted.bmp");
+      }
+    }
 
     // Writes the ASiC file to temporary directory
     final File sample = File.createTempFile ("sample", ".asice");

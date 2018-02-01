@@ -27,10 +27,9 @@ import com.helger.asic.jaxb.cades.DataObjectReferenceType;
 /**
  * @author steinar Date: 02.07.15 Time: 12.08
  */
-public class AsicCadesWriterTest
+public final class AsicCadesWriterTest
 {
-
-  public static final Logger log = LoggerFactory.getLogger (AsicCadesWriterTest.class);
+  private static final Logger log = LoggerFactory.getLogger (AsicCadesWriterTest.class);
 
   public static final int BYTES_TO_CHECK = 40;
   public static final String BII_ENVELOPE_XML = "bii-envelope.xml";
@@ -69,19 +68,20 @@ public class AsicCadesWriterTest
 
     assertTrue (file + " can not be read", file.exists () && file.isFile () && file.canRead ());
 
-    final FileInputStream fileInputStream = new FileInputStream (file);
-    final BufferedInputStream is = new BufferedInputStream (fileInputStream);
+    try (final FileInputStream fileInputStream = new FileInputStream (file);
+         final BufferedInputStream is = new BufferedInputStream (fileInputStream))
+    {
+      final byte [] buffer = new byte [BYTES_TO_CHECK];
+      final int read = is.read (buffer, 0, BYTES_TO_CHECK);
+      assertEquals (read, BYTES_TO_CHECK);
 
-    final byte [] buffer = new byte [BYTES_TO_CHECK];
-    final int read = is.read (buffer, 0, BYTES_TO_CHECK);
-    assertEquals (read, BYTES_TO_CHECK);
+      assertEquals ("Byte 28 should be 0", buffer[28], (byte) 0);
 
-    assertEquals ("Byte 28 should be 0", buffer[28], (byte) 0);
+      assertEquals ("'mimetype' file should not be compressed", buffer[8], 0);
 
-    assertEquals ("'mimetype' file should not be compressed", buffer[8], 0);
-
-    assertTrue ("First 4 octets should read 0x50 0x4B 0x03 0x04",
-                buffer[0] == 0x50 && buffer[1] == 0x4B && buffer[2] == 0x03 && buffer[3] == 0x04);
+      assertTrue ("First 4 octets should read 0x50 0x4B 0x03 0x04",
+                  buffer[0] == 0x50 && buffer[1] == 0x4B && buffer[2] == 0x03 && buffer[3] == 0x04);
+    }
   }
 
   @Test
@@ -91,19 +91,19 @@ public class AsicCadesWriterTest
     final File asicOutputFile = new File (System.getProperty ("java.io.tmpdir"), "asic-sample-cades.zip");
 
     final IAsicWriter asicWriter = asicWriterFactory.newContainer (asicOutputFile)
-                                                   .add (new File (envelopeUrl.toURI ()))
-                                                   // Specifies the file, the
-                                                   // archive entry name and
-                                                   // explicitly names the MIME
-                                                   // type
-                                                   .add (new File (messageUrl.toURI ()),
-                                                         BII_MESSAGE_XML,
-                                                         MimeType.forString ("application/xml"))
-                                                   .setRootEntryName (envelopeUrl.toURI ().toString ())
-                                                   .sign (keystoreFile,
-                                                          TestUtil.keyStorePassword (),
-                                                          TestUtil.keyPairAlias (),
-                                                          TestUtil.privateKeyPassword ());
+                                                    .add (new File (envelopeUrl.toURI ()))
+                                                    // Specifies the file, the
+                                                    // archive entry name and
+                                                    // explicitly names the MIME
+                                                    // type
+                                                    .add (new File (messageUrl.toURI ()),
+                                                          BII_MESSAGE_XML,
+                                                          MimeType.forString ("application/xml"))
+                                                    .setRootEntryName (envelopeUrl.toURI ().toString ())
+                                                    .sign (keystoreFile,
+                                                           TestUtil.keyStorePassword (),
+                                                           TestUtil.keyPairAlias (),
+                                                           TestUtil.privateKeyPassword ());
 
     // Verifies that both files have been added.
     {
@@ -123,10 +123,9 @@ public class AsicCadesWriterTest
 
     log.info ("Generated file " + asicOutputFile);
 
-    final ZipFile zipFile = new ZipFile (asicOutputFile);
-    final Enumeration <? extends ZipEntry> entries = zipFile.entries ();
-
+    try (final ZipFile zipFile = new ZipFile (asicOutputFile))
     {
+      final Enumeration <? extends ZipEntry> entries = zipFile.entries ();
       int matchCount = 0;
       while (entries.hasMoreElements ())
       {
@@ -141,7 +140,10 @@ public class AsicCadesWriterTest
           matchCount++;
         }
         log.info ("Found " + name);
-        final InputStream stream = zipFile.getInputStream (entry);
+        try (final InputStream stream = zipFile.getInputStream (entry))
+        {
+          // empty
+        }
       }
       assertEquals ("Number of items in archive did not match", matchCount, 2);
     }

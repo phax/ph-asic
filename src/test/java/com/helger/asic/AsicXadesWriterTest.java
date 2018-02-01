@@ -24,39 +24,38 @@ import com.helger.xsds.xmldsig.ReferenceType;
 /**
  * @author steinar Date: 02.07.15 Time: 12.08
  */
-public class AsicXadesWriterTest
+public final class AsicXadesWriterTest
 {
-
-  public static final Logger log = LoggerFactory.getLogger (AsicXadesWriterTest.class);
+  private static final Logger log = LoggerFactory.getLogger (AsicXadesWriterTest.class);
 
   public static final String BII_ENVELOPE_XML = "bii-envelope.xml";
   public static final String BII_MESSAGE_XML = TestUtil.BII_SAMPLE_MESSAGE_XML;
-  private URL envelopeUrl;
-  private URL messageUrl;
-  private File keystoreFile;
+  private URL m_aEnvelopeUrl;
+  private URL m_aMessageUrl;
+  private File m_aKeystoreFile;
 
-  private AsicWriterFactory asicContainerWriterFactory;
+  private AsicWriterFactory m_aAsicWriterFactory;
 
   @Before
   public void setUp ()
   {
-    envelopeUrl = AsicXadesWriterTest.class.getClassLoader ().getResource (BII_ENVELOPE_XML);
-    assertNotNull (envelopeUrl);
+    m_aEnvelopeUrl = AsicXadesWriterTest.class.getClassLoader ().getResource (BII_ENVELOPE_XML);
+    assertNotNull (m_aEnvelopeUrl);
 
-    messageUrl = AsicXadesWriterTest.class.getClassLoader ().getResource (BII_MESSAGE_XML);
-    assertNotNull (messageUrl);
+    m_aMessageUrl = AsicXadesWriterTest.class.getClassLoader ().getResource (BII_MESSAGE_XML);
+    assertNotNull (m_aMessageUrl);
 
-    keystoreFile = new File ("src/test/resources/keystore.jks");
-    assertTrue ("Expected to find your private key and certificate in " + keystoreFile, keystoreFile.canRead ());
+    m_aKeystoreFile = new File ("src/test/resources/keystore.jks");
+    assertTrue ("Expected to find your private key and certificate in " + m_aKeystoreFile, m_aKeystoreFile.canRead ());
 
-    asicContainerWriterFactory = AsicWriterFactory.newFactory (ESignatureMethod.XAdES);
+    m_aAsicWriterFactory = AsicWriterFactory.newFactory (ESignatureMethod.XAdES);
   }
 
   @Test
   public void createSampleEmptyContainer () throws Exception
   {
     final ByteArrayOutputStream outputStream = new ByteArrayOutputStream ();
-    asicContainerWriterFactory.newContainer (outputStream).sign (keystoreFile, "changeit", "changeit");
+    m_aAsicWriterFactory.newContainer (outputStream).sign (m_aKeystoreFile, "changeit", "changeit");
 
     final byte [] buffer = outputStream.toByteArray ();
     assertEquals ("Byte 28 should be 0", buffer[28], (byte) 0);
@@ -68,15 +67,15 @@ public class AsicXadesWriterTest
   @Test
   public void createSampleContainer () throws Exception
   {
-    final SignatureHelper signatureHelper = new SignatureHelper (keystoreFile, "changeit", "selfsigned", "changeit");
+    final SignatureHelper signatureHelper = new SignatureHelper (m_aKeystoreFile, "changeit", "selfsigned", "changeit");
 
-    final IAsicWriter asicWriter = asicContainerWriterFactory.newContainer (new File (System.getProperty ("java.io.tmpdir")),
-                                                                           "asic-sample-xades.zip")
-                                                            .add (new File (envelopeUrl.toURI ()))
-                                                            .add (new File (messageUrl.toURI ()),
-                                                                  TestUtil.BII_SAMPLE_MESSAGE_XML,
-                                                                  MimeType.forString ("application/xml"))
-                                                            .sign (signatureHelper);
+    final IAsicWriter asicWriter = m_aAsicWriterFactory.newContainer (new File (System.getProperty ("java.io.tmpdir")),
+                                                                      "asic-sample-xades.zip")
+                                                       .add (new File (m_aEnvelopeUrl.toURI ()))
+                                                       .add (new File (m_aMessageUrl.toURI ()),
+                                                             TestUtil.BII_SAMPLE_MESSAGE_XML,
+                                                             MimeType.forString ("application/xml"))
+                                                       .sign (signatureHelper);
 
     final File file = new File (System.getProperty ("java.io.tmpdir"), "asic-sample-xades.zip");
 
@@ -103,31 +102,32 @@ public class AsicXadesWriterTest
 
     log.info ("Generated file " + file);
 
-    final ZipFile zipFile = new ZipFile (file);
-    final Enumeration <? extends ZipEntry> entries = zipFile.entries ();
-
+    try (final ZipFile zipFile = new ZipFile (file))
     {
-      int matchCount = 0;
-      while (entries.hasMoreElements ())
-      {
-        final ZipEntry entry = entries.nextElement ();
-        final String name = entry.getName ();
-        if (BII_ENVELOPE_XML.equals (name))
-        {
-          matchCount++;
-        }
-        if (BII_MESSAGE_XML.equals (name))
-        {
-          matchCount++;
-        }
-        log.info ("Found " + name);
-      }
-      assertEquals ("Number of items in archive did not match", matchCount, 2);
-    }
+      final Enumeration <? extends ZipEntry> entries = zipFile.entries ();
 
+      {
+        int matchCount = 0;
+        while (entries.hasMoreElements ())
+        {
+          final ZipEntry entry = entries.nextElement ();
+          final String name = entry.getName ();
+          if (BII_ENVELOPE_XML.equals (name))
+          {
+            matchCount++;
+          }
+          if (BII_MESSAGE_XML.equals (name))
+          {
+            matchCount++;
+          }
+          log.info ("Found " + name);
+        }
+        assertEquals ("Number of items in archive did not match", matchCount, 2);
+      }
+    }
     try
     {
-      asicWriter.add (new File (envelopeUrl.toURI ()));
+      asicWriter.add (new File (m_aEnvelopeUrl.toURI ()));
       fail ("Exception expected");
     }
     catch (final Exception e)
@@ -137,7 +137,7 @@ public class AsicXadesWriterTest
 
     try
     {
-      asicWriter.sign (keystoreFile, "changeit", "changeit");
+      asicWriter.sign (m_aKeystoreFile, "changeit", "changeit");
       fail ("Exception expected");
     }
     catch (final Exception e)
@@ -149,7 +149,7 @@ public class AsicXadesWriterTest
   @Test
   public void rootfileNotSupported () throws IOException
   {
-    final IAsicWriter asicWriter = asicContainerWriterFactory.newContainer (new ByteArrayOutputStream ());
+    final IAsicWriter asicWriter = m_aAsicWriterFactory.newContainer (new ByteArrayOutputStream ());
     asicWriter.add (new ByteArrayInputStream ("Content".getBytes ()), "rootfile.txt");
 
     try

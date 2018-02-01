@@ -46,50 +46,50 @@ public class AsicReaderImplTest
                      .sign (signatureHelper);
 
     // Step 2 - reads the contents of the ASiC archive
-    final IAsicReader asicReader = asicReaderFactory.open (new ByteArrayInputStream (containerOutput.toByteArray ()));
-
-    ByteArrayOutputStream fileStream;
+    try (final IAsicReader asicReader = asicReaderFactory.open (new ByteArrayInputStream (containerOutput.toByteArray ())))
     {
-      assertEquals ("content1.txt", asicReader.getNextFile ());
+      ByteArrayOutputStream fileStream;
+      {
+        assertEquals ("content1.txt", asicReader.getNextFile ());
 
-      fileStream = new ByteArrayOutputStream ();
-      asicReader.writeFile (fileStream);
-      assertEquals (fileContent1, fileStream.toString ());
-    }
+        fileStream = new ByteArrayOutputStream ();
+        asicReader.writeFile (fileStream);
+        assertEquals (fileContent1, fileStream.toString ());
+      }
 
-    {
-      assertEquals ("content2.txt", asicReader.getNextFile ());
+      {
+        assertEquals ("content2.txt", asicReader.getNextFile ());
 
-      fileStream = new ByteArrayOutputStream ();
-      asicReader.writeFile (fileStream);
-      assertEquals (fileContent2, fileStream.toString ());
-    }
+        fileStream = new ByteArrayOutputStream ();
+        asicReader.writeFile (fileStream);
+        assertEquals (fileContent2, fileStream.toString ());
+      }
 
-    assertNull (asicReader.getNextFile ());
+      assertNull (asicReader.getNextFile ());
 
-    try
-    {
-      asicReader.writeFile (new ByteArrayOutputStream ());
-      fail ("Exception expected");
-    }
-    catch (final IllegalStateException e)
-    {
-      log.info (e.getMessage ());
-    }
+      try
+      {
+        asicReader.writeFile (new ByteArrayOutputStream ());
+        fail ("Exception expected");
+      }
+      catch (final IllegalStateException e)
+      {
+        log.info (e.getMessage ());
+      }
 
-    asicReader.close ();
-
-    try
-    {
       asicReader.close ();
-    }
-    catch (final IllegalStateException e)
-    {
-      fail ("No exception expected");
-    }
 
-    assertEquals (asicReader.getAsicManifest ().getFile ().size (), 2);
+      try
+      {
+        asicReader.close ();
+      }
+      catch (final IllegalStateException e)
+      {
+        fail ("No exception expected");
+      }
 
+      assertEquals (asicReader.getAsicManifest ().getFile ().size (), 2);
+    }
   }
 
   @Test
@@ -108,60 +108,61 @@ public class AsicReaderImplTest
                            MimeType.forString ("text/plain"))
                      .sign (signatureHelper);
 
-    final IAsicReader asicReader = asicReaderFactory.open (file);
-
-    File contentFile;
-    String filename;
-    ByteArrayOutputStream fileStream;
+    try (final IAsicReader asicReader = asicReaderFactory.open (file))
     {
-      filename = asicReader.getNextFile ();
-      assertEquals ("content1.txt", filename);
+      File contentFile;
+      String filename;
+      ByteArrayOutputStream fileStream;
+      {
+        filename = asicReader.getNextFile ();
+        assertEquals ("content1.txt", filename);
 
-      contentFile = new File (tmpDir, "asic-" + filename);
-      asicReader.writeFile (contentFile);
+        contentFile = new File (tmpDir, "asic-" + filename);
+        asicReader.writeFile (contentFile);
 
-      fileStream = new ByteArrayOutputStream ();
-      AsicUtils.copyStream (Files.newInputStream (contentFile.toPath ()), fileStream);
-      assertEquals (fileContent1, fileStream.toString ());
+        fileStream = new ByteArrayOutputStream ();
+        AsicUtils.copyStream (Files.newInputStream (contentFile.toPath ()), fileStream);
+        assertEquals (fileContent1, fileStream.toString ());
 
-      Files.delete (contentFile.toPath ());
-    }
+        Files.delete (contentFile.toPath ());
+      }
 
-    {
-      filename = asicReader.getNextFile ();
-      assertEquals ("content2.txt", filename);
+      {
+        filename = asicReader.getNextFile ();
+        assertEquals ("content2.txt", filename);
 
-      contentFile = new File (tmpDir, "asic-" + filename);
-      asicReader.writeFile (contentFile);
+        contentFile = new File (tmpDir, "asic-" + filename);
+        asicReader.writeFile (contentFile);
 
-      fileStream = new ByteArrayOutputStream ();
-      AsicUtils.copyStream (Files.newInputStream (contentFile.toPath ()), fileStream);
-      assertEquals (fileContent2, fileStream.toString ());
+        fileStream = new ByteArrayOutputStream ();
+        AsicUtils.copyStream (Files.newInputStream (contentFile.toPath ()), fileStream);
+        assertEquals (fileContent2, fileStream.toString ());
 
-      Files.delete (contentFile.toPath ());
-    }
+        Files.delete (contentFile.toPath ());
+      }
 
-    assertNull (asicReader.getNextFile ());
+      assertNull (asicReader.getNextFile ());
 
-    try
-    {
-      asicReader.writeFile (new ByteArrayOutputStream ());
-      fail ("Exception expected");
-    }
-    catch (final IllegalStateException e)
-    {
-      log.info (e.getMessage ());
-    }
+      try
+      {
+        asicReader.writeFile (new ByteArrayOutputStream ());
+        fail ("Exception expected");
+      }
+      catch (final IllegalStateException e)
+      {
+        log.info (e.getMessage ());
+      }
 
-    asicReader.close ();
-
-    try
-    {
       asicReader.close ();
-    }
-    catch (final IllegalStateException e)
-    {
-      fail ("No exception expected");
+
+      try
+      {
+        asicReader.close ();
+      }
+      catch (final IllegalStateException e)
+      {
+        fail ("No exception expected");
+      }
     }
 
     Files.delete (file.toPath ());
@@ -170,9 +171,7 @@ public class AsicReaderImplTest
   @Test
   public void exceptionOnInvalidMime () throws IOException
   {
-    final IAsicReader asicReader = asicReaderFactory.open (getClass ().getResourceAsStream ("/asic-general-test-invalid-mime.asice"));
-
-    try
+    try (final IAsicReader asicReader = asicReaderFactory.open (getClass ().getResourceAsStream ("/asic-general-test-invalid-mime.asice")))
     {
       asicReader.getNextFile ();
       fail ("Didn't throw exception on wrong mimetype.");
@@ -181,17 +180,5 @@ public class AsicReaderImplTest
     {
       log.info (e.getMessage ());
     }
-
-    asicReader.close ();
-
-    try
-    {
-      asicReader.close ();
-    }
-    catch (final IllegalStateException e)
-    {
-      fail ("No exception expected");
-    }
-
   }
 }

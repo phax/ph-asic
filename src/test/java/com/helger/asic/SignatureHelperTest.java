@@ -3,20 +3,17 @@ package com.helger.asic;
 import static org.junit.Assert.fail;
 
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-public class SignatureHelperTest
+public final class SignatureHelperTest
 {
-
-  private static Logger log = LoggerFactory.getLogger (SignatureHelperTest.class);
-
+  @SuppressWarnings ("unused")
   @Test
   public void loadNoProblems ()
   {
     new SignatureHelper (getClass ().getResourceAsStream ("/keystore.jks"), "changeit", null, "changeit");
   }
 
+  @SuppressWarnings ("unused")
   @Test
   public void wrongKeystorePassword ()
   {
@@ -27,10 +24,11 @@ public class SignatureHelperTest
     }
     catch (final IllegalStateException e)
     {
-      log.info (e.getMessage ());
+      // Ignore
     }
   }
 
+  @SuppressWarnings ("unused")
   @Test
   public void wrongKeyPassword ()
   {
@@ -41,10 +39,11 @@ public class SignatureHelperTest
     }
     catch (final IllegalStateException e)
     {
-      log.info (e.getMessage ());
+      // Ignore
     }
   }
 
+  @SuppressWarnings ("unused")
   @Test
   public void wrongKeyAlias ()
   {
@@ -55,7 +54,7 @@ public class SignatureHelperTest
     }
     catch (final IllegalStateException e)
     {
-      log.info (e.getMessage ());
+      // Ignore
     }
   }
 }

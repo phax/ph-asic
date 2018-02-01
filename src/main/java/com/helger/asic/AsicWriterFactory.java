@@ -42,9 +42,9 @@ public class AsicWriterFactory
 
   private final ESignatureMethod m_eSM;
 
-  private AsicWriterFactory (final ESignatureMethod signatureMethod)
+  protected AsicWriterFactory (final ESignatureMethod eSM)
   {
-    this.m_eSM = signatureMethod;
+    m_eSM = eSM;
   }
 
   /**
@@ -57,6 +57,7 @@ public class AsicWriterFactory
    *        the name of the archive.
    * @return an instance of AsicWriter
    * @throws IOException
+   *         on IO error
    */
   public IAsicWriter newContainer (final File outputDir, final String filename) throws IOException
   {
@@ -71,15 +72,13 @@ public class AsicWriterFactory
    *        the file reference to the archive.
    * @return an instance of AsicWriter
    * @throws IOException
+   *         on IO error
    */
   public IAsicWriter newContainer (final File file) throws IOException
   {
     return newContainer (file.toPath ());
   }
 
-  /**
-   * @see #newContainer(File)
-   */
   public IAsicWriter newContainer (final Path path) throws IOException
   {
     // Conformance to ETSI TS 102 918, 6.2.1 1)
@@ -97,13 +96,14 @@ public class AsicWriterFactory
    *        stream into which the archive will be written.
    * @return an instance of AsicWriter
    * @throws IOException
+   *         on IO error
    */
   public IAsicWriter newContainer (final OutputStream outputStream) throws IOException
   {
     return newContainer (outputStream, false);
   }
 
-  IAsicWriter newContainer (final OutputStream outputStream, final boolean closeStreamOnClose) throws IOException
+  public IAsicWriter newContainer (final OutputStream outputStream, final boolean closeStreamOnClose) throws IOException
   {
     switch (m_eSM)
     {
@@ -112,7 +112,7 @@ public class AsicWriterFactory
       case XAdES:
         return new XadesAsicWriter (m_eSM, outputStream, closeStreamOnClose);
       default:
-        throw new IllegalStateException (String.format ("Not implemented: %s", m_eSM));
+        throw new IllegalStateException ("Not implemented: " + m_eSM);
     }
   }
 }

@@ -1,27 +1,27 @@
 package com.helger.asic;
 
-enum EMessageDigestAlgorithm
+public enum EMessageDigestAlgorithm
 {
   SHA256 ("SHA-256", "http://www.w3.org/2001/04/xmlenc#sha256"),
   SHA384 ("SHA-384", "http://www.w3.org/2001/04/xmlenc#sha384"),
   SHA512 ("SHA-512", "http://www.w3.org/2001/04/xmlenc#sha512");
 
-  private String algorithm;
-  private String uri;
+  private final String m_sAlgorithm;
+  private final String m_sURI;
 
-  EMessageDigestAlgorithm (String algorithm, String uri)
+  private EMessageDigestAlgorithm (final String algorithm, final String uri)
   {
-    this.algorithm = algorithm;
-    this.uri = uri;
+    m_sAlgorithm = algorithm;
+    m_sURI = uri;
   }
 
   public String getAlgorithm ()
   {
-    return algorithm;
+    return m_sAlgorithm;
   }
 
   public String getUri ()
   {
-    return uri;
+    return m_sURI;
   }
 }

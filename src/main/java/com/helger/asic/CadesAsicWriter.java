@@ -10,18 +10,24 @@ import java.util.UUID;
  *
  * @author steinar Date: 02.07.15 Time: 12.09
  */
-class CadesAsicWriter extends AbstractAsicWriter
+public class CadesAsicWriter extends AbstractAsicWriter
 {
 
   /**
    * Prepares creation of a new container.
-   * 
+   *
+   * @param signatureMethod
+   *        signature method
    * @param outputStream
    *        Stream used to write container.
+   * @param closeStreamOnClose
+   *        close stream when this is closed
+   * @throws IOException
+   *         on IO error
    */
-  public CadesAsicWriter (ESignatureMethod signatureMethod,
-                          OutputStream outputStream,
-                          boolean closeStreamOnClose) throws IOException
+  public CadesAsicWriter (final ESignatureMethod signatureMethod,
+                          final OutputStream outputStream,
+                          final boolean closeStreamOnClose) throws IOException
   {
     super (outputStream, closeStreamOnClose, new CadesAsicManifest (signatureMethod.getMessageDigestAlgorithm ()));
   }
@@ -30,24 +36,24 @@ class CadesAsicWriter extends AbstractAsicWriter
    * {@inheritDoc}
    */
   @Override
-  public IAsicWriter setRootEntryName (String name)
+  public IAsicWriter setRootEntryName (final String name)
   {
     ((CadesAsicManifest) m_aAsicManifest).setRootfileForEntry (name);
     return this;
   }
 
   @Override
-  protected void performSign (SignatureHelper signatureHelper) throws IOException
+  protected void performSign (final SignatureHelper signatureHelper) throws IOException
   {
     // Define signature filename containing UUID
-    String signatureFilename = String.format ("META-INF/signature-%s.p7s", UUID.randomUUID ().toString ());
+    final String signatureFilename = String.format ("META-INF/signature-%s.p7s", UUID.randomUUID ().toString ());
 
     // Adding signature file to asic manifest before actual signing
     ((CadesAsicManifest) m_aAsicManifest).setSignature (signatureFilename, "application/x-pkcs7-signature");
 
     // Generates and writes manifest (META-INF/asicmanifest.xml) to the zip
     // archive
-    byte [] manifestBytes = ((CadesAsicManifest) m_aAsicManifest).toBytes ();
+    final byte [] manifestBytes = ((CadesAsicManifest) m_aAsicManifest).toBytes ();
     m_aAsicOutputStream.writeZipEntry ("META-INF/asicmanifest.xml", manifestBytes);
 
     // Generates and writes signature (META-INF/signature-*.p7s) to the zip

@@ -19,7 +19,7 @@ import com.helger.asic.jaxb.cades.ObjectFactory;
 import com.helger.asic.jaxb.cades.SigReferenceType;
 import com.helger.xsds.xmldsig.DigestMethodType;
 
-class CadesAsicManifest extends AbstractAsicManifest
+public class CadesAsicManifest extends AbstractAsicManifest
 {
   private static final Logger logger = LoggerFactory.getLogger (AbstractAsicManifest.class);
 
@@ -80,7 +80,7 @@ class CadesAsicManifest extends AbstractAsicManifest
     {
       if (dataObject.getURI ().equals (entryName))
       {
-        dataObject.setRootfile (true);
+        dataObject.setRootfile (Boolean.TRUE);
         rootFilenameIsSet = true;
         return;
       }
@@ -117,12 +117,11 @@ class CadesAsicManifest extends AbstractAsicManifest
     }
   }
 
-  public static String extractAndVerify (String xml, final ManifestVerifier manifestVerifier)
+  public static String extractAndVerify (final String sXml, final ManifestVerifier manifestVerifier)
   {
     // Updating namespaces for compatibility with previous releases and other
     // implementations
-
-    xml = xml.replace ("http://uri.etsi.org/02918/v1.1.1#", "http://uri.etsi.org/02918/v1.2.1#");
+    String xml = sXml.replace ("http://uri.etsi.org/02918/v1.1.1#", "http://uri.etsi.org/02918/v1.2.1#");
     xml = xml.replace ("http://uri.etsi.org/2918/v1.2.1#", "http://uri.etsi.org/02918/v1.2.1#");
     xml = xml.replaceAll ("http://www.w3.org/2000/09/xmldsig#sha", "http://www.w3.org/2001/04/xmlenc#sha");
 
@@ -130,7 +129,7 @@ class CadesAsicManifest extends AbstractAsicManifest
     {
       // Read XML
       final Unmarshaller unmarshaller = jaxbContext.createUnmarshaller ();
-      final ASiCManifestType manifest = (ASiCManifestType) ((JAXBElement) unmarshaller.unmarshal (new ByteArrayInputStream (xml.getBytes ()))).getValue ();
+      final ASiCManifestType manifest = ((JAXBElement <ASiCManifestType>) unmarshaller.unmarshal (new ByteArrayInputStream (xml.getBytes ()))).getValue ();
 
       String sigReference = manifest.getSigReference ().getURI ();
       if (sigReference == null)

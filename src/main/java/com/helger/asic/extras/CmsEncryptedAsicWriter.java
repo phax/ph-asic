@@ -20,6 +20,7 @@ import org.bouncycastle.cms.jcajce.JceCMSContentEncryptorBuilder;
 import org.bouncycastle.cms.jcajce.JceKeyTransRecipientInfoGenerator;
 
 import com.helger.asic.AsicUtils;
+import com.helger.asic.BCHelper;
 import com.helger.asic.IAsicWriter;
 import com.helger.asic.MimeType;
 import com.helger.asic.SignatureHelper;
@@ -27,8 +28,13 @@ import com.helger.asic.SignatureHelper;
 /**
  * Wrapper to seamlessly encode specific files.
  */
-public class CmsEncryptedAsicWriter extends CmsEncryptedAsicAbstract implements IAsicWriter
+public class CmsEncryptedAsicWriter implements IAsicWriter
 {
+  static
+  {
+    BCHelper.getProvider ();
+  }
+
   private final IAsicWriter m_aAsicWriter;
   private final X509Certificate m_aCertificate;
   private final ASN1ObjectIdentifier m_aCmsAlgorithm;
@@ -47,15 +53,6 @@ public class CmsEncryptedAsicWriter extends CmsEncryptedAsicAbstract implements 
     m_aAsicWriter = asicWriter;
     m_aCertificate = certificate;
     m_aCmsAlgorithm = cmsAlgorithm;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public IAsicWriter add (final File file) throws IOException
-  {
-    return add (file.toPath ());
   }
 
   /**
@@ -122,12 +119,12 @@ public class CmsEncryptedAsicWriter extends CmsEncryptedAsicAbstract implements 
       AsicUtils.copyStream (inputStream, byteArrayOutputStream);
 
       final CMSEnvelopedDataGenerator cmsEnvelopedDataGenerator = new CMSEnvelopedDataGenerator ();
-      cmsEnvelopedDataGenerator.addRecipientInfoGenerator (new JceKeyTransRecipientInfoGenerator (m_aCertificate).setProvider (BC));
+      cmsEnvelopedDataGenerator.addRecipientInfoGenerator (new JceKeyTransRecipientInfoGenerator (m_aCertificate).setProvider (BCHelper.getProvider ()));
       final CMSEnvelopedData data = cmsEnvelopedDataGenerator.generate (new CMSProcessableByteArray (byteArrayOutputStream.toByteArray ()),
-                                                                        new JceCMSContentEncryptorBuilder (m_aCmsAlgorithm).setProvider (BC)
+                                                                        new JceCMSContentEncryptorBuilder (m_aCmsAlgorithm).setProvider (BCHelper.getProvider ())
                                                                                                                            .build ());
 
-      this.m_aEntryNames.add (filename);
+      m_aEntryNames.add (filename);
 
       return m_aAsicWriter.add (new ByteArrayInputStream (data.getEncoded ()), filename + ".p7m", mimeType);
     }
@@ -138,10 +135,11 @@ public class CmsEncryptedAsicWriter extends CmsEncryptedAsicAbstract implements 
   }
 
   @Override
-  public IAsicWriter setRootEntryName (String name)
+  public IAsicWriter setRootEntryName (final String sName)
   {
-    if (this.m_aEntryNames.contains (name))
-      name = String.format ("%s.p7m", name);
+    String name = sName;
+    if (m_aEntryNames.contains (name))
+      name += ".p7m";
 
     return m_aAsicWriter.setRootEntryName (name);
   }

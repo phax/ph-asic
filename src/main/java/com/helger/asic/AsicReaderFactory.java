@@ -48,7 +48,7 @@ public class AsicReaderFactory
   }
 
   @Nonnull
-  public IAsicReader open (@Nonnull final InputStream inputStream) throws IOException
+  public IAsicReader open (@Nonnull final InputStream inputStream)
   {
     return new AsicReaderImpl (m_eMD, inputStream);
   }

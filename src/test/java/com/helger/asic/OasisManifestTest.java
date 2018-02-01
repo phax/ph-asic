@@ -3,6 +3,7 @@ package com.helger.asic;
 import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
 
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -22,17 +23,18 @@ public class OasisManifestTest
     log.info (new String (oasisManifest.toBytes ()));
   }
 
+  @SuppressWarnings ("unused")
   @Test
   public void triggerReadException ()
   {
     try
     {
-      new OasisManifest (new ByteArrayInputStream ("invalid data".getBytes ()));
+      new OasisManifest (new ByteArrayInputStream ("invalid data".getBytes (StandardCharsets.ISO_8859_1)));
       fail ("Exception expected.");
     }
     catch (final IllegalStateException e)
     {
-      log.info (e.getMessage ());
+      // Expected
     }
   }
 
