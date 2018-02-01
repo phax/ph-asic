@@ -14,8 +14,7 @@ import org.slf4j.LoggerFactory;
  */
 public class AsicWriterFactory
 {
-
-  private static Logger logger = LoggerFactory.getLogger (AsicWriterFactory.class);
+  private static final Logger logger = LoggerFactory.getLogger (AsicWriterFactory.class);
 
   /**
    * Creates an AsicWriterFactory, which utilises the default signature method,
@@ -25,7 +24,7 @@ public class AsicWriterFactory
    */
   public static AsicWriterFactory newFactory ()
   {
-    return newFactory (SignatureMethod.CAdES);
+    return newFactory (ESignatureMethod.CAdES);
   }
 
   /**
@@ -34,24 +33,24 @@ public class AsicWriterFactory
    * @param signatureMethod
    *        the signature method to be used.
    * @return instantiated AsicWriterFactory
-   * @see SignatureMethod
+   * @see ESignatureMethod
    */
-  public static AsicWriterFactory newFactory (SignatureMethod signatureMethod)
+  public static AsicWriterFactory newFactory (final ESignatureMethod signatureMethod)
   {
     return new AsicWriterFactory (signatureMethod);
   }
 
-  private SignatureMethod signatureMethod;
+  private final ESignatureMethod m_eSM;
 
-  private AsicWriterFactory (SignatureMethod signatureMethod)
+  private AsicWriterFactory (final ESignatureMethod signatureMethod)
   {
-    this.signatureMethod = signatureMethod;
+    this.m_eSM = signatureMethod;
   }
 
   /**
    * Factory method creating a new AsicWriter, which will create an ASiC archive
    * in the supplied directory with the supplied file name
-   * 
+   *
    * @param outputDir
    *        the directory in which the archive will be created.
    * @param filename
@@ -59,7 +58,7 @@ public class AsicWriterFactory
    * @return an instance of AsicWriter
    * @throws IOException
    */
-  public AsicWriter newContainer (File outputDir, String filename) throws IOException
+  public IAsicWriter newContainer (final File outputDir, final String filename) throws IOException
   {
     return newContainer (new File (outputDir, filename));
   }
@@ -67,13 +66,13 @@ public class AsicWriterFactory
   /**
    * Creates a new AsicWriter, which will create an ASiC archive in the supplied
    * file.
-   * 
+   *
    * @param file
    *        the file reference to the archive.
    * @return an instance of AsicWriter
    * @throws IOException
    */
-  public AsicWriter newContainer (File file) throws IOException
+  public IAsicWriter newContainer (final File file) throws IOException
   {
     return newContainer (file.toPath ());
   }
@@ -81,7 +80,7 @@ public class AsicWriterFactory
   /**
    * @see #newContainer(File)
    */
-  public AsicWriter newContainer (Path path) throws IOException
+  public IAsicWriter newContainer (final Path path) throws IOException
   {
     // Conformance to ETSI TS 102 918, 6.2.1 1)
     if (!AsicUtils.PATTERN_EXTENSION_ASICE.matcher (path.toString ()).matches ())
@@ -93,27 +92,27 @@ public class AsicWriterFactory
   /**
    * Creates a new AsicWriter, which will write the container contents to the
    * supplied output stream.
-   * 
+   *
    * @param outputStream
    *        stream into which the archive will be written.
    * @return an instance of AsicWriter
    * @throws IOException
    */
-  public AsicWriter newContainer (OutputStream outputStream) throws IOException
+  public IAsicWriter newContainer (final OutputStream outputStream) throws IOException
   {
     return newContainer (outputStream, false);
   }
 
-  AsicWriter newContainer (OutputStream outputStream, boolean closeStreamOnClose) throws IOException
+  IAsicWriter newContainer (final OutputStream outputStream, final boolean closeStreamOnClose) throws IOException
   {
-    switch (signatureMethod)
+    switch (m_eSM)
     {
       case CAdES:
-        return new CadesAsicWriter (signatureMethod, outputStream, closeStreamOnClose);
+        return new CadesAsicWriter (m_eSM, outputStream, closeStreamOnClose);
       case XAdES:
-        return new XadesAsicWriter (signatureMethod, outputStream, closeStreamOnClose);
+        return new XadesAsicWriter (m_eSM, outputStream, closeStreamOnClose);
       default:
-        throw new IllegalStateException (String.format ("Not implemented: %s", signatureMethod));
+        throw new IllegalStateException (String.format ("Not implemented: %s", m_eSM));
     }
   }
 }

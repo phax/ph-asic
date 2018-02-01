@@ -8,41 +8,40 @@ import java.nio.file.Path;
 
 public class AsicVerifierFactory
 {
+  private final EMessageDigestAlgorithm m_eMessageDigestAlgorithm;
 
   public static AsicVerifierFactory newFactory ()
   {
-    return newFactory (MessageDigestAlgorithm.SHA256);
+    return newFactory (EMessageDigestAlgorithm.SHA256);
   }
 
-  public static AsicVerifierFactory newFactory (SignatureMethod signatureMethod)
+  public static AsicVerifierFactory newFactory (final ESignatureMethod signatureMethod)
   {
     return newFactory (signatureMethod.getMessageDigestAlgorithm ());
   }
 
-  static AsicVerifierFactory newFactory (MessageDigestAlgorithm messageDigestAlgorithm)
+  static AsicVerifierFactory newFactory (final EMessageDigestAlgorithm messageDigestAlgorithm)
   {
     return new AsicVerifierFactory (messageDigestAlgorithm);
   }
 
-  private MessageDigestAlgorithm messageDigestAlgorithm;
-
-  private AsicVerifierFactory (MessageDigestAlgorithm messageDigestAlgorithm)
+  private AsicVerifierFactory (final EMessageDigestAlgorithm messageDigestAlgorithm)
   {
-    this.messageDigestAlgorithm = messageDigestAlgorithm;
+    this.m_eMessageDigestAlgorithm = messageDigestAlgorithm;
   }
 
-  public AsicVerifier verify (File file) throws IOException
+  public AsicVerifier verify (final File file) throws IOException
   {
     return verify (file.toPath ());
   }
 
-  public AsicVerifier verify (Path file) throws IOException
+  public AsicVerifier verify (final Path file) throws IOException
   {
     return verify (Files.newInputStream (file));
   }
 
-  public AsicVerifier verify (InputStream inputStream) throws IOException
+  public AsicVerifier verify (final InputStream inputStream) throws IOException
   {
-    return new AsicVerifier (messageDigestAlgorithm, inputStream);
+    return new AsicVerifier (m_eMessageDigestAlgorithm, inputStream);
   }
 }

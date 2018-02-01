@@ -14,39 +14,38 @@ import org.slf4j.LoggerFactory;
  */
 class AsicOutputStream extends ZipOutputStream
 {
-
-  public static final Logger logger = LoggerFactory.getLogger (AsicOutputStream.class);
+  private static final Logger logger = LoggerFactory.getLogger (AsicOutputStream.class);
 
   public static final String APPLICATION_VND_ETSI_ASIC_E_ZIP = "application/vnd.etsi.asic-e+zip";
 
-  public AsicOutputStream (OutputStream out) throws IOException
+  public AsicOutputStream (final OutputStream aOS) throws IOException
   {
-    super (out);
+    super (aOS);
 
     setComment ("mimetype=" + APPLICATION_VND_ETSI_ASIC_E_ZIP);
-    putMimeTypeAsFirstEntry (APPLICATION_VND_ETSI_ASIC_E_ZIP);
+    _putMimeTypeAsFirstEntry (APPLICATION_VND_ETSI_ASIC_E_ZIP);
   }
 
-  private void putMimeTypeAsFirstEntry (String mimeType) throws IOException
+  private void _putMimeTypeAsFirstEntry (final String mimeType) throws IOException
   {
-    ZipEntry mimetypeEntry = new ZipEntry ("mimetype");
+    final ZipEntry mimetypeEntry = new ZipEntry ("mimetype");
     mimetypeEntry.setComment ("mimetype=" + mimeType);
     mimetypeEntry.setMethod (ZipEntry.STORED);
     mimetypeEntry.setSize (mimeType.getBytes ().length);
 
-    CRC32 crc32 = new CRC32 ();
+    final CRC32 crc32 = new CRC32 ();
     crc32.update (mimeType.getBytes ());
     mimetypeEntry.setCrc (crc32.getValue ());
 
     writeZipEntry (mimetypeEntry, mimeType.getBytes ());
   }
 
-  protected void writeZipEntry (String filename, byte [] bytes) throws IOException
+  protected void writeZipEntry (final String filename, final byte [] bytes) throws IOException
   {
     writeZipEntry (new ZipEntry (filename), bytes);
   }
 
-  protected void writeZipEntry (ZipEntry zipEntry, byte [] bytes) throws IOException
+  protected void writeZipEntry (final ZipEntry zipEntry, final byte [] bytes) throws IOException
   {
     try
     {
@@ -55,13 +54,9 @@ class AsicOutputStream extends ZipOutputStream
       write (bytes);
       closeEntry ();
     }
-    catch (IOException e)
+    catch (final IOException e)
     {
-      throw new IOException (String.format ("Unable to create new ZIP entry for %s: %s",
-                                            zipEntry.getName (),
-                                            e.getMessage ()),
-                             e);
+      throw new IOException ("Unable to create new ZIP entry for " + zipEntry.getName (), e);
     }
   }
-
 }

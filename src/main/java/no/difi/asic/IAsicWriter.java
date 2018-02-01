@@ -3,9 +3,10 @@ package no.difi.asic;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
-public interface AsicWriter
+public interface IAsicWriter
 {
   /**
    * Adds another data object to the ASiC archive.
@@ -16,12 +17,15 @@ public interface AsicWriter
    * @return reference to this AsicWriter
    * @throws IOException
    */
-  AsicWriter add (File file) throws IOException;
+  default IAsicWriter add (final File file) throws IOException
+  {
+    return add (file.toPath ());
+  }
 
   /**
    * Adds another data object to the ASiC container, using the supplied name as
    * the zip entry name
-   * 
+   *
    * @param file
    *        references the file to be added as a data object.
    * @param entryName
@@ -29,18 +33,24 @@ public interface AsicWriter
    * @return reference to this AsicWriter
    * @throws IOException
    */
-  AsicWriter add (File file, String entryName) throws IOException;
+  default IAsicWriter add (final File file, final String entryName) throws IOException
+  {
+    return add (file.toPath (), entryName);
+  }
 
   /**
    * Adds another data object to the ASiC archive
-   * 
+   *
    * @param path
    *        references the file to be added.
    * @return reference to this AsicWriter
    * @throws IOException
    * @see #add(File)
    */
-  AsicWriter add (Path path) throws IOException;
+  default IAsicWriter add (final Path path) throws IOException
+  {
+    return add (path, path.toFile ().getName ());
+  }
 
   /**
    * Adds another data object to the ASiC container under the entry name
@@ -54,12 +64,19 @@ public interface AsicWriter
    * @throws IOException
    * @see #add(File, String)
    */
-  AsicWriter add (Path path, String entryName) throws IOException;
+  default IAsicWriter add (final Path path, final String entryName) throws IOException
+  {
+    try (final InputStream inputStream = Files.newInputStream (path))
+    {
+      add (inputStream, entryName);
+    }
+    return this;
+  }
 
   /**
    * Adds the data provided by the stream into the ASiC archive, using the name
    * of the supplied file as the entry name.
-   * 
+   *
    * @param inputStream
    *        input stream of data.
    * @param filename
@@ -68,7 +85,11 @@ public interface AsicWriter
    * @return reference to this AsicWriter
    * @throws IOException
    */
-  AsicWriter add (InputStream inputStream, String filename) throws IOException;
+  default IAsicWriter add (final InputStream inputStream, final String filename) throws IOException
+  {
+    // Add file to container
+    return add (inputStream, filename, AsicUtils.detectMime (filename));
+  }
 
   /**
    * Adds the contents of a file into the ASiC archive using the supplied entry
@@ -83,10 +104,32 @@ public interface AsicWriter
    * @return reference to this AsicWriter
    * @throws IOException
    */
-  AsicWriter add (File file, String entryName, MimeType mimeType) throws IOException;
+  default IAsicWriter add (final File file, final String entryName, final MimeType mimeType) throws IOException
+  {
+    return add (file.toPath (), entryName, mimeType);
+  }
 
-  /** @see #add(File, String, MimeType) */
-  AsicWriter add (Path path, String entryName, MimeType mimeType) throws IOException;
+  /**
+   * Adds the contents of a file into the ASiC archive using the supplied entry
+   * name and MIME type.
+   *
+   * @param path
+   *        references the file to be added as a data object.
+   * @param entryName
+   *        the archive entry name to be used.
+   * @param mimeType
+   *        explicitly identifies the MIME type of the entry.
+   * @return reference to this AsicWriter
+   * @throws IOException
+   */
+  default IAsicWriter add (final Path path, final String entryName, final MimeType mimeType) throws IOException
+  {
+    try (InputStream inputStream = Files.newInputStream (path))
+    {
+      add (inputStream, entryName, mimeType);
+    }
+    return this;
+  }
 
   /**
    * Adds the contents of an input stream into the ASiC archive, under a given
@@ -94,7 +137,7 @@ public interface AsicWriter
    *
    * @see #add(Path, String, MimeType)
    */
-  AsicWriter add (InputStream inputStream, String filename, MimeType mimeType) throws IOException;
+  IAsicWriter add (InputStream inputStream, String filename, MimeType mimeType) throws IOException;
 
   /**
    * Specifies which entry (file) represents the "root" document, i.e. which
@@ -104,7 +147,7 @@ public interface AsicWriter
    *        of entry holding the root document.
    * @return reference to this AsicWriter
    */
-  AsicWriter setRootEntryName (String name);
+  IAsicWriter setRootEntryName (String name);
 
   /**
    * Signs and closes the ASiC archive. The private and public key is obtained
@@ -119,7 +162,7 @@ public interface AsicWriter
    * @return reference to this AsicWriter
    * @throws IOException
    */
-  AsicWriter sign (File keyStoreFile, String keyStorePassword, String keyPassword) throws IOException;
+  IAsicWriter sign (File keyStoreFile, String keyStorePassword, String keyPassword) throws IOException;
 
   /**
    * Signs and closes the ASiC archive using the private and public key stored
@@ -137,7 +180,7 @@ public interface AsicWriter
    * @return reference to this AsicWriter
    * @throws IOException
    */
-  AsicWriter sign (File keyStoreFile, String keyStorePassword, String keyAlias, String keyPassword) throws IOException;
+  IAsicWriter sign (File keyStoreFile, String keyStorePassword, String keyAlias, String keyPassword) throws IOException;
 
   /**
    * Allows re-use of the same SignatureHelper object when creating multiple
@@ -149,5 +192,5 @@ public interface AsicWriter
    * @see #sign(File, String, String, String)
    * @throws IOException
    */
-  AsicWriter sign (SignatureHelper signatureHelper) throws IOException;
+  IAsicWriter sign (SignatureHelper signatureHelper) throws IOException;
 }

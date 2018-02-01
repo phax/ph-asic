@@ -15,7 +15,6 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.transform.stream.StreamSource;
 
-import com.helger.security.messagedigest.EMessageDigestAlgorithm;
 import com.helger.xsds.xades132.CertIDListType;
 import com.helger.xsds.xades132.CertIDType;
 import com.helger.xsds.xades132.DataObjectFormatType;
@@ -67,7 +66,7 @@ class XadesAsicManifest extends AbstractAsicManifest
   // \XAdESSignature\Signature\Object\QualifyingProperties\SignedProperties\SignedDataObjectProperties
   private final SignedDataObjectPropertiesType signedDataObjectProperties = new SignedDataObjectPropertiesType ();
 
-  public XadesAsicManifest (final MessageDigestAlgorithm messageDigestAlgorithm)
+  public XadesAsicManifest (final EMessageDigestAlgorithm messageDigestAlgorithm)
   {
     super (messageDigestAlgorithm);
 
@@ -95,11 +94,11 @@ class XadesAsicManifest extends AbstractAsicManifest
       final ReferenceType reference = new ReferenceType ();
       reference.setId (id);
       reference.setURI (filename);
-      reference.setDigestValue (messageDigest.digest ());
+      reference.setDigestValue (m_aMD.digest ());
 
       // \XAdESSignature\Signature\SignedInfo\Reference\DigestMethod
       final DigestMethodType digestMethodType = new DigestMethodType ();
-      digestMethodType.setAlgorithm (messageDigestAlgorithm.getUri ());
+      digestMethodType.setAlgorithm (m_aMessageDigestAlgorithm.getUri ());
       reference.setDigestMethod (digestMethodType);
 
       signedInfo.getReference ().add (reference);
@@ -213,9 +212,9 @@ class XadesAsicManifest extends AbstractAsicManifest
     {
       // \XAdESSignature\Signature\Object\QualifyingProperties\SignedProperties\SignedSignatureProperties\SigningCertificate\Cert\CertDigest
       final DigestAlgAndValueType certDigest = new DigestAlgAndValueType ();
-      certDigest.setDigestValue (EMessageDigestAlgorithm.SHA_1.createMessageDigest ()
-                                                              .digest (signatureHelper.getX509Certificate ()
-                                                                                      .getEncoded ()));
+      certDigest.setDigestValue (com.helger.security.messagedigest.EMessageDigestAlgorithm.SHA_1.createMessageDigest ()
+                                                                                                .digest (signatureHelper.getX509Certificate ()
+                                                                                                                        .getEncoded ()));
       cert.setCertDigest (certDigest);
 
       // \XAdESSignature\Signature\Object\QualifyingProperties\SignedProperties\SignedSignatureProperties\SigningCertificate\Cert\CertDigest\DigestMethod
@@ -264,7 +263,7 @@ class XadesAsicManifest extends AbstractAsicManifest
 
       // \XAdESSignature\Signature\SignedInfo\Reference\DigestMethod
       final DigestMethodType digestMethodType = new DigestMethodType ();
-      digestMethodType.setAlgorithm (messageDigestAlgorithm.getUri ());
+      digestMethodType.setAlgorithm (m_aMessageDigestAlgorithm.getUri ());
       reference.setDigestMethod (digestMethodType);
 
       signedInfo.getReference ().add (reference);

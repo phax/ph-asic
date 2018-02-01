@@ -43,7 +43,7 @@ class CadesAsicManifest extends AbstractAsicManifest
   private final ASiCManifestType ASiCManifestType = new ASiCManifestType ();
   private boolean rootFilenameIsSet = false;
 
-  public CadesAsicManifest (final MessageDigestAlgorithm messageDigestAlgorithm)
+  public CadesAsicManifest (final EMessageDigestAlgorithm messageDigestAlgorithm)
   {
     super (messageDigestAlgorithm);
   }
@@ -54,10 +54,10 @@ class CadesAsicManifest extends AbstractAsicManifest
     final DataObjectReferenceType dataObject = new DataObjectReferenceType ();
     dataObject.setURI (filename);
     dataObject.setMimeType (mimeType.toString ());
-    dataObject.setDigestValue (messageDigest.digest ());
+    dataObject.setDigestValue (m_aMD.digest ());
 
     final DigestMethodType digestMethodType = new DigestMethodType ();
-    digestMethodType.setAlgorithm (messageDigestAlgorithm.getUri ());
+    digestMethodType.setAlgorithm (m_aMessageDigestAlgorithm.getUri ());
     dataObject.setDigestMethod (digestMethodType);
 
     ASiCManifestType.getDataObjectReference ().add (dataObject);

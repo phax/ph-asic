@@ -14,15 +14,15 @@ public class ManifestVerifierTest
   @Test
   public void validateMessageDigestAlgorithm ()
   {
-    final ManifestVerifier manifestVerifier = new ManifestVerifier (MessageDigestAlgorithm.SHA256);
+    final ManifestVerifier manifestVerifier = new ManifestVerifier (EMessageDigestAlgorithm.SHA256);
 
     // Not to fail
-    manifestVerifier.update ("sha256", null, null, MessageDigestAlgorithm.SHA256.getUri (), null);
+    manifestVerifier.update ("sha256", null, null, EMessageDigestAlgorithm.SHA256.getUri (), null);
 
     try
     {
       // Should fail
-      manifestVerifier.update ("sha384", null, null, MessageDigestAlgorithm.SHA384.getUri (), null);
+      manifestVerifier.update ("sha384", null, null, EMessageDigestAlgorithm.SHA384.getUri (), null);
       fail ("Exception expected");
     }
     catch (final IllegalStateException e)
@@ -33,7 +33,7 @@ public class ManifestVerifierTest
     try
     {
       // Should fail
-      manifestVerifier.update ("sha512", null, null, MessageDigestAlgorithm.SHA512.getUri (), null);
+      manifestVerifier.update ("sha512", null, null, EMessageDigestAlgorithm.SHA512.getUri (), null);
       fail ("Exception expected");
     }
     catch (final IllegalStateException e)
@@ -45,7 +45,7 @@ public class ManifestVerifierTest
   @Test
   public void testValidDigest ()
   {
-    final ManifestVerifier manifestVerifier = new ManifestVerifier (MessageDigestAlgorithm.SHA256);
+    final ManifestVerifier manifestVerifier = new ManifestVerifier (EMessageDigestAlgorithm.SHA256);
     manifestVerifier.update ("file", new byte [] { 'c', 'a', 'f', 'e' }, null);
     manifestVerifier.update ("file", "text/plain", new byte [] { 'c', 'a', 'f', 'e' }, null, null);
 
@@ -56,7 +56,7 @@ public class ManifestVerifierTest
   @Test
   public void testInvalidDigest ()
   {
-    final ManifestVerifier manifestVerifier = new ManifestVerifier (MessageDigestAlgorithm.SHA256);
+    final ManifestVerifier manifestVerifier = new ManifestVerifier (EMessageDigestAlgorithm.SHA256);
     manifestVerifier.update ("file", new byte [] { 'c', 'a', 'f', 'e' }, null);
 
     try

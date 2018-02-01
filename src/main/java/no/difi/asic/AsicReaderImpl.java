@@ -7,10 +7,10 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-class AsicReaderImpl extends AbstractAsicReader implements AsicReader
+class AsicReaderImpl extends AbstractAsicReader implements IAsicReader
 {
-
-  AsicReaderImpl (MessageDigestAlgorithm messageDigestAlgorithm, InputStream inputStream) throws IOException
+  AsicReaderImpl (final EMessageDigestAlgorithm messageDigestAlgorithm,
+                  final InputStream inputStream) throws IOException
   {
     super (messageDigestAlgorithm, inputStream);
   }
@@ -28,7 +28,7 @@ class AsicReaderImpl extends AbstractAsicReader implements AsicReader
    * {@inheritDoc}
    */
   @Override
-  public void writeFile (File file) throws IOException
+  public void writeFile (final File file) throws IOException
   {
     writeFile (file.toPath ());
   }
@@ -37,9 +37,9 @@ class AsicReaderImpl extends AbstractAsicReader implements AsicReader
    * {@inheritDoc}
    */
   @Override
-  public void writeFile (Path path) throws IOException
+  public void writeFile (final Path path) throws IOException
   {
-    OutputStream outputStream = Files.newOutputStream (path);
+    final OutputStream outputStream = Files.newOutputStream (path);
     writeFile (outputStream);
     outputStream.close ();
   }
@@ -48,7 +48,7 @@ class AsicReaderImpl extends AbstractAsicReader implements AsicReader
    * {@inheritDoc}
    */
   @Override
-  public void writeFile (OutputStream outputStream) throws IOException
+  public void writeFile (final OutputStream outputStream) throws IOException
   {
     super.writeFile (outputStream);
   }

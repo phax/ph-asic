@@ -19,7 +19,7 @@ class CadesAsicWriter extends AbstractAsicWriter
    * @param outputStream
    *        Stream used to write container.
    */
-  public CadesAsicWriter (SignatureMethod signatureMethod,
+  public CadesAsicWriter (ESignatureMethod signatureMethod,
                           OutputStream outputStream,
                           boolean closeStreamOnClose) throws IOException
   {
@@ -30,9 +30,9 @@ class CadesAsicWriter extends AbstractAsicWriter
    * {@inheritDoc}
    */
   @Override
-  public AsicWriter setRootEntryName (String name)
+  public IAsicWriter setRootEntryName (String name)
   {
-    ((CadesAsicManifest) asicManifest).setRootfileForEntry (name);
+    ((CadesAsicManifest) m_aAsicManifest).setRootfileForEntry (name);
     return this;
   }
 
@@ -43,15 +43,15 @@ class CadesAsicWriter extends AbstractAsicWriter
     String signatureFilename = String.format ("META-INF/signature-%s.p7s", UUID.randomUUID ().toString ());
 
     // Adding signature file to asic manifest before actual signing
-    ((CadesAsicManifest) asicManifest).setSignature (signatureFilename, "application/x-pkcs7-signature");
+    ((CadesAsicManifest) m_aAsicManifest).setSignature (signatureFilename, "application/x-pkcs7-signature");
 
     // Generates and writes manifest (META-INF/asicmanifest.xml) to the zip
     // archive
-    byte [] manifestBytes = ((CadesAsicManifest) asicManifest).toBytes ();
-    asicOutputStream.writeZipEntry ("META-INF/asicmanifest.xml", manifestBytes);
+    byte [] manifestBytes = ((CadesAsicManifest) m_aAsicManifest).toBytes ();
+    m_aAsicOutputStream.writeZipEntry ("META-INF/asicmanifest.xml", manifestBytes);
 
     // Generates and writes signature (META-INF/signature-*.p7s) to the zip
     // archive
-    asicOutputStream.writeZipEntry (signatureFilename, signatureHelper.signData (manifestBytes));
+    m_aAsicOutputStream.writeZipEntry (signatureFilename, signatureHelper.signData (manifestBytes));
   }
 }

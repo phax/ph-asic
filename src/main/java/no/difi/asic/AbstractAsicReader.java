@@ -10,15 +10,16 @@ import java.security.DigestInputStream;
 import java.security.DigestOutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.zip.ZipEntry;
 
 import org.bouncycastle.util.encoders.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.commons.collection.impl.CommonsHashMap;
+import com.helger.commons.collection.impl.ICommonsMap;
 import com.helger.commons.io.stream.NullOutputStream;
+import com.helger.commons.io.stream.StreamHelper;
 
 import no.difi.commons.asic.jaxb.asic.AsicManifest;
 import no.difi.commons.asic.jaxb.asic.Certificate;
@@ -31,34 +32,33 @@ import no.difi.commons.asic.jaxb.opendocument.manifest.Manifest;
  */
 abstract class AbstractAsicReader implements Closeable
 {
-
   private static final Logger logger = LoggerFactory.getLogger (AbstractAsicReader.class);
 
-  private MessageDigest messageDigest;
+  private MessageDigest m_aMD;
 
-  private AsicInputStream zipInputStream;
-  private ZipEntry currentZipEntry;
+  private AsicInputStream m_aZipInputStream;
+  private ZipEntry m_aCurrentZipEntry;
 
   private final ManifestVerifier m_aManifestVerifier;
-  private Manifest manifest;
+  private Manifest m_aManifest;
 
   // Initiated with 'true' as the first file should not do anything.
-  private boolean contentIsWritten = true;
+  private boolean m_bContentIsWritten = true;
 
   /**
    * Used to hold signature or manifest for CAdES as they are not in the same
    * file.
    */
-  private final Map <String, Object> signingContent = new HashMap <> ();
+  private final ICommonsMap <String, Object> m_aSigningContent = new CommonsHashMap <> ();
 
-  AbstractAsicReader (final MessageDigestAlgorithm messageDigestAlgorithm, final InputStream inputStream)
+  AbstractAsicReader (final EMessageDigestAlgorithm messageDigestAlgorithm, final InputStream inputStream)
   {
-    this.m_aManifestVerifier = new ManifestVerifier (messageDigestAlgorithm);
+    m_aManifestVerifier = new ManifestVerifier (messageDigestAlgorithm);
 
     try
     {
-      messageDigest = MessageDigest.getInstance (messageDigestAlgorithm.getAlgorithm ());
-      messageDigest.reset ();
+      m_aMD = MessageDigest.getInstance (messageDigestAlgorithm.getAlgorithm ());
+      m_aMD.reset ();
     }
     catch (final NoSuchAlgorithmException e)
     {
@@ -67,35 +67,35 @@ abstract class AbstractAsicReader implements Closeable
                                        e);
     }
 
-    zipInputStream = new AsicInputStream (inputStream);
+    m_aZipInputStream = new AsicInputStream (inputStream);
     // Comment in ZIP is stored in Central Directory in the end of the file.
   }
 
   public String getNextFile () throws IOException
   {
     // Read file if the user didn't.
-    if (!contentIsWritten)
+    if (!m_bContentIsWritten)
       writeFile (new NullOutputStream ());
 
     // Write digest to manifest
-    if (currentZipEntry != null)
+    if (m_aCurrentZipEntry != null)
     {
-      final byte [] digest = messageDigest.digest ();
+      final byte [] digest = m_aMD.digest ();
       logger.debug ("Digest: {}", Base64.encode (digest));
-      m_aManifestVerifier.update (currentZipEntry.getName (), digest, null);
+      m_aManifestVerifier.update (m_aCurrentZipEntry.getName (), digest, null);
     }
 
-    while ((currentZipEntry = zipInputStream.getNextEntry ()) != null)
+    while ((m_aCurrentZipEntry = m_aZipInputStream.getNextEntry ()) != null)
     {
-      logger.info ("Found file: {}", currentZipEntry.getName ());
+      logger.info ("Found file: {}", m_aCurrentZipEntry.getName ());
 
       // Files used for validation are not exposed
-      if (currentZipEntry.getName ().startsWith ("META-INF/"))
+      if (m_aCurrentZipEntry.getName ().startsWith ("META-INF/"))
         handleMetadataEntry ();
       else
       {
-        contentIsWritten = false;
-        return currentZipEntry.getName ();
+        m_bContentIsWritten = false;
+        return m_aCurrentZipEntry.getName ();
       }
     }
 
@@ -106,9 +106,9 @@ abstract class AbstractAsicReader implements Closeable
     m_aManifestVerifier.verifyAllVerified ();
 
     // All CAdES signatures and manifest must be verified.
-    if (signingContent.size () > 0)
+    if (m_aSigningContent.size () > 0)
       throw new IllegalStateException (String.format ("Signature not verified: %s",
-                                                      signingContent.keySet ().iterator ().next ()));
+                                                      m_aSigningContent.keySet ().iterator ().next ()));
 
     // Return null when container is out of content to read.
     return null;
@@ -116,39 +116,37 @@ abstract class AbstractAsicReader implements Closeable
 
   void writeFile (final OutputStream outputStream) throws IOException
   {
-    if (currentZipEntry == null)
+    if (m_aCurrentZipEntry == null)
       throw new IllegalStateException ("No file to read.");
 
     // Calculate digest while reading file
-    messageDigest.reset ();
-    final DigestOutputStream digestOutputStream = new DigestOutputStream (outputStream, messageDigest);
-    AsicUtils.copyStream (zipInputStream, digestOutputStream);
+    m_aMD.reset ();
+    final DigestOutputStream digestOutputStream = new DigestOutputStream (outputStream, m_aMD);
+    AsicUtils.copyStream (m_aZipInputStream, digestOutputStream);
 
-    zipInputStream.closeEntry ();
+    m_aZipInputStream.closeEntry ();
 
-    contentIsWritten = true;
+    m_bContentIsWritten = true;
   }
 
   InputStream inputStream ()
   {
-    if (currentZipEntry == null)
+    if (m_aCurrentZipEntry == null)
       throw new IllegalStateException ("No file to read.");
 
     // We must trust the user.
-    contentIsWritten = true;
+    m_bContentIsWritten = true;
 
-    messageDigest.reset ();
-    return new InputStreamWrapper (new DigestInputStream (zipInputStream, messageDigest));
+    m_aMD.reset ();
+    // Why wrapping??
+    return new InputStreamWrapper (new DigestInputStream (m_aZipInputStream, m_aMD));
   }
 
   @Override
   public void close () throws IOException
   {
-    if (zipInputStream != null)
-    {
-      zipInputStream.close ();
-      zipInputStream = null;
-    }
+    StreamHelper.close (m_aZipInputStream);
+    m_aZipInputStream = null;
   }
 
   /**
@@ -159,13 +157,13 @@ abstract class AbstractAsicReader implements Closeable
   private void handleMetadataEntry () throws IOException
   {
     // Extracts everything after META-INF/
-    final String filename = currentZipEntry.getName ().substring (9).toLowerCase ();
+    final String filename = m_aCurrentZipEntry.getName ().substring (9).toLowerCase ();
 
     // Read content in file
     final ByteArrayOutputStream contentsOfStream = new ByteArrayOutputStream ();
-    AsicUtils.copyStream (zipInputStream, contentsOfStream);
+    AsicUtils.copyStream (m_aZipInputStream, contentsOfStream);
 
-    if (AsicUtils.PATTERN_CADES_MANIFEST.matcher (currentZipEntry.getName ()).matches ())
+    if (AsicUtils.PATTERN_CADES_MANIFEST.matcher (m_aCurrentZipEntry.getName ()).matches ())
     {
       // Handling manifest in ASiC CAdES.
       final String sigReference = CadesAsicManifest.extractAndVerify (contentsOfStream.toString (),
@@ -173,46 +171,46 @@ abstract class AbstractAsicReader implements Closeable
       handleCadesSigning (sigReference, contentsOfStream.toString ());
     }
     else
-      if (AsicUtils.PATTERN_XADES_SIGNATURES.matcher (currentZipEntry.getName ()).matches ())
+      if (AsicUtils.PATTERN_XADES_SIGNATURES.matcher (m_aCurrentZipEntry.getName ()).matches ())
       {
         // Handling manifest in ASiC XAdES.
         XadesAsicManifest.extractAndVerify (contentsOfStream.toString (), m_aManifestVerifier);
       }
       else
-        if (AsicUtils.PATTERN_CADES_SIGNATURE.matcher (currentZipEntry.getName ()).matches ())
+        if (AsicUtils.PATTERN_CADES_SIGNATURE.matcher (m_aCurrentZipEntry.getName ()).matches ())
         {
           // Handling signature in ASiC CAdES.
-          handleCadesSigning (currentZipEntry.getName (), contentsOfStream);
+          handleCadesSigning (m_aCurrentZipEntry.getName (), contentsOfStream);
         }
         else
           if (filename.equals ("manifest.xml"))
           {
             // Read manifest.
-            manifest = OasisManifest.read (new ByteArrayInputStream (contentsOfStream.toByteArray ()));
+            m_aManifest = OasisManifest.read (new ByteArrayInputStream (contentsOfStream.toByteArray ()));
           }
           else
           {
             throw new IllegalStateException (String.format ("Contains unknown metadata file: %s",
-                                                            currentZipEntry.getName ()));
+                                                            m_aCurrentZipEntry.getName ()));
           }
   }
 
   private void handleCadesSigning (final String sigReference, final Object o)
   {
-    if (!signingContent.containsKey (sigReference))
-      signingContent.put (sigReference, o);
+    if (!m_aSigningContent.containsKey (sigReference))
+      m_aSigningContent.put (sigReference, o);
     else
     {
       final byte [] data = o instanceof String ? ((String) o).getBytes ()
-                                               : ((String) signingContent.get (sigReference)).getBytes ();
+                                               : ((String) m_aSigningContent.get (sigReference)).getBytes ();
       final byte [] sign = o instanceof ByteArrayOutputStream ? ((ByteArrayOutputStream) o).toByteArray ()
-                                                              : ((ByteArrayOutputStream) signingContent.get (sigReference)).toByteArray ();
+                                                              : ((ByteArrayOutputStream) m_aSigningContent.get (sigReference)).toByteArray ();
 
       final Certificate certificate = SignatureVerifier.validate (data, sign);
-      certificate.setCert (currentZipEntry.getName ());
+      certificate.setCert (m_aCurrentZipEntry.getName ());
       m_aManifestVerifier.addCertificate (certificate);
 
-      signingContent.remove (sigReference);
+      m_aSigningContent.remove (sigReference);
     }
   }
 
@@ -233,7 +231,7 @@ abstract class AbstractAsicReader implements Closeable
    */
   public Manifest getOasisManifest ()
   {
-    return manifest;
+    return m_aManifest;
   }
 
 }

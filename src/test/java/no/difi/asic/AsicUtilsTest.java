@@ -82,7 +82,7 @@ public class AsicUtilsTest
                        new ByteArrayInputStream (source2.toByteArray ()));
 
     // Read container (asic)
-    final AsicReader asicReader = asicReaderFactory.open (new ByteArrayInputStream (target.toByteArray ()));
+    final IAsicReader asicReader = asicReaderFactory.open (new ByteArrayInputStream (target.toByteArray ()));
 
     ByteArrayOutputStream fileStream;
     {
@@ -216,7 +216,7 @@ public class AsicUtilsTest
   @Test
   public void simpleCombineXades () throws IOException
   {
-    final AsicWriterFactory asicWriterFactory = AsicWriterFactory.newFactory (SignatureMethod.XAdES);
+    final AsicWriterFactory asicWriterFactory = AsicWriterFactory.newFactory (ESignatureMethod.XAdES);
 
     // Create first container
     final ByteArrayOutputStream source1 = new ByteArrayOutputStream ();
@@ -241,7 +241,7 @@ public class AsicUtilsTest
                        new ByteArrayInputStream (source2.toByteArray ()));
 
     // Read container (asic)
-    final AsicReader asicReader = asicReaderFactory.open (new ByteArrayInputStream (target.toByteArray ()));
+    final IAsicReader asicReader = asicReaderFactory.open (new ByteArrayInputStream (target.toByteArray ()));
 
     ByteArrayOutputStream fileStream;
     {

@@ -90,7 +90,7 @@ public class AsicCadesWriterTest
 
     final File asicOutputFile = new File (System.getProperty ("java.io.tmpdir"), "asic-sample-cades.zip");
 
-    final AsicWriter asicWriter = asicWriterFactory.newContainer (asicOutputFile)
+    final IAsicWriter asicWriter = asicWriterFactory.newContainer (asicOutputFile)
                                                    .add (new File (envelopeUrl.toURI ()))
                                                    // Specifies the file, the
                                                    // archive entry name and
@@ -174,7 +174,7 @@ public class AsicCadesWriterTest
   @Test
   public void writingToMetaInf () throws IOException
   {
-    final AsicWriter asicWriter = asicWriterFactory.newContainer (new ByteArrayOutputStream ());
+    final IAsicWriter asicWriter = asicWriterFactory.newContainer (new ByteArrayOutputStream ());
 
     try
     {

@@ -21,7 +21,7 @@ public class AsicReaderTest
   public void readingContentWithWriteFile () throws IOException
   {
     // Testing using AsicReader::writeFile.
-    final AsicReader asicReader = asicReaderFactory.open (getClass ().getResourceAsStream ("/asic-cades-test-valid.asice"));
+    final IAsicReader asicReader = asicReaderFactory.open (getClass ().getResourceAsStream ("/asic-cades-test-valid.asice"));
     while (asicReader.getNextFile () != null)
       asicReader.writeFile (new NullOutputStream ());
     asicReader.close ();
@@ -32,7 +32,7 @@ public class AsicReaderTest
   public void readingContentWithInputStream () throws IOException
   {
     // Testing using AsicReader::inputStream.
-    final AsicReader asicReader = asicReaderFactory.open (getClass ().getResourceAsStream ("/asic-cades-test-valid.asice"));
+    final IAsicReader asicReader = asicReaderFactory.open (getClass ().getResourceAsStream ("/asic-cades-test-valid.asice"));
     while (asicReader.getNextFile () != null)
       AsicUtils.copyStream (asicReader.inputStream (), new NullOutputStream ());
     asicReader.close ();
@@ -43,7 +43,7 @@ public class AsicReaderTest
   public void readingContentWithoutReading () throws IOException
   {
     // Testing using no functionality to read content.
-    final AsicReader asicReader = asicReaderFactory.open (getClass ().getResourceAsStream ("/asic-cades-test-valid.asice"));
+    final IAsicReader asicReader = asicReaderFactory.open (getClass ().getResourceAsStream ("/asic-cades-test-valid.asice"));
     while (asicReader.getNextFile () != null)
     {
       // No action
@@ -55,7 +55,7 @@ public class AsicReaderTest
   @Test (expected = IllegalStateException.class)
   public void exceptionOnEmpty () throws IOException
   {
-    final AsicReader asicReader = asicReaderFactory.open (getClass ().getResourceAsStream ("/asic-cades-test-valid.asice"));
+    final IAsicReader asicReader = asicReaderFactory.open (getClass ().getResourceAsStream ("/asic-cades-test-valid.asice"));
     while (asicReader.getNextFile () != null)
       asicReader.writeFile (new NullOutputStream ());
 

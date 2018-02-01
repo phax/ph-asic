@@ -11,18 +11,19 @@ import java.nio.file.Paths;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 
+import javax.annotation.Nonnull;
 import javax.annotation.WillNotClose;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.io.stream.NonClosingInputStream;
 import com.helger.commons.io.stream.StreamHelper;
 
 public class AsicUtils
 {
-
-  private static Logger logger = LoggerFactory.getLogger (AsicUtils.class);
+  private static final Logger logger = LoggerFactory.getLogger (AsicUtils.class);
 
   /** The MIME type, which should be the very first entry in the container */
   public static final String MIMETYPE_ASICE = "application/vnd.etsi.asic-e+zip";
@@ -49,8 +50,11 @@ public class AsicUtils
    *        Stream for target container.
    * @param inputStreams
    *        Streams for source containers.
+   * @throws IOException
+   *         in case of error
    */
-  public static void combine (final OutputStream outputStream, final InputStream... inputStreams) throws IOException
+  public static void combine (@Nonnull final OutputStream outputStream,
+                              @Nonnull final InputStream... inputStreams) throws IOException
   {
     // Statuses
     int manifestCounter = 0;
@@ -58,87 +62,89 @@ public class AsicUtils
     boolean containsRootFile = false;
 
     // Open target container
-    final AsicOutputStream target = new AsicOutputStream (outputStream);
-
-    // Prepare to combine OASIS OpenDocument Manifests
-    final OasisManifest oasisManifest = new OasisManifest (MimeType.forString (MIMETYPE_ASICE));
-
-    for (final InputStream inputStream : inputStreams)
+    try (final AsicOutputStream target = new AsicOutputStream (outputStream))
     {
-      // Open source container
-      final AsicInputStream source = new AsicInputStream (inputStream);
+      // Prepare to combine OASIS OpenDocument Manifests
+      final OasisManifest oasisManifest = new OasisManifest (MimeType.forString (MIMETYPE_ASICE));
 
-      // Read entries
-      ZipEntry zipEntry;
-      while ((zipEntry = source.getNextEntry ()) != null)
+      for (final InputStream inputStream : inputStreams)
       {
-        if (PATTERN_CADES_MANIFEST.matcher (zipEntry.getName ()).matches ())
+        // Open source container
+        try (final AsicInputStream source = new AsicInputStream (inputStream))
         {
-          // Fetch content
-          final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream ();
-          copyStream (source, byteArrayOutputStream);
-
-          // Read manifest
-          final ManifestVerifier manifestVerifier = new ManifestVerifier (null);
-          CadesAsicManifest.extractAndVerify (byteArrayOutputStream.toString (), manifestVerifier);
-
-          // Make sure only on rootfile makes it to the source container
-          if (manifestVerifier.getAsicManifest ().getRootfile () != null)
+          // Read entries
+          ZipEntry zipEntry;
+          while ((zipEntry = source.getNextEntry ()) != null)
           {
-            if (containsRootFile)
-              throw new IllegalStateException ("Multiple rootfiles is not allowed when combining containers.");
-            containsRootFile = true;
-          }
-
-          // Write manifest to container
-          target.putNextEntry (new ZipEntry (String.format ("META-INF/asicmanifest%s.xml", ++manifestCounter)));
-          copyStream (new ByteArrayInputStream (byteArrayOutputStream.toByteArray ()), target);
-        }
-        else
-          if (PATTERN_XADES_SIGNATURES.matcher (zipEntry.getName ()).matches ())
-          {
-            // Copy content to target container
-            target.putNextEntry (new ZipEntry (String.format ("META-INF/signatures%s.xml", ++manifestCounter)));
-            copyStream (source, target);
-          }
-          else
-            if (zipEntry.getName ().equals ("META-INF/manifest.xml"))
+            if (PATTERN_CADES_MANIFEST.matcher (zipEntry.getName ()).matches ())
             {
               // Fetch content
               final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream ();
               copyStream (source, byteArrayOutputStream);
 
-              // Copy entries
-              oasisManifest.append (new OasisManifest (new ByteArrayInputStream (byteArrayOutputStream.toByteArray ())));
+              // Read manifest
+              final ManifestVerifier manifestVerifier = new ManifestVerifier (null);
+              CadesAsicManifest.extractAndVerify (byteArrayOutputStream.toString (), manifestVerifier);
 
-              // Nothing to write to target container
-              target.closeEntry ();
-              continue;
+              // Make sure only on rootfile makes it to the source container
+              if (manifestVerifier.getAsicManifest ().getRootfile () != null)
+              {
+                if (containsRootFile)
+                  throw new IllegalStateException ("Multiple rootfiles is not allowed when combining containers.");
+                containsRootFile = true;
+              }
+
+              // Write manifest to container
+              ++manifestCounter;
+              target.putNextEntry (new ZipEntry ("META-INF/asicmanifest" + manifestCounter + ".xml"));
+              copyStream (new ByteArrayInputStream (byteArrayOutputStream.toByteArray ()), target);
             }
             else
-            {
-              // Copy content to target container
-              target.putNextEntry (zipEntry);
-              copyStream (source, target);
+              if (PATTERN_XADES_SIGNATURES.matcher (zipEntry.getName ()).matches ())
+              {
+                // Copy content to target container
+                ++manifestCounter;
+                target.putNextEntry (new ZipEntry ("META-INF/signatures" + manifestCounter + ".xml"));
+                copyStream (source, target);
+              }
+              else
+                if (zipEntry.getName ().equals ("META-INF/manifest.xml"))
+                {
+                  // Fetch content
+                  final NonBlockingByteArrayOutputStream aBAOS = new NonBlockingByteArrayOutputStream ();
+                  copyStream (source, aBAOS);
 
-              if (!zipEntry.getName ().startsWith ("META-INF/"))
-                fileCounter++;
-            }
+                  // Copy entries
+                  oasisManifest.append (new OasisManifest (aBAOS.getAsInputStream ()));
 
-        source.closeEntry ();
-        target.closeEntry ();
+                  // Nothing to write to target container
+                  target.closeEntry ();
+                  continue;
+                }
+                else
+                {
+                  // Copy content to target container
+                  target.putNextEntry (zipEntry);
+                  copyStream (source, target);
+
+                  if (!zipEntry.getName ().startsWith ("META-INF/"))
+                    fileCounter++;
+                }
+
+            source.closeEntry ();
+            target.closeEntry ();
+          }
+
+          // Close source container
+        }
       }
 
-      // Close source container
-      source.close ();
+      // Add manifest if it contains the same amount of files as the container.
+      if (oasisManifest.size () == fileCounter + 1)
+        target.writeZipEntry ("META-INF/manifest.xml", oasisManifest.toBytes ());
+
+      // Close target container
     }
-
-    // Add manifest if it contains the same amount of files as the container.
-    if (oasisManifest.size () == fileCounter + 1)
-      target.writeZipEntry ("META-INF/manifest.xml", oasisManifest.toBytes ());
-
-    // Close target container
-    target.close ();
   }
 
   public static MimeType detectMime (final String filename) throws IOException
@@ -156,7 +162,7 @@ public class AsicUtils
     // Throw exception if content type is not detected
     if (mimeType == null)
     {
-      throw new IllegalStateException (String.format ("Unable to determine MIME type of %s", filename));
+      throw new IllegalStateException ("Unable to determine MIME type of " + filename);
     }
 
     return MimeType.forString (mimeType);

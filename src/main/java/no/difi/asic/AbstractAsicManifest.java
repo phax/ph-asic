@@ -3,23 +3,24 @@ package no.difi.asic;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import javax.annotation.Nonnull;
+
 abstract class AbstractAsicManifest
 {
+  protected EMessageDigestAlgorithm m_aMessageDigestAlgorithm;
+  protected MessageDigest m_aMD;
 
-  protected MessageDigestAlgorithm messageDigestAlgorithm;
-  protected MessageDigest messageDigest;
-
-  public AbstractAsicManifest (MessageDigestAlgorithm messageDigestAlgorithm)
+  public AbstractAsicManifest (@Nonnull final EMessageDigestAlgorithm messageDigestAlgorithm)
   {
-    this.messageDigestAlgorithm = messageDigestAlgorithm;
+    m_aMessageDigestAlgorithm = messageDigestAlgorithm;
 
     // Create message digest
     try
     {
-      messageDigest = MessageDigest.getInstance (messageDigestAlgorithm.getAlgorithm ());
-      messageDigest.reset ();
+      m_aMD = MessageDigest.getInstance (messageDigestAlgorithm.getAlgorithm ());
+      m_aMD.reset ();
     }
-    catch (NoSuchAlgorithmException e)
+    catch (final NoSuchAlgorithmException e)
     {
       throw new IllegalStateException (String.format ("Algorithm %s not supported",
                                                       messageDigestAlgorithm.getAlgorithm ()),
@@ -27,13 +28,11 @@ abstract class AbstractAsicManifest
     }
   }
 
-  /**
-   * @inheritDoc
-   */
+  @Nonnull
   public MessageDigest getMessageDigest ()
   {
-    messageDigest.reset ();
-    return messageDigest;
+    m_aMD.reset ();
+    return m_aMD;
   }
 
   /**

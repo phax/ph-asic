@@ -7,7 +7,7 @@ import com.helger.commons.io.stream.NullOutputStream;
 
 public class AsicVerifier extends AbstractAsicReader
 {
-  AsicVerifier (final MessageDigestAlgorithm messageDigestAlgorithm, final InputStream inputStream) throws IOException
+  AsicVerifier (final EMessageDigestAlgorithm messageDigestAlgorithm, final InputStream inputStream) throws IOException
   {
     super (messageDigestAlgorithm, inputStream);
 

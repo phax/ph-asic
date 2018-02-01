@@ -49,7 +49,7 @@ public class AsicXadesWriterTest
     keystoreFile = new File ("src/test/resources/keystore.jks");
     assertTrue ("Expected to find your private key and certificate in " + keystoreFile, keystoreFile.canRead ());
 
-    asicContainerWriterFactory = AsicWriterFactory.newFactory (SignatureMethod.XAdES);
+    asicContainerWriterFactory = AsicWriterFactory.newFactory (ESignatureMethod.XAdES);
   }
 
   @Test
@@ -70,7 +70,7 @@ public class AsicXadesWriterTest
   {
     final SignatureHelper signatureHelper = new SignatureHelper (keystoreFile, "changeit", "selfsigned", "changeit");
 
-    final AsicWriter asicWriter = asicContainerWriterFactory.newContainer (new File (System.getProperty ("java.io.tmpdir")),
+    final IAsicWriter asicWriter = asicContainerWriterFactory.newContainer (new File (System.getProperty ("java.io.tmpdir")),
                                                                            "asic-sample-xades.zip")
                                                             .add (new File (envelopeUrl.toURI ()))
                                                             .add (new File (messageUrl.toURI ()),
@@ -149,7 +149,7 @@ public class AsicXadesWriterTest
   @Test
   public void rootfileNotSupported () throws IOException
   {
-    final AsicWriter asicWriter = asicContainerWriterFactory.newContainer (new ByteArrayOutputStream ());
+    final IAsicWriter asicWriter = asicContainerWriterFactory.newContainer (new ByteArrayOutputStream ());
     asicWriter.add (new ByteArrayInputStream ("Content".getBytes ()), "rootfile.txt");
 
     try

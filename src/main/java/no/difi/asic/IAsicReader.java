@@ -9,9 +9,8 @@ import java.nio.file.Path;
 
 import no.difi.commons.asic.jaxb.asic.AsicManifest;
 
-public interface AsicReader extends Closeable
+public interface IAsicReader extends Closeable
 {
-
   /**
    * Provides the name of the next entry in the ASiC archive and positions the
    * inputstream at the beginning of the data.
@@ -52,6 +51,7 @@ public interface AsicReader extends Closeable
    * Returns InputStream to read the content.
    *
    * @return Content
+   * @throws IOException
    */
   InputStream inputStream () throws IOException;
 

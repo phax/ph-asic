@@ -24,8 +24,8 @@ public class AsicCadesReferenceTest
 
   private static Logger log = LoggerFactory.getLogger (AsicCadesReferenceTest.class);
 
-  private final AsicVerifierFactory asicVerifierFactory = AsicVerifierFactory.newFactory (SignatureMethod.CAdES);
-  private final AsicReaderFactory asicRederFactory = AsicReaderFactory.newFactory (SignatureMethod.CAdES);
+  private final AsicVerifierFactory asicVerifierFactory = AsicVerifierFactory.newFactory (ESignatureMethod.CAdES);
+  private final AsicReaderFactory asicRederFactory = AsicReaderFactory.newFactory (ESignatureMethod.CAdES);
 
   @BeforeClass
   public static void beforeClass ()
@@ -70,7 +70,7 @@ public class AsicCadesReferenceTest
       log.info (e.getMessage ());
     }
 
-    final AsicReader asicReader = asicRederFactory.open (getClass ().getResourceAsStream ("/asic-cades-test-invalid-manifest.asice"));
+    final IAsicReader asicReader = asicRederFactory.open (getClass ().getResourceAsStream ("/asic-cades-test-invalid-manifest.asice"));
 
     try
     {

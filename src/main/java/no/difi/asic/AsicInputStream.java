@@ -11,8 +11,7 @@ import org.slf4j.LoggerFactory;
 
 class AsicInputStream extends ZipInputStream
 {
-
-  public static final Logger logger = LoggerFactory.getLogger (AsicInputStream.class);
+  private static final Logger logger = LoggerFactory.getLogger (AsicInputStream.class);
 
   public AsicInputStream (final InputStream in)
   {

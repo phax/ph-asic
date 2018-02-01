@@ -21,9 +21,9 @@ import org.bouncycastle.cms.CMSAlgorithm;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import no.difi.asic.AsicReader;
+import no.difi.asic.IAsicReader;
 import no.difi.asic.AsicReaderFactory;
-import no.difi.asic.AsicWriter;
+import no.difi.asic.IAsicWriter;
 import no.difi.asic.AsicWriterFactory;
 import no.difi.asic.MimeType;
 import no.difi.asic.SignatureHelper;
@@ -45,7 +45,7 @@ public class CmsEncryptedAsicTest
     final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream ();
 
     // Create a new ASiC archive
-    final AsicWriter asicWriter = AsicWriterFactory.newFactory ().newContainer (byteArrayOutputStream);
+    final IAsicWriter asicWriter = AsicWriterFactory.newFactory ().newContainer (byteArrayOutputStream);
     // Encapsulate ASiC archive to enable writing encrypted content
     final CmsEncryptedAsicWriter writer = new CmsEncryptedAsicWriter (asicWriter, certificate, CMSAlgorithm.AES128_GCM);
     writer.add (getClass ().getResourceAsStream ("/image.bmp"), "simple.bmp", MimeType.forString ("image/bmp"));
@@ -70,7 +70,7 @@ public class CmsEncryptedAsicTest
     final PrivateKey privateKey = (PrivateKey) keyStore.getKey ("selfsigned", "changeit".toCharArray ());
 
     // Open content of ByteArrayOutputStream for reading
-    final AsicReader asicReader = AsicReaderFactory.newFactory ()
+    final IAsicReader asicReader = AsicReaderFactory.newFactory ()
                                                    .open (new ByteArrayInputStream (byteArrayOutputStream.toByteArray ()));
     // Encapsulate ASiC archive to enable reading encrypted content
     final CmsEncryptedAsicReader reader = new CmsEncryptedAsicReader (asicReader, privateKey);
@@ -145,7 +145,7 @@ public class CmsEncryptedAsicTest
     {
 
       // Create a new ASiC archive
-      final AsicWriter asicWriter = AsicWriterFactory.newFactory ().newContainer (fileOutputStream);
+      final IAsicWriter asicWriter = AsicWriterFactory.newFactory ().newContainer (fileOutputStream);
       // Encapsulate ASiC archive to enable writing encrypted content
       final CmsEncryptedAsicWriter writer = new CmsEncryptedAsicWriter (asicWriter, certificate);
 

@@ -46,7 +46,7 @@ public class AsicReaderImplTest
                      .sign (signatureHelper);
 
     // Step 2 - reads the contents of the ASiC archive
-    final AsicReader asicReader = asicReaderFactory.open (new ByteArrayInputStream (containerOutput.toByteArray ()));
+    final IAsicReader asicReader = asicReaderFactory.open (new ByteArrayInputStream (containerOutput.toByteArray ()));
 
     ByteArrayOutputStream fileStream;
     {
@@ -108,7 +108,7 @@ public class AsicReaderImplTest
                            MimeType.forString ("text/plain"))
                      .sign (signatureHelper);
 
-    final AsicReader asicReader = asicReaderFactory.open (file);
+    final IAsicReader asicReader = asicReaderFactory.open (file);
 
     File contentFile;
     String filename;
@@ -170,7 +170,7 @@ public class AsicReaderImplTest
   @Test
   public void exceptionOnInvalidMime () throws IOException
   {
-    final AsicReader asicReader = asicReaderFactory.open (getClass ().getResourceAsStream ("/asic-general-test-invalid-mime.asice"));
+    final IAsicReader asicReader = asicReaderFactory.open (getClass ().getResourceAsStream ("/asic-general-test-invalid-mime.asice"));
 
     try
     {

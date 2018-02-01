@@ -89,7 +89,7 @@ public class AsicWriterTest
 
     // Creates the actual container with all the data objects (files) and signs
     // it.
-    final AsicWriter asicWriter = asicWriterFactory.newContainer (archiveOutputFile)
+    final IAsicWriter asicWriter = asicWriterFactory.newContainer (archiveOutputFile)
                                                    // Adds an ordinary file,
                                                    // using the file name as the
                                                    // entry name
@@ -211,7 +211,7 @@ public class AsicWriterTest
 
     log.debug ("Wrote ASiC-e container to " + archiveOutputFile);
     // Opens the generated archive and reads each entry
-    final AsicReader asicReader = AsicReaderFactory.newFactory ().open (archiveOutputFile);
+    final IAsicReader asicReader = AsicReaderFactory.newFactory ().open (archiveOutputFile);
 
     String entryName;
 

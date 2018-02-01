@@ -17,22 +17,22 @@ import org.bouncycastle.cms.CMSEnvelopedDataParser;
 import org.bouncycastle.cms.RecipientInformation;
 import org.bouncycastle.cms.jcajce.JceKeyTransEnvelopedRecipient;
 
-import no.difi.asic.AsicReader;
+import no.difi.asic.IAsicReader;
 import no.difi.asic.AsicUtils;
 import no.difi.commons.asic.jaxb.asic.AsicManifest;
 
 /**
  * Wrapper to seamlessly decode encoded files.
  */
-public class CmsEncryptedAsicReader extends CmsEncryptedAsicAbstract implements AsicReader
+public class CmsEncryptedAsicReader extends CmsEncryptedAsicAbstract implements IAsicReader
 {
 
-  private final AsicReader asicReader;
+  private final IAsicReader asicReader;
   private final PrivateKey privateKey;
 
   private String currentFile;
 
-  public CmsEncryptedAsicReader (final AsicReader asicReader, final PrivateKey privateKey)
+  public CmsEncryptedAsicReader (final IAsicReader asicReader, final PrivateKey privateKey)
   {
     this.asicReader = asicReader;
     this.privateKey = privateKey;

@@ -11,12 +11,12 @@ import no.difi.commons.asic.jaxb.asic.Certificate;
 class ManifestVerifier
 {
 
-  private MessageDigestAlgorithm messageDigestAlgorithm;
+  private EMessageDigestAlgorithm messageDigestAlgorithm;
 
   private AsicManifest asicManifest = new AsicManifest ();
   private Map <String, AsicFile> asicManifestMap = new HashMap <> ();
 
-  public ManifestVerifier (MessageDigestAlgorithm messageDigestAlgorithm)
+  public ManifestVerifier (EMessageDigestAlgorithm messageDigestAlgorithm)
   {
     this.messageDigestAlgorithm = messageDigestAlgorithm;
   }

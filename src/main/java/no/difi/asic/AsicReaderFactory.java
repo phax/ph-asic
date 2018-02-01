@@ -11,38 +11,38 @@ public class AsicReaderFactory
 
   public static AsicReaderFactory newFactory ()
   {
-    return newFactory (MessageDigestAlgorithm.SHA256);
+    return newFactory (EMessageDigestAlgorithm.SHA256);
   }
 
-  public static AsicReaderFactory newFactory (SignatureMethod signatureMethod)
+  public static AsicReaderFactory newFactory (ESignatureMethod signatureMethod)
   {
     return newFactory (signatureMethod.getMessageDigestAlgorithm ());
   }
 
-  static AsicReaderFactory newFactory (MessageDigestAlgorithm messageDigestAlgorithm)
+  static AsicReaderFactory newFactory (EMessageDigestAlgorithm messageDigestAlgorithm)
   {
     return new AsicReaderFactory (messageDigestAlgorithm);
   }
 
-  private MessageDigestAlgorithm messageDigestAlgorithm;
+  private EMessageDigestAlgorithm m_eMD;
 
-  private AsicReaderFactory (MessageDigestAlgorithm messageDigestAlgorithm)
+  private AsicReaderFactory (EMessageDigestAlgorithm messageDigestAlgorithm)
   {
-    this.messageDigestAlgorithm = messageDigestAlgorithm;
+    this.m_eMD = messageDigestAlgorithm;
   }
 
-  public AsicReader open (File file) throws IOException
+  public IAsicReader open (File file) throws IOException
   {
     return open (file.toPath ());
   }
 
-  public AsicReader open (Path file) throws IOException
+  public IAsicReader open (Path file) throws IOException
   {
     return open (Files.newInputStream (file));
   }
 
-  public AsicReader open (InputStream inputStream) throws IOException
+  public IAsicReader open (InputStream inputStream) throws IOException
   {
-    return new AsicReaderImpl (messageDigestAlgorithm, inputStream);
+    return new AsicReaderImpl (m_eMD, inputStream);
   }
 }
