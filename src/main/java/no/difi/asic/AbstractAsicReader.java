@@ -19,7 +19,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.commons.io.stream.NullOutputStream;
-import com.helger.commons.io.stream.StreamHelper;
 
 import no.difi.commons.asic.jaxb.asic.AsicManifest;
 import no.difi.commons.asic.jaxb.asic.Certificate;
@@ -123,7 +122,7 @@ abstract class AbstractAsicReader implements Closeable
     // Calculate digest while reading file
     messageDigest.reset ();
     final DigestOutputStream digestOutputStream = new DigestOutputStream (outputStream, messageDigest);
-    StreamHelper.copyInputStreamToOutputStream (zipInputStream, digestOutputStream);
+    AsicUtils.copyStream (zipInputStream, digestOutputStream);
 
     zipInputStream.closeEntry ();
 
@@ -164,12 +163,13 @@ abstract class AbstractAsicReader implements Closeable
 
     // Read content in file
     final ByteArrayOutputStream contentsOfStream = new ByteArrayOutputStream ();
-    StreamHelper.copyInputStreamToOutputStream (zipInputStream, contentsOfStream);
+    AsicUtils.copyStream (zipInputStream, contentsOfStream);
 
     if (AsicUtils.PATTERN_CADES_MANIFEST.matcher (currentZipEntry.getName ()).matches ())
     {
       // Handling manifest in ASiC CAdES.
-      final String sigReference = CadesAsicManifest.extractAndVerify (contentsOfStream.toString (), m_aManifestVerifier);
+      final String sigReference = CadesAsicManifest.extractAndVerify (contentsOfStream.toString (),
+                                                                      m_aManifestVerifier);
       handleCadesSigning (sigReference, contentsOfStream.toString ());
     }
     else

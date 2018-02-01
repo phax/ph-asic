@@ -17,9 +17,8 @@ import org.bouncycastle.cms.CMSEnvelopedDataParser;
 import org.bouncycastle.cms.RecipientInformation;
 import org.bouncycastle.cms.jcajce.JceKeyTransEnvelopedRecipient;
 
-import com.helger.commons.io.stream.StreamHelper;
-
 import no.difi.asic.AsicReader;
+import no.difi.asic.AsicUtils;
 import no.difi.commons.asic.jaxb.asic.AsicManifest;
 
 /**
@@ -84,7 +83,7 @@ public class CmsEncryptedAsicReader extends CmsEncryptedAsicAbstract implements 
         final RecipientInformation recipient = (RecipientInformation) recipients.iterator ().next ();
         final byte [] decryptedData = recipient.getContent (new JceKeyTransEnvelopedRecipient (privateKey).setProvider (BC));
 
-        StreamHelper.copyInputStreamToOutputStream (new ByteArrayInputStream (decryptedData), outputStream);
+        AsicUtils.copyStream (new ByteArrayInputStream (decryptedData), outputStream);
       }
       catch (final Exception e)
       {

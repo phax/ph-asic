@@ -237,7 +237,7 @@ public class AsicWriterTest
     final AsicManifest asicManifest = asicReader.getAsicManifest ();
     final String asicManifestRootfile = asicManifest.getRootfile ();
     assertNotNull (asicManifestRootfile, "Root file not found");
-    assertEquals (asicManifestRootfile, BII_MESSAGE_XML, "Invalid Rootfile found");
+    assertEquals ("Invalid Rootfile found", asicManifestRootfile, BII_MESSAGE_XML);
 
   }
 

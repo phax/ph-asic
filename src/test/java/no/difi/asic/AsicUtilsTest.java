@@ -17,8 +17,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.commons.io.stream.StreamHelper;
-
 public class AsicUtilsTest
 {
 
@@ -151,7 +149,7 @@ public class AsicUtilsTest
       if (!zipEntry.getName ().equals ("META-INF/manifest.xml"))
       {
         source2output.putNextEntry (zipEntry);
-        StreamHelper.copyInputStreamToOutputStream (source2input, source2output);
+        AsicUtils.copyStream (source2input, source2output);
         source2output.closeEntry ();
         source2input.closeEntry ();
       }

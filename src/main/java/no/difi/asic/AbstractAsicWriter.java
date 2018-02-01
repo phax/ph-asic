@@ -12,8 +12,6 @@ import java.util.zip.ZipEntry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.commons.io.stream.StreamHelper;
-
 abstract class AbstractAsicWriter implements AsicWriter
 {
 
@@ -132,7 +130,7 @@ abstract class AbstractAsicWriter implements AsicWriter
                                                                                  asicManifest.getMessageDigest ());
 
     // Copy inputStream to zip output stream
-    StreamHelper.copyInputStreamToOutputStream (inputStream, zipOutputStreamWithDigest);
+    AsicUtils.copyStream (inputStream, zipOutputStreamWithDigest);
 
     // Closes the zip entry
     asicOutputStream.closeEntry ();

@@ -11,9 +11,12 @@ import java.nio.file.Paths;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 
+import javax.annotation.WillNotClose;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.commons.io.stream.NonClosingInputStream;
 import com.helger.commons.io.stream.StreamHelper;
 
 public class AsicUtils
@@ -73,7 +76,7 @@ public class AsicUtils
         {
           // Fetch content
           final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream ();
-          StreamHelper.copyInputStreamToOutputStream (source, byteArrayOutputStream);
+          copyStream (source, byteArrayOutputStream);
 
           // Read manifest
           final ManifestVerifier manifestVerifier = new ManifestVerifier (null);
@@ -89,22 +92,21 @@ public class AsicUtils
 
           // Write manifest to container
           target.putNextEntry (new ZipEntry (String.format ("META-INF/asicmanifest%s.xml", ++manifestCounter)));
-          StreamHelper.copyInputStreamToOutputStream (new ByteArrayInputStream (byteArrayOutputStream.toByteArray ()),
-                                                      target);
+          copyStream (new ByteArrayInputStream (byteArrayOutputStream.toByteArray ()), target);
         }
         else
           if (PATTERN_XADES_SIGNATURES.matcher (zipEntry.getName ()).matches ())
           {
             // Copy content to target container
             target.putNextEntry (new ZipEntry (String.format ("META-INF/signatures%s.xml", ++manifestCounter)));
-            StreamHelper.copyInputStreamToOutputStream (source, target);
+            copyStream (source, target);
           }
           else
             if (zipEntry.getName ().equals ("META-INF/manifest.xml"))
             {
               // Fetch content
               final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream ();
-              StreamHelper.copyInputStreamToOutputStream (source, byteArrayOutputStream);
+              copyStream (source, byteArrayOutputStream);
 
               // Copy entries
               oasisManifest.append (new OasisManifest (new ByteArrayInputStream (byteArrayOutputStream.toByteArray ())));
@@ -117,7 +119,7 @@ public class AsicUtils
             {
               // Copy content to target container
               target.putNextEntry (zipEntry);
-              StreamHelper.copyInputStreamToOutputStream (source, target);
+              copyStream (source, target);
 
               if (!zipEntry.getName ().startsWith ("META-INF/"))
                 fileCounter++;
@@ -160,4 +162,8 @@ public class AsicUtils
     return MimeType.forString (mimeType);
   }
 
+  public static void copyStream (@WillNotClose final InputStream aIS, @WillNotClose final OutputStream aOS)
+  {
+    StreamHelper.copyInputStreamToOutputStream (new NonClosingInputStream (aIS), aOS);
+  }
 }

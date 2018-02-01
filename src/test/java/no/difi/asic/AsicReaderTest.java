@@ -8,7 +8,6 @@ import java.io.IOException;
 import org.junit.Test;
 
 import com.helger.commons.io.stream.NullOutputStream;
-import com.helger.commons.io.stream.StreamHelper;
 
 /**
  * Testing functionality.
@@ -35,7 +34,7 @@ public class AsicReaderTest
     // Testing using AsicReader::inputStream.
     final AsicReader asicReader = asicReaderFactory.open (getClass ().getResourceAsStream ("/asic-cades-test-valid.asice"));
     while (asicReader.getNextFile () != null)
-      StreamHelper.copyInputStreamToOutputStream (asicReader.inputStream (), new NullOutputStream ());
+      AsicUtils.copyStream (asicReader.inputStream (), new NullOutputStream ());
     asicReader.close ();
     assertEquals (1, asicReader.getAsicManifest ().getCertificate ().size ());
   }

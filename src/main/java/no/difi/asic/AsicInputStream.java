@@ -9,8 +9,6 @@ import java.util.zip.ZipInputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.commons.io.stream.StreamHelper;
-
 class AsicInputStream extends ZipInputStream
 {
 
@@ -29,7 +27,7 @@ class AsicInputStream extends ZipInputStream
     if (zipEntry != null && zipEntry.getName ().equals ("mimetype"))
     {
       final ByteArrayOutputStream baos = new ByteArrayOutputStream ();
-      StreamHelper.copyInputStreamToOutputStream (this, baos);
+      AsicUtils.copyStream (this, baos);
 
       logger.debug ("Content of mimetype: {}", baos.toString ());
       if (!AsicUtils.MIMETYPE_ASICE.equals (baos.toString ()))

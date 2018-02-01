@@ -19,8 +19,6 @@ import org.bouncycastle.cms.CMSProcessableByteArray;
 import org.bouncycastle.cms.jcajce.JceCMSContentEncryptorBuilder;
 import org.bouncycastle.cms.jcajce.JceKeyTransRecipientInfoGenerator;
 
-import com.helger.commons.io.stream.StreamHelper;
-
 import no.difi.asic.AsicUtils;
 import no.difi.asic.AsicWriter;
 import no.difi.asic.MimeType;
@@ -184,7 +182,7 @@ public class CmsEncryptedAsicWriter extends CmsEncryptedAsicAbstract implements 
     try
     {
       final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream ();
-      StreamHelper.copyInputStreamToOutputStream (inputStream, byteArrayOutputStream);
+      AsicUtils.copyStream (inputStream, byteArrayOutputStream);
 
       final CMSEnvelopedDataGenerator cmsEnvelopedDataGenerator = new CMSEnvelopedDataGenerator ();
       cmsEnvelopedDataGenerator.addRecipientInfoGenerator (new JceKeyTransRecipientInfoGenerator (certificate).setProvider (BC));

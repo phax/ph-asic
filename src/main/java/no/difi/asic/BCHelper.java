@@ -10,7 +10,6 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
  */
 class BCHelper
 {
-
   private static final Provider PROVIDER;
 
   static

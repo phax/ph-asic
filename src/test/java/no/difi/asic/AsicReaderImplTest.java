@@ -14,8 +14,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.commons.io.stream.StreamHelper;
-
 public class AsicReaderImplTest
 {
 
@@ -123,7 +121,7 @@ public class AsicReaderImplTest
       asicReader.writeFile (contentFile);
 
       fileStream = new ByteArrayOutputStream ();
-      StreamHelper.copyInputStreamToOutputStream (Files.newInputStream (contentFile.toPath ()), fileStream);
+      AsicUtils.copyStream (Files.newInputStream (contentFile.toPath ()), fileStream);
       assertEquals (fileContent1, fileStream.toString ());
 
       Files.delete (contentFile.toPath ());
@@ -137,7 +135,7 @@ public class AsicReaderImplTest
       asicReader.writeFile (contentFile);
 
       fileStream = new ByteArrayOutputStream ();
-      StreamHelper.copyInputStreamToOutputStream (Files.newInputStream (contentFile.toPath ()), fileStream);
+      AsicUtils.copyStream (Files.newInputStream (contentFile.toPath ()), fileStream);
       assertEquals (fileContent2, fileStream.toString ());
 
       Files.delete (contentFile.toPath ());

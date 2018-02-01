@@ -1,5 +1,9 @@
 package no.difi.asic.extras;
 
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -14,7 +18,6 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
 import org.bouncycastle.cms.CMSAlgorithm;
-import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -73,37 +76,37 @@ public class CmsEncryptedAsicTest
     final CmsEncryptedAsicReader reader = new CmsEncryptedAsicReader (asicReader, privateKey);
 
     // Read plain file
-    Assert.assertEquals (reader.getNextFile (), "simple.bmp");
+    assertEquals (reader.getNextFile (), "simple.bmp");
     final ByteArrayOutputStream file1 = new ByteArrayOutputStream ();
     reader.writeFile (file1);
 
     // Read encrypted file
-    Assert.assertEquals (reader.getNextFile (), "encrypted.bmp");
+    assertEquals (reader.getNextFile (), "encrypted.bmp");
     final ByteArrayOutputStream file2 = new ByteArrayOutputStream ();
     reader.writeFile (file2);
 
     // Read encrypted file 2
-    Assert.assertEquals (reader.getNextFile (), "encrypted2.bmp");
+    assertEquals (reader.getNextFile (), "encrypted2.bmp");
     final ByteArrayOutputStream file3 = new ByteArrayOutputStream ();
     reader.writeFile (file3);
 
     // Read encrypted file 3
-    Assert.assertEquals (reader.getNextFile (), "encrypted3.xml");
+    assertEquals (reader.getNextFile (), "encrypted3.xml");
     final ByteArrayOutputStream file4 = new ByteArrayOutputStream ();
     reader.writeFile (file4);
 
     // Verify both files contain the same data
-    Assert.assertEquals (file2.toByteArray (), file1.toByteArray ());
+    assertArrayEquals (file2.toByteArray (), file1.toByteArray ());
 
     // Verify no more files are found
-    Assert.assertNull (reader.getNextFile ());
+    assertNull (reader.getNextFile ());
 
     // Verify certificate used for signing of ASiC is the same as the one used
     // for signing
-    Assert.assertEquals (reader.getAsicManifest ().getCertificate ().get (0).getCertificate (),
-                         certificate.getEncoded ());
+    assertArrayEquals (reader.getAsicManifest ().getCertificate ().get (0).getCertificate (),
+                       certificate.getEncoded ());
 
-    Assert.assertEquals (reader.getAsicManifest ().getRootfile (), "encrypted.bmp");
+    assertEquals (reader.getAsicManifest ().getRootfile (), "encrypted.bmp");
 
     asicReader.close ();
 

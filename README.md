@@ -1,5 +1,5 @@
-[![Build Status](https://travis-ci.org/difi/asic.svg?branch=master)](https://travis-ci.org/difi/asic)
-[![CodeCov](https://codecov.io/gh/difi/asic/branch/master/graph/badge.svg)](https://codecov.io/gh/difi/asic)
+[![Build Status](https://travis-ci.org/phax/ph-asic.svg?branch=master)](https://travis-ci.org/phax/ph-asic)
+[![CodeCov](https://codecov.io/gh/phax/ph-asic/branch/master/graph/badge.svg)](https://codecov.io/gh/phax/ph-asic)
 [![Maven Central](https://img.shields.io/maven-central/v/no.difi.commons/commons-asic.svg)](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22no.difi.commons%22%20AND%20a%3A%22commons-asic%22)
 
 # Associated Signature Container (ASiC)
@@ -51,7 +51,7 @@ asic-container.asice:
    
 ```
 
-Consult the [AsicCadesContainerWriterTest](src/test/java/no/difi/asic/AsicWriterTest.java) for sample usage.
+Consult the [AsicCadesContainerWriterTest](src/test/java/no/phax/ph-asic/AsicWriterTest.java) for sample usage.
 Here is a rough sketch on how to do it:
 ```java
 // Creates an ASiC archive after which every entry is read back from the archive.
