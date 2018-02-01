@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/phax/ph-asic.svg?branch=master)](https://travis-ci.org/phax/ph-asic)
 [![CodeCov](https://codecov.io/gh/phax/ph-asic/branch/master/graph/badge.svg)](https://codecov.io/gh/phax/ph-asic)
-[![Maven Central](https://img.shields.io/maven-central/v/no.difi.commons/commons-asic.svg)](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22no.difi.commons%22%20AND%20a%3A%22commons-asic%22)
+[![Maven Central](https://img.shields.io/maven-central/v/com.helger/ph-asic.svg)](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.helger%22%20AND%20a%3A%22ph-asic%22)
 
 # Associated Signature Container (ASiC)
 
@@ -18,14 +18,15 @@ This component provides an easy-to-use factory for creating ASiC-E containers.
 Conformance is claimed according to 7.2.1 (TBA) and 7.2.2 in
 [ETSI TS 102 918 V1.3.1](http://webapp.etsi.org/workprogram/Report_WorkItem.asp?WKI_ID=42455).
 
+This implementation is based on difi's v0.9.2
 
 ## Maven
 
 ```xml
 <dependency>
-	<groupId>no.difi.commons</groupId>
-	<artifactId>commons-asic</artifactId>
-	<version>0.9.2</version>
+	<groupId>com.helger</groupId>
+	<artifactId>ph-asic</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
 </dependency>
 ```
 
