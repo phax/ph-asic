@@ -1,11 +1,9 @@
 package no.difi.asic;
 
-import no.difi.commons.asic.jaxb.asic.AsicManifest;
-import no.difi.commons.asic.jaxb.cades.DataObjectReferenceType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -16,198 +14,248 @@ import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import static org.testng.Assert.*;
+import org.junit.Before;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import no.difi.commons.asic.jaxb.asic.AsicManifest;
+import no.difi.commons.asic.jaxb.cades.DataObjectReferenceType;
 
 /**
- * @author steinar
- *         Date: 02.07.15
- *         Time: 12.08
+ * @author steinar Date: 02.07.15 Time: 12.08
  */
-public class AsicWriterTest {
+public class AsicWriterTest
+{
 
-    public static final Logger log = LoggerFactory.getLogger(AsicWriterTest.class);
+  public static final Logger log = LoggerFactory.getLogger (AsicWriterTest.class);
 
-    public static final String BII_ENVELOPE_XML = "bii-envelope.xml";
-    public static final String BII_MESSAGE_XML = TestUtil.BII_SAMPLE_MESSAGE_XML;
-    private File keystoreFile;
+  public static final String BII_ENVELOPE_XML = "bii-envelope.xml";
+  public static final String BII_MESSAGE_XML = TestUtil.BII_SAMPLE_MESSAGE_XML;
+  private File keystoreFile;
 
-    private AsicVerifierFactory asicVerifierFactory;
-    private File biiEnvelopeFile;
-    private File biiMessageFile;
+  private AsicVerifierFactory asicVerifierFactory;
+  private File biiEnvelopeFile;
+  private File biiMessageFile;
 
-    @BeforeMethod
-    public void setUp() {
-        try {
-            URL envelopeUrl = AsicWriterTest.class.getClassLoader().getResource(BII_ENVELOPE_XML);
-            assertNotNull(envelopeUrl);
+  @Before
+  public void setUp ()
+  {
+    try
+    {
+      final URL envelopeUrl = AsicWriterTest.class.getClassLoader ().getResource (BII_ENVELOPE_XML);
+      assertNotNull (envelopeUrl);
 
-            biiEnvelopeFile = new File(envelopeUrl.toURI());
-        } catch (URISyntaxException e) {
-            throw new IllegalStateException("Unable to convert resource " + BII_ENVELOPE_XML + " into a File object using URIs:" + e.getMessage(), e);
-        }
-
-
-        try {
-            URL messageUrl;
-            messageUrl = AsicWriterTest.class.getClassLoader().getResource(BII_MESSAGE_XML);
-            assertNotNull(messageUrl);
-            biiMessageFile = new File(messageUrl.toURI());
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
-        keystoreFile = TestUtil.keyStoreFile();
-        assertTrue(keystoreFile.canRead(), "Expected to find your private key and certificate in " + keystoreFile);
-
-        asicVerifierFactory = AsicVerifierFactory.newFactory(); // Assumes default signature method
+      biiEnvelopeFile = new File (envelopeUrl.toURI ());
+    }
+    catch (final URISyntaxException e)
+    {
+      throw new IllegalStateException ("Unable to convert resource " +
+                                       BII_ENVELOPE_XML +
+                                       " into a File object using URIs:" +
+                                       e.getMessage (),
+                                       e);
     }
 
+    try
+    {
+      URL messageUrl;
+      messageUrl = AsicWriterTest.class.getClassLoader ().getResource (BII_MESSAGE_XML);
+      assertNotNull (messageUrl);
+      biiMessageFile = new File (messageUrl.toURI ());
+    }
+    catch (final URISyntaxException e)
+    {
+      e.printStackTrace ();
+    }
+    keystoreFile = TestUtil.keyStoreFile ();
+    assertTrue ("Expected to find your private key and certificate in " + keystoreFile, keystoreFile.canRead ());
 
-    @Test
-    public void createSampleContainer() throws Exception {
+    asicVerifierFactory = AsicVerifierFactory.newFactory (); // Assumes default
+                                                             // signature method
+  }
 
-        // PART 1 - creates the ASiC archive
+  @Test
+  public void createSampleContainer () throws Exception
+  {
 
-        // Name of the file to hold the the ASiC archive
-        File archiveOutputFile = new File(System.getProperty("java.io.tmpdir"), "asic-sample-default.zip");
+    // PART 1 - creates the ASiC archive
 
-        // Creates an AsicWriterFactory with default signature method
-        AsicWriterFactory asicWriterFactory = AsicWriterFactory.newFactory();
+    // Name of the file to hold the the ASiC archive
+    final File archiveOutputFile = new File (System.getProperty ("java.io.tmpdir"), "asic-sample-default.zip");
 
-        // Creates the actual container with all the data objects (files) and signs it.
-        AsicWriter asicWriter = asicWriterFactory.newContainer(archiveOutputFile)
-                // Adds an ordinary file, using the file name as the entry name
-                .add(biiEnvelopeFile)
-                        // Adds another file, explicitly naming the entry and specifying the MIME type
-                .add(biiMessageFile, BII_MESSAGE_XML, MimeType.forString("application/xml"))
-                        // Indicates that the BII message is the root document
-                .setRootEntryName(BII_MESSAGE_XML)
-                        // Signing the contents of the archive, closes it for further changes.
-                .sign(keystoreFile, TestUtil.keyStorePassword(), TestUtil.privateKeyPassword());
+    // Creates an AsicWriterFactory with default signature method
+    final AsicWriterFactory asicWriterFactory = AsicWriterFactory.newFactory ();
 
+    // Creates the actual container with all the data objects (files) and signs
+    // it.
+    final AsicWriter asicWriter = asicWriterFactory.newContainer (archiveOutputFile)
+                                                   // Adds an ordinary file,
+                                                   // using the file name as the
+                                                   // entry name
+                                                   .add (biiEnvelopeFile)
+                                                   // Adds another file,
+                                                   // explicitly naming the
+                                                   // entry and specifying the
+                                                   // MIME type
+                                                   .add (biiMessageFile,
+                                                         BII_MESSAGE_XML,
+                                                         MimeType.forString ("application/xml"))
+                                                   // Indicates that the BII
+                                                   // message is the root
+                                                   // document
+                                                   .setRootEntryName (BII_MESSAGE_XML)
+                                                   // Signing the contents of
+                                                   // the archive, closes it for
+                                                   // further changes.
+                                                   .sign (keystoreFile,
+                                                          TestUtil.keyStorePassword (),
+                                                          TestUtil.privateKeyPassword ());
 
-        // PART 2 - verify the contents of the archive.
+    // PART 2 - verify the contents of the archive.
 
+    {
+      int matchCount = 0;
+      final CadesAsicManifest asicManifest = (CadesAsicManifest) ((CadesAsicWriter) asicWriter).getAsicManifest ();
+      for (final DataObjectReferenceType dataObject : asicManifest.getASiCManifestType ().getDataObjectReference ())
+      {
+        if (dataObject.getURI ().equals (BII_ENVELOPE_XML))
+          matchCount++;
+        if (dataObject.getURI ().equals (BII_MESSAGE_XML))
+          matchCount++;
+      }
+      assertEquals ("Entries were not added properly into list", matchCount, 2);
+    }
+
+    assertTrue ("ASiC container can not be read", archiveOutputFile.canRead ());
+
+    log.info ("Generated file " + archiveOutputFile);
+
+    final ZipFile zipFile = new ZipFile (archiveOutputFile);
+    final Enumeration <? extends ZipEntry> entries = zipFile.entries ();
+
+    {
+      int matchCount = 0;
+      while (entries.hasMoreElements ())
+      {
+        final ZipEntry entry = entries.nextElement ();
+        final String name = entry.getName ();
+        if (BII_ENVELOPE_XML.equals (name))
         {
-            int matchCount = 0;
-            CadesAsicManifest asicManifest = (CadesAsicManifest) ((CadesAsicWriter) asicWriter).getAsicManifest();
-            for (DataObjectReferenceType dataObject : asicManifest.getASiCManifestType().getDataObjectReference()) {
-                if (dataObject.getURI().equals(BII_ENVELOPE_XML))
-                    matchCount++;
-                if (dataObject.getURI().equals(BII_MESSAGE_XML))
-                    matchCount++;
-            }
-            assertEquals(matchCount, 2, "Entries were not added properly into list");
+          matchCount++;
         }
-
-        assertTrue(archiveOutputFile.canRead(), "ASiC container can not be read");
-
-        log.info("Generated file " + archiveOutputFile);
-
-        ZipFile zipFile = new ZipFile(archiveOutputFile);
-        Enumeration<? extends ZipEntry> entries = zipFile.entries();
-
+        if (BII_MESSAGE_XML.equals (name))
         {
-            int matchCount = 0;
-            while (entries.hasMoreElements()) {
-                ZipEntry entry = entries.nextElement();
-                String name = entry.getName();
-                if (BII_ENVELOPE_XML.equals(name)) {
-                    matchCount++;
-                }
-                if (BII_MESSAGE_XML.equals(name)) {
-                    matchCount++;
-                }
-                log.info("Found " + name);
-                InputStream stream = zipFile.getInputStream(entry);
-            }
-            assertEquals(matchCount, 2, "Number of items in archive did not match");
+          matchCount++;
         }
-
-        try {
-            asicWriter.add(biiEnvelopeFile);
-            fail("Exception expected");
-        } catch (Exception e) {
-            assertTrue(e instanceof IllegalStateException);
-        }
-
-        try {
-            asicWriter.sign(new SignatureHelper(keystoreFile, TestUtil.keyStorePassword(), TestUtil.privateKeyPassword()));
-            fail("Exception expected");
-        } catch (Exception e) {
-            assertTrue(e instanceof IllegalStateException);
-        }
-
-        AsicVerifier asicVerifier = asicVerifierFactory.verify(archiveOutputFile);
-        assertEquals(asicVerifier.getAsicManifest().getFile().size(), 2);
+        log.info ("Found " + name);
+        final InputStream stream = zipFile.getInputStream (entry);
+      }
+      assertEquals ("Number of items in archive did not match", matchCount, 2);
     }
 
-    @Test
-    public void writeAndRead() throws Exception {
-
-        URL brochureUrl = AsicWriterTest.class.getClassLoader().getResource("e-Delivery_target_architecture.pdf");
-        assertNotNull(brochureUrl, "Unable to locate brochure in class path");
-        File brochurePdfFile = new File(brochureUrl.toURI());
-        assertTrue(brochurePdfFile.canRead(), "Brochure found in class path, but not readable as File object");
-
-        // Name of the file to hold the the ASiC archive
-        File archiveOutputFile = new File(System.getProperty("java.io.tmpdir"), "asic-sample-default.zip");
-
-        // Creates an AsicWriterFactory with default signature method
-        AsicWriterFactory asicWriterFactory = AsicWriterFactory.newFactory();
-
-        // Creates the actual container with all the data objects (files) and signs it.
-        asicWriterFactory.newContainer(archiveOutputFile)
-                // Adds file, explicitly naming the entry and specifying the MIME type
-                .add(biiMessageFile, BII_MESSAGE_XML, MimeType.forString("application/xml"))
-                        // Indicates which file is the root file
-                .setRootEntryName(BII_MESSAGE_XML)
-                        // Adds a PDF attachment, using the name of the file, i.e. with path removed, as the entry name
-                .add(brochurePdfFile)
-                        // Signing the contents of the archive, closes it for further changes.
-                .sign(keystoreFile, TestUtil.keyStorePassword(), TestUtil.privateKeyPassword());
-
-        log.debug("Wrote ASiC-e container to " + archiveOutputFile);
-        // Opens the generated archive and reads each entry
-        AsicReader asicReader = AsicReaderFactory.newFactory().open(archiveOutputFile);
-
-        String entryName;
-
-        // Iterates over each entry and writes the contents into a file having same name as the entry
-        while ((entryName = asicReader.getNextFile()) != null) {
-            log.debug("Read entry " + entryName);
-
-            // Creates file with same name as entry
-            File file = new File(entryName);
-            // Ensures we don't overwrite anything
-            if (file.exists()) {
-                throw new IllegalStateException("File already exists");
-            }
-            asicReader.writeFile(file);
-
-            // Removes file immediately, since this is just a test
-            file.delete();
-        }
-        asicReader.close();
-        AsicManifest asicManifest = asicReader.getAsicManifest();
-        String asicManifestRootfile = asicManifest.getRootfile();
-        assertNotNull(asicManifestRootfile, "Root file not found");
-        assertEquals(asicManifestRootfile, BII_MESSAGE_XML, "Invalid Rootfile found");
-
-
+    try
+    {
+      asicWriter.add (biiEnvelopeFile);
+      fail ("Exception expected");
+    }
+    catch (final Exception e)
+    {
+      assertTrue (e instanceof IllegalStateException);
     }
 
-    @Test
-    public void unknownMimetype() throws Exception {
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-
-        try {
-            AsicWriterFactory asicWriterFactory = AsicWriterFactory.newFactory();
-            asicWriterFactory.newContainer(byteArrayOutputStream)
-                    .add(biiEnvelopeFile, "envelope.aaz");
-            fail("Expected exception, is .aaz a known extension?");
-        } catch (IllegalStateException e) {
-            log.info(e.getMessage());
-        }
-
+    try
+    {
+      asicWriter.sign (new SignatureHelper (keystoreFile,
+                                            TestUtil.keyStorePassword (),
+                                            TestUtil.privateKeyPassword ()));
+      fail ("Exception expected");
     }
+    catch (final Exception e)
+    {
+      assertTrue (e instanceof IllegalStateException);
+    }
+
+    final AsicVerifier asicVerifier = asicVerifierFactory.verify (archiveOutputFile);
+    assertEquals (asicVerifier.getAsicManifest ().getFile ().size (), 2);
+  }
+
+  @Test
+  public void writeAndRead () throws Exception
+  {
+    final URL brochureUrl = AsicWriterTest.class.getClassLoader ().getResource ("e-Delivery_target_architecture.pdf");
+    assertNotNull (brochureUrl);
+    final File brochurePdfFile = new File (brochureUrl.toURI ());
+    assertTrue (brochurePdfFile.canRead ());
+
+    // Name of the file to hold the the ASiC archive
+    final File archiveOutputFile = new File (System.getProperty ("java.io.tmpdir"), "asic-sample-default.zip");
+
+    // Creates an AsicWriterFactory with default signature method
+    final AsicWriterFactory asicWriterFactory = AsicWriterFactory.newFactory ();
+
+    // Creates the actual container with all the data objects (files) and signs
+    // it.
+    asicWriterFactory.newContainer (archiveOutputFile)
+                     // Adds file, explicitly naming the entry and specifying
+                     // the MIME type
+                     .add (biiMessageFile, BII_MESSAGE_XML, MimeType.forString ("application/xml"))
+                     // Indicates which file is the root file
+                     .setRootEntryName (BII_MESSAGE_XML)
+                     // Adds a PDF attachment, using the name of the file, i.e.
+                     // with path removed, as the entry name
+                     .add (brochurePdfFile)
+                     // Signing the contents of the archive, closes it for
+                     // further changes.
+                     .sign (keystoreFile, TestUtil.keyStorePassword (), TestUtil.privateKeyPassword ());
+
+    log.debug ("Wrote ASiC-e container to " + archiveOutputFile);
+    // Opens the generated archive and reads each entry
+    final AsicReader asicReader = AsicReaderFactory.newFactory ().open (archiveOutputFile);
+
+    String entryName;
+
+    // Iterates over each entry and writes the contents into a file having same
+    // name as the entry
+    while ((entryName = asicReader.getNextFile ()) != null)
+    {
+      log.debug ("Read entry " + entryName);
+
+      // Creates file with same name as entry
+      final File file = new File (entryName);
+      // Ensures we don't overwrite anything
+      if (file.exists ())
+      {
+        throw new IllegalStateException ("File already exists");
+      }
+      asicReader.writeFile (file);
+
+      // Removes file immediately, since this is just a test
+      file.delete ();
+    }
+    asicReader.close ();
+    final AsicManifest asicManifest = asicReader.getAsicManifest ();
+    final String asicManifestRootfile = asicManifest.getRootfile ();
+    assertNotNull (asicManifestRootfile, "Root file not found");
+    assertEquals (asicManifestRootfile, BII_MESSAGE_XML, "Invalid Rootfile found");
+
+  }
+
+  @Test
+  public void unknownMimetype () throws Exception
+  {
+    final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream ();
+
+    try
+    {
+      final AsicWriterFactory asicWriterFactory = AsicWriterFactory.newFactory ();
+      asicWriterFactory.newContainer (byteArrayOutputStream).add (biiEnvelopeFile, "envelope.aaz");
+      fail ("Expected exception, is .aaz a known extension?");
+    }
+    catch (final IllegalStateException e)
+    {
+      log.info (e.getMessage ());
+    }
+
+  }
 }

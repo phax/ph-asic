@@ -1,18 +1,19 @@
 package no.difi.asic;
 
-import com.google.common.io.ByteStreams;
-
 import java.io.IOException;
 import java.io.InputStream;
 
-public class AsicVerifier extends AbstractAsicReader {
+import com.helger.commons.io.stream.NullOutputStream;
 
-    AsicVerifier(MessageDigestAlgorithm messageDigestAlgorithm, InputStream inputStream) throws IOException {
-        super(messageDigestAlgorithm, inputStream);
+public class AsicVerifier extends AbstractAsicReader
+{
+  AsicVerifier (final MessageDigestAlgorithm messageDigestAlgorithm, final InputStream inputStream) throws IOException
+  {
+    super (messageDigestAlgorithm, inputStream);
 
-        while (getNextFile() != null)
-            writeFile(ByteStreams.nullOutputStream());
+    while (getNextFile () != null)
+      writeFile (new NullOutputStream ());
 
-        close();
-    }
+    close ();
+  }
 }

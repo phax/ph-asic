@@ -1,100 +1,130 @@
 package no.difi.asic;
 
-import no.difi.commons.asic.jaxb.asic.AsicManifest;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.security.Security;
 
-import static org.testng.Assert.*;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Marshaller;
 
-public class AsicCadesReferenceTest {
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-    private static Logger log = LoggerFactory.getLogger(AsicCadesReferenceTest.class);
+import no.difi.commons.asic.jaxb.asic.AsicManifest;
 
-    private AsicVerifierFactory asicVerifierFactory = AsicVerifierFactory.newFactory(SignatureMethod.CAdES);
-    private AsicReaderFactory asicRederFactory = AsicReaderFactory.newFactory(SignatureMethod.CAdES);
+public class AsicCadesReferenceTest
+{
 
-    @BeforeClass
-    public void beforeClass() {
-        Security.addProvider(new BouncyCastleProvider());
+  private static Logger log = LoggerFactory.getLogger (AsicCadesReferenceTest.class);
+
+  private final AsicVerifierFactory asicVerifierFactory = AsicVerifierFactory.newFactory (SignatureMethod.CAdES);
+  private final AsicReaderFactory asicRederFactory = AsicReaderFactory.newFactory (SignatureMethod.CAdES);
+
+  @BeforeClass
+  public static void beforeClass ()
+  {
+    Security.addProvider (new BouncyCastleProvider ());
+  }
+
+  @Test
+  public void valid () throws IOException
+  {
+    final AsicVerifier asicVerifier = asicVerifierFactory.verify (getClass ().getResourceAsStream ("/asic-cades-test-valid.asice"));
+    assertEquals (asicVerifier.getAsicManifest ().getFile ().size (), 2);
+
+    // Printing internal manifest for reference.
+    try
+    {
+      final JAXBContext jaxbContext = JAXBContext.newInstance (AsicManifest.class);
+      final Marshaller marshaller = jaxbContext.createMarshaller ();
+      marshaller.setProperty (Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+
+      final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream ();
+      marshaller.marshal (asicVerifier.getAsicManifest (), byteArrayOutputStream);
+
+      log.info (byteArrayOutputStream.toString ());
+    }
+    catch (final Exception e)
+    {
+      log.warn (e.getMessage ());
+    }
+  }
+
+  @Test
+  public void invalidManifest () throws IOException
+  {
+    try
+    {
+      asicVerifierFactory.verify (getClass ().getResourceAsStream ("/asic-cades-test-invalid-manifest.asice"));
+      fail ("Exception expected.");
+    }
+    catch (final IllegalStateException e)
+    {
+      log.info (e.getMessage ());
     }
 
-    @Test
-    public void valid() throws IOException {
-        AsicVerifier asicVerifier = asicVerifierFactory.verify(getClass().getResourceAsStream("/asic-cades-test-valid.asice"));
-        assertEquals(asicVerifier.getAsicManifest().getFile().size(), 2);
+    final AsicReader asicReader = asicRederFactory.open (getClass ().getResourceAsStream ("/asic-cades-test-invalid-manifest.asice"));
 
-        // Printing internal manifest for reference.
-        try {
-            JAXBContext jaxbContext = JAXBContext.newInstance(AsicManifest.class);
-            Marshaller marshaller = jaxbContext.createMarshaller();
-            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            marshaller.marshal(asicVerifier.getAsicManifest(), byteArrayOutputStream);
-
-            log.info(byteArrayOutputStream.toString());
-        } catch (Exception e) {
-            log.warn(e.getMessage());
-        }
+    try
+    {
+      asicReader.getNextFile ();
+      fail ("Exception expected");
     }
-
-    @Test
-    public void invalidManifest() throws IOException {
-        try {
-            asicVerifierFactory.verify(getClass().getResourceAsStream("/asic-cades-test-invalid-manifest.asice"));
-            fail("Exception expected.");
-        } catch (IllegalStateException e) {
-            log.info(e.getMessage());
-        }
-
-        AsicReader asicReader = asicRederFactory.open(getClass().getResourceAsStream("/asic-cades-test-invalid-manifest.asice"));
-
-        try {
-            asicReader.getNextFile();
-            fail("Exception expected");
-        } catch (IllegalStateException e) {
-            // Container doesn't contain content files, so first read is expected to find manifest and thus throw exception.
-            log.info(e.getMessage());
-        }
+    catch (final IllegalStateException e)
+    {
+      // Container doesn't contain content files, so first read is expected to
+      // find manifest and thus throw exception.
+      log.info (e.getMessage ());
     }
+  }
 
-    @Test
-    public void invalidSignature() throws IOException {
-        try {
-            asicVerifierFactory.verify(getClass().getResourceAsStream("/asic-cades-test-invalid-signature.asice"));
-            fail("Exception expected.");
-        } catch (IllegalStateException e) {
-            log.info(e.getMessage());
-        }
+  @Test
+  public void invalidSignature () throws IOException
+  {
+    try
+    {
+      asicVerifierFactory.verify (getClass ().getResourceAsStream ("/asic-cades-test-invalid-signature.asice"));
+      fail ("Exception expected.");
     }
+    catch (final IllegalStateException e)
+    {
+      log.info (e.getMessage ());
+    }
+  }
 
-    @Test
-    public void invalidMetadataFile() throws IOException {
-        try {
-            asicVerifierFactory.verify(getClass().getResourceAsStream("/asic-cades-test-invalid-metadata-file.asice"));
-            fail("Exception expected.");
-        } catch (IllegalStateException e) {
-            log.info(e.getMessage());
-            assertTrue(e.getMessage().contains("signature.malformed"));
-        }
+  @Test
+  public void invalidMetadataFile () throws IOException
+  {
+    try
+    {
+      asicVerifierFactory.verify (getClass ().getResourceAsStream ("/asic-cades-test-invalid-metadata-file.asice"));
+      fail ("Exception expected.");
     }
+    catch (final IllegalStateException e)
+    {
+      log.info (e.getMessage ());
+      assertTrue (e.getMessage ().contains ("signature.malformed"));
+    }
+  }
 
-    @Test//(enabled = false)
-    public void invalidSigReference() throws IOException {
-        try {
-            asicVerifierFactory.verify(getClass().getResourceAsStream("/asic-cades-test-invalid-sigreference.asice"));
-            fail("Exception expected.");
-        } catch (IllegalStateException e) {
-            log.info(e.getMessage());
-        }
+  @Test // (enabled = false)
+  public void invalidSigReference () throws IOException
+  {
+    try
+    {
+      asicVerifierFactory.verify (getClass ().getResourceAsStream ("/asic-cades-test-invalid-sigreference.asice"));
+      fail ("Exception expected.");
     }
+    catch (final IllegalStateException e)
+    {
+      log.info (e.getMessage ());
+    }
+  }
 }

@@ -1,6 +1,30 @@
 package no.difi.asic;
 
-import com.google.common.io.BaseEncoding;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.math.BigInteger;
+import java.security.InvalidKeyException;
+import java.security.Key;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.PrivateKey;
+import java.security.SecureRandom;
+import java.security.Security;
+import java.security.SignatureException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 import org.bouncycastle.asn1.x500.X500NameBuilder;
 import org.bouncycastle.asn1.x500.style.BCStyle;
 import org.bouncycastle.cert.jcajce.JcaCertStore;
@@ -18,134 +42,134 @@ import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.bouncycastle.operator.jcajce.JcaDigestCalculatorProviderBuilder;
 import org.bouncycastle.util.Store;
+import org.junit.Before;
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.testng.annotations.BeforeTest;
-import org.testng.annotations.Test;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.math.BigInteger;
-import java.security.*;
-import java.security.cert.CertificateException;
-import java.security.cert.CertificateFactory;
-import java.security.cert.X509Certificate;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import com.helger.commons.base64.Base64;
 
 /**
- * @author steinar
- *         Date: 05.07.15
- *         Time: 21.57
+ * @author steinar Date: 05.07.15 Time: 21.57
  */
-public class BouncyCastleSignatureTest {
+public class BouncyCastleSignatureTest
+{
+  private KeyPair keyPair;
+  private X509Certificate x509Certificate;
 
+  public static final Logger log = LoggerFactory.getLogger (BouncyCastleSignatureTest.class);
 
-    private KeyPair keyPair;
-    private X509Certificate x509Certificate;
+  @Before
+  public void setUp ()
+  {
+    Security.addProvider (new BouncyCastleProvider ());
+  }
 
-    public static final Logger log = LoggerFactory.getLogger(BouncyCastleSignatureTest.class);
+  @Test
+  public void createSignature () throws Exception
+  {
 
-    @BeforeTest
+    final List certList = new ArrayList ();
+    final CMSProcessableByteArray msg = new CMSProcessableByteArray ("Hello world".getBytes ());
+    // generateKeyPairAndCertificate();
+    keyPair = getKeyPair (); // Reads private key and certificate from our own
+                             // keystore
 
-    public void setUp() {
-        Security.addProvider(new BouncyCastleProvider());
-    }
+    final String keyAlgorithm = keyPair.getPrivate ().getAlgorithm ();
 
-    @Test
-    public void createSignature() throws Exception {
+    final Store jcaCertStore = new JcaCertStore (certList);
+    final CMSSignedDataGenerator cmsSignedDataGenerator = new CMSSignedDataGenerator ();
+    final String signatureAlgorithm = "SHA1with" + keyAlgorithm;
+    final ContentSigner sha1Signer = new JcaContentSignerBuilder (signatureAlgorithm).setProvider (BouncyCastleProvider.PROVIDER_NAME)
+                                                                                     .build (keyPair.getPrivate ());
 
-        List certList = new ArrayList();
-        CMSProcessableByteArray msg = new CMSProcessableByteArray("Hello world".getBytes());
-        // generateKeyPairAndCertificate();
-        keyPair = getKeyPair(); // Reads private key and certificate from our own keystore
+    final DigestCalculatorProvider digestCalculatorProvider = new JcaDigestCalculatorProviderBuilder ().setProvider (BouncyCastleProvider.PROVIDER_NAME)
+                                                                                                       .build ();
+    final SignerInfoGenerator signerInfoGenerator = new JcaSignerInfoGeneratorBuilder (digestCalculatorProvider).build (sha1Signer,
+                                                                                                                        x509Certificate);
+    cmsSignedDataGenerator.addSignerInfoGenerator (signerInfoGenerator);
+    cmsSignedDataGenerator.addCertificates (jcaCertStore);
+    final CMSSignedData sigData = cmsSignedDataGenerator.generate (msg, false);
 
+    final byte [] bytes = Base64.encodeBytesToBytes (sigData.getEncoded ());
+    log.debug (new String (bytes));
 
-        String keyAlgorithm = keyPair.getPrivate().getAlgorithm();
+  }
 
-        Store jcaCertStore = new JcaCertStore(certList);
-        CMSSignedDataGenerator cmsSignedDataGenerator = new CMSSignedDataGenerator();
-        String signatureAlgorithm = "SHA1with" + keyAlgorithm;
-        ContentSigner sha1Signer = new JcaContentSignerBuilder(signatureAlgorithm).setProvider(BouncyCastleProvider.PROVIDER_NAME).build(keyPair.getPrivate());
+  void generateKeyPairAndCertificate () throws NoSuchProviderException,
+                                        NoSuchAlgorithmException,
+                                        OperatorCreationException,
+                                        CertificateException,
+                                        SignatureException,
+                                        InvalidKeyException
+  {
 
-        DigestCalculatorProvider digestCalculatorProvider = new JcaDigestCalculatorProviderBuilder().setProvider(BouncyCastleProvider.PROVIDER_NAME).build();
-        SignerInfoGenerator signerInfoGenerator = new JcaSignerInfoGeneratorBuilder(digestCalculatorProvider).build(sha1Signer, x509Certificate);
-        cmsSignedDataGenerator.addSignerInfoGenerator(signerInfoGenerator);
-        cmsSignedDataGenerator.addCertificates(jcaCertStore);
-        CMSSignedData sigData = cmsSignedDataGenerator.generate(msg, false);
+    final String BC = BouncyCastleProvider.PROVIDER_NAME;
+    final KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance ("DSA", BC);
+    keyPairGenerator.initialize (1024, new SecureRandom ());
+    keyPair = keyPairGenerator.generateKeyPair ();
 
-        byte[] bytes = BaseEncoding.base64().encode(sigData.getEncoded()).getBytes();
-        log.debug(new String(bytes));
+    final X500NameBuilder nameBuilder = createStdBuilder ();
 
-    }
+    final ContentSigner sigGen = new JcaContentSignerBuilder ("SHA1withDSA").setProvider (BC)
+                                                                            .build (keyPair.getPrivate ());
+    final JcaX509v3CertificateBuilder certGen = new JcaX509v3CertificateBuilder (nameBuilder.build (),
+                                                                                 BigInteger.valueOf (1),
+                                                                                 new Date (System.currentTimeMillis () -
+                                                                                           50000),
+                                                                                 new Date (System.currentTimeMillis () +
+                                                                                           50000),
+                                                                                 nameBuilder.build (),
+                                                                                 keyPair.getPublic ());
 
-    void generateKeyPairAndCertificate() throws NoSuchProviderException, NoSuchAlgorithmException, OperatorCreationException, CertificateException, SignatureException, InvalidKeyException {
+    x509Certificate = new JcaX509CertificateConverter ().setProvider (BC).getCertificate (certGen.build (sigGen));
 
-        String BC = BouncyCastleProvider.PROVIDER_NAME;
-        KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("DSA", BC);
-        keyPairGenerator.initialize(1024, new SecureRandom());
-        keyPair = keyPairGenerator.generateKeyPair();
+    x509Certificate.checkValidity (new Date ());
 
-        X500NameBuilder nameBuilder = createStdBuilder();
+    x509Certificate.verify (keyPair.getPublic ());
 
+    final ByteArrayInputStream bIn = new ByteArrayInputStream (x509Certificate.getEncoded ());
+    final CertificateFactory fact = CertificateFactory.getInstance ("X.509", BC);
 
-        ContentSigner sigGen = new JcaContentSignerBuilder("SHA1withDSA").setProvider(BC).build(keyPair.getPrivate());
-        JcaX509v3CertificateBuilder certGen = new JcaX509v3CertificateBuilder(
-                nameBuilder.build(),
-                BigInteger.valueOf(1),
-                new Date(System.currentTimeMillis() - 50000),
-                new Date(System.currentTimeMillis() + 50000),
-                nameBuilder.build(),
-                keyPair.getPublic());
+    x509Certificate = (X509Certificate) fact.generateCertificate (bIn);
 
+    System.out.println (x509Certificate);
+  }
 
-        x509Certificate = new JcaX509CertificateConverter().setProvider(BC).getCertificate(certGen.build(sigGen));
+  private X500NameBuilder createStdBuilder ()
+  {
+    final X500NameBuilder builder = new X500NameBuilder (BCStyle.INSTANCE);
 
-        x509Certificate.checkValidity(new Date());
+    builder.addRDN (BCStyle.C, "AU");
+    builder.addRDN (BCStyle.O, "The Legion of the Bouncy Castle");
+    builder.addRDN (BCStyle.L, "Melbourne");
+    builder.addRDN (BCStyle.ST, "Victoria");
+    builder.addRDN (BCStyle.E, "feedback-crypto@bouncycastle.org");
 
-        x509Certificate.verify(keyPair.getPublic());
+    return builder;
+  }
 
-        ByteArrayInputStream bIn = new ByteArrayInputStream(x509Certificate.getEncoded());
-        CertificateFactory fact = CertificateFactory.getInstance("X.509", BC);
+  KeyPair getKeyPair () throws KeyStoreException,
+                        CertificateException,
+                        NoSuchAlgorithmException,
+                        IOException,
+                        UnrecoverableKeyException
+  {
+    final KeyStore keyStore = KeyStore.getInstance ("JKS");
 
-        x509Certificate = (X509Certificate)fact.generateCertificate(bIn);
+    final FileInputStream fileInputStream = new FileInputStream (new File ("src/test/resources/keystore.jks"));
 
-        System.out.println(x509Certificate);
-    }
+    keyStore.load (fileInputStream, "changeit".toCharArray ());
 
-    private X500NameBuilder createStdBuilder()
-    {
-        X500NameBuilder builder = new X500NameBuilder(BCStyle.INSTANCE);
+    final String alias = keyStore.aliases ().nextElement ();
+    final X509Certificate certificate = (X509Certificate) keyStore.getCertificate (alias);
 
-        builder.addRDN(BCStyle.C, "AU");
-        builder.addRDN(BCStyle.O, "The Legion of the Bouncy Castle");
-        builder.addRDN(BCStyle.L, "Melbourne");
-        builder.addRDN(BCStyle.ST, "Victoria");
-        builder.addRDN(BCStyle.E, "feedback-crypto@bouncycastle.org");
+    x509Certificate = certificate;
 
-        return builder;
-    }
+    final Key key = keyStore.getKey (alias, "changeit".toCharArray ());
+    final PrivateKey privateKey = (PrivateKey) key;
 
-    KeyPair getKeyPair() throws KeyStoreException, CertificateException, NoSuchAlgorithmException, IOException, UnrecoverableKeyException {
-        KeyStore keyStore = KeyStore.getInstance("JKS");
-
-        FileInputStream fileInputStream = new FileInputStream(new File("src/test/resources/keystore.jks"));
-
-
-        keyStore.load(fileInputStream, "changeit".toCharArray());
-
-        String alias = keyStore.aliases().nextElement();
-        X509Certificate certificate = (X509Certificate) keyStore.getCertificate(alias);
-
-        x509Certificate = certificate;
-
-        Key key = keyStore.getKey(alias, "changeit".toCharArray());
-        PrivateKey privateKey = (PrivateKey) key;
-
-        return new KeyPair(certificate.getPublicKey(), privateKey);
-    }
+    return new KeyPair (certificate.getPublicKey (), privateKey);
+  }
 
 }
