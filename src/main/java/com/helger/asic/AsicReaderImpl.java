@@ -17,14 +17,11 @@ import java.io.OutputStream;
 
 public class AsicReaderImpl extends AbstractAsicReader implements IAsicReader
 {
-  protected AsicReaderImpl (final EMessageDigestAlgorithm messageDigestAlgorithm, final InputStream inputStream)
+  protected AsicReaderImpl (final EMessageDigestAlgorithm eMDAlgorithm, final InputStream aIS)
   {
-    super (messageDigestAlgorithm, inputStream);
+    super (eMDAlgorithm, aIS);
   }
 
-  /**
-   * {@inheritDoc}
-   */
   @Override
   public void writeFile (final OutputStream outputStream) throws IOException
   {

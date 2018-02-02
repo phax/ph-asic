@@ -23,12 +23,12 @@ import com.helger.asic.jaxb.opendocument.manifest.FileEntry;
 import com.helger.asic.jaxb.opendocument.manifest.Manifest;
 import com.helger.commons.mime.IMimeType;
 
-class OasisManifest
+public class OasisManifest
 {
   @Nullable
-  public static Manifest read (final InputStream inputStream)
+  public static Manifest read (final byte [] aBytes)
   {
-    return AsicReader.oasisManifest ().read (inputStream);
+    return AsicReader.oasisManifest ().read (aBytes);
   }
 
   private final Manifest m_aManifest;

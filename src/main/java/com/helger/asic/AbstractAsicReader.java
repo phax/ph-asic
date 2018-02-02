@@ -11,12 +11,11 @@
  */
 package com.helger.asic;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.security.DigestInputStream;
 import java.security.DigestOutputStream;
 import java.security.MessageDigest;
@@ -32,6 +31,7 @@ import com.helger.asic.jaxb.asic.Certificate;
 import com.helger.asic.jaxb.opendocument.manifest.Manifest;
 import com.helger.commons.collection.impl.CommonsHashMap;
 import com.helger.commons.collection.impl.ICommonsMap;
+import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.io.stream.NullOutputStream;
 import com.helger.commons.io.stream.StreamHelper;
 
@@ -59,22 +59,20 @@ public abstract class AbstractAsicReader implements Closeable
    * Used to hold signature or manifest for CAdES as they are not in the same
    * file.
    */
-  private final ICommonsMap <String, Object> m_aSigningContent = new CommonsHashMap <> ();
+  private final ICommonsMap <String, byte []> m_aSigningContent = new CommonsHashMap <> ();
 
-  AbstractAsicReader (final EMessageDigestAlgorithm messageDigestAlgorithm, final InputStream inputStream)
+  AbstractAsicReader (final EMessageDigestAlgorithm eMDAlgo, final InputStream inputStream)
   {
-    m_aManifestVerifier = new ManifestVerifier (messageDigestAlgorithm);
+    m_aManifestVerifier = new ManifestVerifier (eMDAlgo);
 
     try
     {
-      m_aMD = MessageDigest.getInstance (messageDigestAlgorithm.getAlgorithm ());
+      m_aMD = MessageDigest.getInstance (eMDAlgo.getAlgorithm ());
       m_aMD.reset ();
     }
     catch (final NoSuchAlgorithmException e)
     {
-      throw new IllegalStateException (String.format ("Algorithm %s not supported",
-                                                      messageDigestAlgorithm.getAlgorithm ()),
-                                       e);
+      throw new IllegalStateException (String.format ("Algorithm %s not supported", eMDAlgo.getAlgorithm ()), e);
     }
 
     m_aZipInputStream = new AsicInputStream (inputStream);
@@ -101,7 +99,7 @@ public abstract class AbstractAsicReader implements Closeable
 
       // Files used for validation are not exposed
       if (m_aCurrentZipEntry.getName ().startsWith ("META-INF/"))
-        handleMetadataEntry ();
+        _handleMetadataEntry ();
       else
       {
         m_bContentIsWritten = false;
@@ -117,8 +115,7 @@ public abstract class AbstractAsicReader implements Closeable
 
     // All CAdES signatures and manifest must be verified.
     if (m_aSigningContent.size () > 0)
-      throw new IllegalStateException (String.format ("Signature not verified: %s",
-                                                      m_aSigningContent.keySet ().iterator ().next ()));
+      throw new IllegalStateException ("Signature not verified: " + m_aSigningContent.keySet ().iterator ().next ());
 
     // Return null when container is out of content to read.
     return null;
@@ -163,39 +160,41 @@ public abstract class AbstractAsicReader implements Closeable
    *
    * @throws IOException
    */
-  private void handleMetadataEntry () throws IOException
+  private void _handleMetadataEntry () throws IOException
   {
     // Extracts everything after META-INF/
     final String filename = m_aCurrentZipEntry.getName ().substring (9).toLowerCase ();
 
     // Read content in file
-    final ByteArrayOutputStream contentsOfStream = new ByteArrayOutputStream ();
+    final NonBlockingByteArrayOutputStream contentsOfStream = new NonBlockingByteArrayOutputStream ();
     AsicUtils.copyStream (m_aZipInputStream, contentsOfStream);
 
     if (AsicUtils.PATTERN_CADES_MANIFEST.matcher (m_aCurrentZipEntry.getName ()).matches ())
     {
       // Handling manifest in ASiC CAdES.
-      final String sigReference = CadesAsicManifest.extractAndVerify (contentsOfStream.toString (),
-                                                                      m_aManifestVerifier);
-      handleCadesSigning (sigReference, contentsOfStream.toString ());
+      final byte [] aContent = contentsOfStream.toByteArray ();
+      final String sContent = new String (aContent, StandardCharsets.ISO_8859_1);
+      final String sigReference = CadesAsicManifest.extractAndVerify (sContent, m_aManifestVerifier);
+      _handleCadesSigning (sigReference, aContent, false);
     }
     else
       if (AsicUtils.PATTERN_XADES_SIGNATURES.matcher (m_aCurrentZipEntry.getName ()).matches ())
       {
         // Handling manifest in ASiC XAdES.
-        XadesAsicManifest.extractAndVerify (contentsOfStream.toString (), m_aManifestVerifier);
+        final String sContent = contentsOfStream.getAsString (StandardCharsets.ISO_8859_1);
+        XadesAsicManifest.extractAndVerify (sContent, m_aManifestVerifier);
       }
       else
         if (AsicUtils.PATTERN_CADES_SIGNATURE.matcher (m_aCurrentZipEntry.getName ()).matches ())
         {
           // Handling signature in ASiC CAdES.
-          handleCadesSigning (m_aCurrentZipEntry.getName (), contentsOfStream);
+          _handleCadesSigning (m_aCurrentZipEntry.getName (), contentsOfStream.toByteArray (), true);
         }
         else
           if (filename.equals ("manifest.xml"))
           {
             // Read manifest.
-            m_aManifest = OasisManifest.read (new ByteArrayInputStream (contentsOfStream.toByteArray ()));
+            m_aManifest = OasisManifest.read (contentsOfStream.toByteArray ());
           }
           else
           {
@@ -204,16 +203,14 @@ public abstract class AbstractAsicReader implements Closeable
           }
   }
 
-  private void handleCadesSigning (final String sigReference, final Object o)
+  private void _handleCadesSigning (final String sigReference, final byte [] o, final boolean bIsSignature)
   {
     if (!m_aSigningContent.containsKey (sigReference))
       m_aSigningContent.put (sigReference, o);
     else
     {
-      final byte [] data = o instanceof String ? ((String) o).getBytes ()
-                                               : ((String) m_aSigningContent.get (sigReference)).getBytes ();
-      final byte [] sign = o instanceof ByteArrayOutputStream ? ((ByteArrayOutputStream) o).toByteArray ()
-                                                              : ((ByteArrayOutputStream) m_aSigningContent.get (sigReference)).toByteArray ();
+      final byte [] data = bIsSignature ? m_aSigningContent.get (sigReference) : o;
+      final byte [] sign = bIsSignature ? o : m_aSigningContent.get (sigReference);
 
       final Certificate certificate = SignatureVerifier.validate (data, sign);
       certificate.setCert (m_aCurrentZipEntry.getName ());
@@ -242,5 +239,4 @@ public abstract class AbstractAsicReader implements Closeable
   {
     return m_aManifest;
   }
-
 }
