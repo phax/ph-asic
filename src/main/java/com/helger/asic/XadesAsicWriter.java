@@ -16,11 +16,11 @@ import java.io.OutputStream;
 
 public class XadesAsicWriter extends AbstractAsicWriter
 {
-  public XadesAsicWriter (final ESignatureMethod signatureMethod,
-                          final OutputStream outputStream,
-                          final boolean closeStreamOnClose) throws IOException
+  public XadesAsicWriter (final ESignatureMethod eSM,
+                          final OutputStream aOS,
+                          final boolean bCloseStreamOnClose) throws IOException
   {
-    super (outputStream, closeStreamOnClose, new XadesAsicManifest (signatureMethod.getMessageDigestAlgorithm ()));
+    super (aOS, bCloseStreamOnClose, new XadesAsicManifest (eSM.getMessageDigestAlgorithm ()));
   }
 
   @Override

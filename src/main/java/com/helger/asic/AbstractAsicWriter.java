@@ -37,24 +37,24 @@ public abstract class AbstractAsicWriter implements IAsicWriter
   /**
    * Prepares creation of a new container.
    *
-   * @param outputStream
+   * @param aOS
    *        Stream used to write container.
-   * @param closeStreamOnClose
-   * @param asicManifest
+   * @param bCloseStreamOnClose
+   * @param aAsicManifest
    */
-  AbstractAsicWriter (final OutputStream outputStream,
-                      final boolean closeStreamOnClose,
-                      final AbstractAsicManifest asicManifest) throws IOException
+  AbstractAsicWriter (final OutputStream aOS,
+                      final boolean bCloseStreamOnClose,
+                      final AbstractAsicManifest aAsicManifest) throws IOException
   {
     // Keep original output stream
-    this.m_aContainerOS = outputStream;
-    this.m_bCloseStreamOnClose = closeStreamOnClose;
+    m_aContainerOS = aOS;
+    m_bCloseStreamOnClose = bCloseStreamOnClose;
 
     // Initiate manifest
-    this.m_aAsicManifest = asicManifest;
+    m_aAsicManifest = aAsicManifest;
 
     // Initiate zip container
-    m_aAsicOutputStream = new AsicOutputStream (outputStream);
+    m_aAsicOutputStream = new AsicOutputStream (aOS);
 
     // Add mimetype to OASIS OpenDocument manifest
     m_aOasisManifest = new OasisManifest (MimeType.forString (AsicUtils.MIMETYPE_ASICE));
@@ -74,7 +74,8 @@ public abstract class AbstractAsicWriter implements IAsicWriter
       throw new IllegalStateException ("Adding files to META-INF is not allowed.");
 
     // Creates new zip entry
-    logger.debug ("Writing file '{}' to container", filename);
+    if (logger.isDebugEnabled ())
+      logger.debug ("Writing file '" + filename + "' to container");
     m_aAsicOutputStream.putNextEntry (new ZipEntry (filename));
 
     // Prepare for calculation of message digest
@@ -97,7 +98,6 @@ public abstract class AbstractAsicWriter implements IAsicWriter
     return this;
   }
 
-  /** {@inheritDoc} */
   @Override
   public IAsicWriter sign (final File keyStoreFile,
                            final String keyStorePassword,
@@ -106,7 +106,6 @@ public abstract class AbstractAsicWriter implements IAsicWriter
     return sign (keyStoreFile, keyStorePassword, null, keyPassword);
   }
 
-  /** {@inheritDoc} */
   @Override
   public IAsicWriter sign (final File keyStoreFile,
                            final String keyStorePassword,
@@ -116,7 +115,6 @@ public abstract class AbstractAsicWriter implements IAsicWriter
     return sign (new SignatureHelper (keyStoreFile, keyStorePassword, keyAlias, keyPassword));
   }
 
-  /** {@inheritDoc} */
   @Override
   public IAsicWriter sign (final SignatureHelper signatureHelper) throws IOException
   {
@@ -140,7 +138,7 @@ public abstract class AbstractAsicWriter implements IAsicWriter
     }
     catch (final IOException e)
     {
-      throw new IllegalStateException (String.format ("Unable to finish the container: %s", e.getMessage ()), e);
+      throw new IllegalStateException ("Unable to finish the container", e);
     }
 
     if (m_bCloseStreamOnClose)
@@ -152,7 +150,7 @@ public abstract class AbstractAsicWriter implements IAsicWriter
       }
       catch (final IOException e)
       {
-        throw new IllegalStateException (String.format ("Unable to close file: %s", e.getMessage ()), e);
+        throw new IllegalStateException ("Unable to close file", e);
       }
     }
 

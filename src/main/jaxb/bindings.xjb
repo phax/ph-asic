@@ -12,10 +12,11 @@
     https://mozilla.org/MPL/2.0/
 
 -->
-<bindings version="2.1" xmlns="http://java.sun.com/xml/ns/jaxb" xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc"
-  extensionBindingPrefixes="xjc">
+<bindings version="2.1" 
+          xmlns="http://java.sun.com/xml/ns/jaxb" 
+          xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc"
+          extensionBindingPrefixes="xjc">
   <bindings schemaLocation="../resources/schemas/asic-model-1.0.xsd">
-    <xjc:simple />
     <schemaBindings>
       <package name="com.helger.asic.jaxb.asic" />
     </schemaBindings>

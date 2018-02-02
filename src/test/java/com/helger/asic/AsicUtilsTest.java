@@ -226,23 +226,23 @@ public final class AsicUtilsTest
   @Test
   public void simpleCombineXades () throws IOException
   {
-    final AsicWriterFactory asicWriterFactory = AsicWriterFactory.newFactory (ESignatureMethod.XAdES);
+    final AsicWriterFactory aFactoryXades = AsicWriterFactory.newFactory (ESignatureMethod.XAdES);
 
     // Create first container
     final ByteArrayOutputStream source1 = new ByteArrayOutputStream ();
-    asicWriterFactory.newContainer (source1)
-                     .add (new ByteArrayInputStream (fileContent1.getBytes ()),
-                           "content1.txt",
-                           MimeType.forString ("text/plain"))
-                     .sign (signatureHelper);
+    aFactoryXades.newContainer (source1)
+                 .add (new ByteArrayInputStream (fileContent1.getBytes ()),
+                       "content1.txt",
+                       MimeType.forString ("text/plain"))
+                 .sign (signatureHelper);
 
     // Create second container
     final ByteArrayOutputStream source2 = new ByteArrayOutputStream ();
-    asicWriterFactory.newContainer (source2)
-                     .add (new ByteArrayInputStream (fileContent2.getBytes ()),
-                           "content2.txt",
-                           MimeType.forString ("text/plain"))
-                     .sign (signatureHelper);
+    aFactoryXades.newContainer (source2)
+                 .add (new ByteArrayInputStream (fileContent2.getBytes ()),
+                       "content2.txt",
+                       MimeType.forString ("text/plain"))
+                 .sign (signatureHelper);
 
     // Combine containers
     final ByteArrayOutputStream target = new ByteArrayOutputStream ();

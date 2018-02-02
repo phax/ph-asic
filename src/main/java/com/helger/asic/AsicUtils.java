@@ -126,7 +126,7 @@ public class AsicUtils
                   copyStream (source, aBAOS);
 
                   // Copy entries
-                  oasisManifest.append (new OasisManifest (aBAOS.getAsInputStream ()));
+                  oasisManifest.addAll (new OasisManifest (aBAOS.getAsInputStream ()));
 
                   // Nothing to write to target container
                   target.closeEntry ();

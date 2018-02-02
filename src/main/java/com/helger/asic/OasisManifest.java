@@ -11,57 +11,36 @@
  */
 package com.helger.asic;
 
-import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
+import javax.annotation.Nullable;
 
+import com.helger.asic.jaxb.AsicReader;
+import com.helger.asic.jaxb.AsicWriter;
 import com.helger.asic.jaxb.opendocument.manifest.FileEntry;
 import com.helger.asic.jaxb.opendocument.manifest.Manifest;
 
 class OasisManifest
 {
-
-  private static JAXBContext jaxbContext; // Thread safe
-
-  static
-  {
-    try
-    {
-      jaxbContext = JAXBContext.newInstance (Manifest.class);
-    }
-    catch (final JAXBException e)
-    {
-      throw new IllegalStateException (String.format ("Unable to create JAXBContext: %s ", e.getMessage ()), e);
-    }
-  }
-
+  @Nullable
   public static Manifest read (final InputStream inputStream)
   {
-    return new OasisManifest (inputStream).getManifest ();
+    return AsicReader.oasisManifest ().read (inputStream);
   }
 
-  private Manifest manifest = new Manifest ();
+  private final Manifest m_aManifest;
 
   public OasisManifest (final MimeType mimeType)
   {
+    m_aManifest = new Manifest ();
     add ("/", mimeType);
   }
 
   public OasisManifest (final InputStream inputStream)
   {
-    try
-    {
-      final Unmarshaller unmarshaller = jaxbContext.createUnmarshaller ();
-      manifest = (Manifest) unmarshaller.unmarshal (inputStream);
-    }
-    catch (final JAXBException e)
-    {
-      throw new IllegalStateException ("Unable to read XML as OASIS OpenDocument Manifest.", e);
-    }
+    m_aManifest = AsicReader.oasisManifest ().read (inputStream);
+    if (m_aManifest == null)
+      throw new IllegalStateException ("Failed to read Manifest from IS");
   }
 
   public void add (final String path, final MimeType mimeType)
@@ -69,41 +48,23 @@ class OasisManifest
     final FileEntry fileEntry = new FileEntry ();
     fileEntry.setMediaType (mimeType.toString ());
     fileEntry.setFullPath (path);
-    manifest.getFileEntry ().add (fileEntry);
+    m_aManifest.getFileEntry ().add (fileEntry);
   }
 
-  public void append (final OasisManifest oasisManifest)
+  public void addAll (final OasisManifest aOther)
   {
-    for (final FileEntry fileEntry : oasisManifest.getManifest ().getFileEntry ())
+    for (final FileEntry fileEntry : aOther.m_aManifest.getFileEntry ())
       if (!fileEntry.getFullPath ().equals ("/"))
-        manifest.getFileEntry ().add (fileEntry);
+        m_aManifest.getFileEntry ().add (fileEntry);
   }
 
   public int size ()
   {
-    return manifest.getFileEntry ().size ();
-  }
-
-  public Manifest getManifest ()
-  {
-    return manifest;
+    return m_aManifest.getFileEntry ().size ();
   }
 
   public byte [] toBytes ()
   {
-    try
-    {
-      final Marshaller marshaller = jaxbContext.createMarshaller ();
-      marshaller.setProperty (Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-
-      final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream ();
-      marshaller.marshal (manifest, byteArrayOutputStream);
-
-      return byteArrayOutputStream.toByteArray ();
-    }
-    catch (final JAXBException e)
-    {
-      throw new IllegalStateException ("Unable to create OASIS OpenDocument Manifest.", e);
-    }
+    return AsicWriter.oasisManifest ().getAsBytes (m_aManifest);
   }
 }
