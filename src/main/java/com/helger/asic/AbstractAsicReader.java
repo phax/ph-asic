@@ -61,7 +61,7 @@ public abstract class AbstractAsicReader implements Closeable
    */
   private final ICommonsMap <String, byte []> m_aSigningContent = new CommonsHashMap <> ();
 
-  AbstractAsicReader (final EMessageDigestAlgorithm eMDAlgo, final InputStream inputStream)
+  protected AbstractAsicReader (final EMessageDigestAlgorithm eMDAlgo, final InputStream inputStream)
   {
     m_aManifestVerifier = new ManifestVerifier (eMDAlgo);
 
@@ -79,7 +79,7 @@ public abstract class AbstractAsicReader implements Closeable
     // Comment in ZIP is stored in Central Directory in the end of the file.
   }
 
-  public String getNextFile () throws IOException
+  public final String getNextFile () throws IOException
   {
     // Read file if the user didn't.
     if (!m_bContentIsWritten)
@@ -121,7 +121,7 @@ public abstract class AbstractAsicReader implements Closeable
     return null;
   }
 
-  protected void internalWriteFile (final OutputStream outputStream) throws IOException
+  protected final void internalWriteFile (final OutputStream outputStream) throws IOException
   {
     if (m_aCurrentZipEntry == null)
       throw new IllegalStateException ("No file to read.");
@@ -149,7 +149,7 @@ public abstract class AbstractAsicReader implements Closeable
   }
 
   @Override
-  public void close () throws IOException
+  public final void close () throws IOException
   {
     StreamHelper.close (m_aZipInputStream);
     m_aZipInputStream = null;

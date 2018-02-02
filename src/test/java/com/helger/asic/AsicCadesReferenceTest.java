@@ -17,12 +17,10 @@ import static org.junit.Assert.fail;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.security.Security;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -41,18 +39,17 @@ public final class AsicCadesReferenceTest
   @BeforeClass
   public static void beforeClass ()
   {
-    Security.addProvider (new BouncyCastleProvider ());
+    BCHelper.getProvider ();
   }
 
   @Test
-  public void valid () throws IOException
+  public void valid () throws Exception
   {
-    final AsicVerifier asicVerifier = asicVerifierFactory.verify (ClassPathResource.getInputStream ("/asic/asic-cades-test-valid.asice"));
-    assertEquals (asicVerifier.getAsicManifest ().getFile ().size (), 2);
-
-    // Printing internal manifest for reference.
-    try
+    try (final AsicVerifier asicVerifier = asicVerifierFactory.verify (ClassPathResource.getInputStream ("/asic/asic-cades-test-valid.asice")))
     {
+      assertEquals (asicVerifier.getAsicManifest ().getFile ().size (), 2);
+
+      // Printing internal manifest for reference.
       final JAXBContext jaxbContext = JAXBContext.newInstance (AsicManifest.class);
       final Marshaller marshaller = jaxbContext.createMarshaller ();
       marshaller.setProperty (Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
@@ -61,10 +58,6 @@ public final class AsicCadesReferenceTest
       marshaller.marshal (asicVerifier.getAsicManifest (), byteArrayOutputStream);
 
       log.info (byteArrayOutputStream.toString ());
-    }
-    catch (final Exception e)
-    {
-      log.warn (e.getMessage ());
     }
   }
 
@@ -78,12 +71,10 @@ public final class AsicCadesReferenceTest
     }
     catch (final IllegalStateException e)
     {
-      log.info (e.getMessage ());
+      // empty
     }
 
-    final IAsicReader asicReader = asicRederFactory.open (ClassPathResource.getInputStream ("/asic/asic-cades-test-invalid-manifest.asice"));
-
-    try
+    try (final IAsicReader asicReader = asicRederFactory.open (ClassPathResource.getInputStream ("/asic/asic-cades-test-invalid-manifest.asice")))
     {
       asicReader.getNextFile ();
       fail ("Exception expected");
@@ -92,7 +83,6 @@ public final class AsicCadesReferenceTest
     {
       // Container doesn't contain content files, so first read is expected to
       // find manifest and thus throw exception.
-      log.info (e.getMessage ());
     }
   }
 
@@ -120,7 +110,6 @@ public final class AsicCadesReferenceTest
     }
     catch (final IllegalStateException e)
     {
-      log.info (e.getMessage ());
       assertTrue (e.getMessage ().contains ("signature.malformed"));
     }
   }
@@ -135,7 +124,7 @@ public final class AsicCadesReferenceTest
     }
     catch (final IllegalStateException e)
     {
-      log.info (e.getMessage ());
+      // expected
     }
   }
 }
