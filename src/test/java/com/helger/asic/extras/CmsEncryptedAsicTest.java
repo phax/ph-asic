@@ -118,7 +118,6 @@ public final class CmsEncryptedAsicTest
       fileOutputStream.write (byteArrayOutputStream.toByteArray ());
     }
     System.out.println ("Wrote sample ASiC to " + sample);
-
   }
 
   private KeyStore loadKeyStore () throws KeyStoreException, IOException, NoSuchAlgorithmException, CertificateException
