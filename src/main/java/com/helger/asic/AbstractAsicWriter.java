@@ -11,7 +11,6 @@
  */
 package com.helger.asic;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -97,23 +96,6 @@ public abstract class AbstractAsicWriter implements IAsicWriter
     m_aOasisManifest.add (filename, mimeType);
 
     return this;
-  }
-
-  @Override
-  public IAsicWriter sign (final File keyStoreFile,
-                           final String keyStorePassword,
-                           final String keyPassword) throws IOException
-  {
-    return sign (keyStoreFile, keyStorePassword, null, keyPassword);
-  }
-
-  @Override
-  public IAsicWriter sign (final File keyStoreFile,
-                           final String keyStorePassword,
-                           final String keyAlias,
-                           final String keyPassword) throws IOException
-  {
-    return sign (new SignatureHelper (keyStoreFile, keyStorePassword, keyAlias, keyPassword));
   }
 
   @Override

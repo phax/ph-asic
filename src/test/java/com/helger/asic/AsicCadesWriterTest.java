@@ -16,7 +16,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -35,6 +34,7 @@ import org.slf4j.LoggerFactory;
 import com.helger.asic.jaxb.cades.DataObjectReferenceType;
 import com.helger.commons.io.file.FilenameHelper;
 import com.helger.commons.io.resource.ClassPathResource;
+import com.helger.commons.io.stream.NonBlockingBufferedInputStream;
 import com.helger.commons.mime.CMimeType;
 
 /**
@@ -73,16 +73,17 @@ public final class AsicCadesWriterTest
   @Test
   public void createSampleEmptyContainer () throws Exception
   {
+    final File aDestFile = new File (System.getProperty ("java.io.tmpdir"), "asic-empty-sample-cades.zip");
 
-    final File file = new File (System.getProperty ("java.io.tmpdir"), "asic-empty-sample-cades.zip");
+    // A container MUST contain any entry
+    asicWriterFactory.newContainer (aDestFile).add (messageFile).sign (keystoreFile,
+                                                                       TestUtil.keyStorePassword (),
+                                                                       TestUtil.keyPairAlias (),
+                                                                       TestUtil.privateKeyPassword ());
 
-    asicWriterFactory.newContainer (file)
-                     .sign (keystoreFile, TestUtil.keyStorePassword (), TestUtil.privateKeyPassword ());
-
-    assertTrue (file + " can not be read", file.exists () && file.isFile () && file.canRead ());
-
-    try (final FileInputStream fileInputStream = new FileInputStream (file);
-         final BufferedInputStream is = new BufferedInputStream (fileInputStream))
+    assertTrue (aDestFile + " can not be read", aDestFile.exists () && aDestFile.isFile () && aDestFile.canRead ());
+    try (final FileInputStream fileInputStream = new FileInputStream (aDestFile);
+         final NonBlockingBufferedInputStream is = new NonBlockingBufferedInputStream (fileInputStream))
     {
       final byte [] buffer = new byte [BYTES_TO_CHECK];
       final int read = is.read (buffer, 0, BYTES_TO_CHECK);
@@ -94,6 +95,10 @@ public final class AsicCadesWriterTest
 
       assertTrue ("First 4 octets should read 0x50 0x4B 0x03 0x04",
                   buffer[0] == 0x50 && buffer[1] == 0x4B && buffer[2] == 0x03 && buffer[3] == 0x04);
+    }
+    finally
+    {
+      aDestFile.delete ();
     }
   }
 
@@ -120,7 +125,7 @@ public final class AsicCadesWriterTest
     {
       int matchCount = 0;
       final CadesAsicManifest asicManifest = (CadesAsicManifest) ((CadesAsicWriter) asicWriter).getAsicManifest ();
-      for (final DataObjectReferenceType dataObject : asicManifest.getASiCManifestType ().getDataObjectReference ())
+      for (final DataObjectReferenceType dataObject : asicManifest.getASiCManifest ().getDataObjectReference ())
       {
         if (dataObject.getURI ().equals (FilenameHelper.getWithoutPath (BII_ENVELOPE_XML)))
           matchCount++;

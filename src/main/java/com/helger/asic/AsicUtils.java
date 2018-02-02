@@ -169,7 +169,9 @@ public class AsicUtils
     // Use URLConnection to find content type
     if (mimeType == null)
     {
-      logger.info ("Unable to determine MIME type using Files.probeContentType(), trying URLConnection.getFileNameMap()");
+      logger.info ("Unable to determine MIME type of '" +
+                   filename +
+                   "' using Files.probeContentType(), trying URLConnection.getFileNameMap()");
       mimeType = URLConnection.getFileNameMap ().getContentTypeFor (filename);
     }
 

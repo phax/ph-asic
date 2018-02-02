@@ -57,7 +57,7 @@ public class CadesAsicWriter extends AbstractAsicWriter
   protected void performSign (final SignatureHelper signatureHelper) throws IOException
   {
     // Define signature filename containing UUID
-    final String signatureFilename = String.format ("META-INF/signature-%s.p7s", UUID.randomUUID ().toString ());
+    final String signatureFilename = "META-INF/signature-" + UUID.randomUUID ().toString () + ".p7s";
 
     // Adding signature file to asic manifest before actual signing
     ((CadesAsicManifest) m_aAsicManifest).setSignature (signatureFilename, "application/x-pkcs7-signature");

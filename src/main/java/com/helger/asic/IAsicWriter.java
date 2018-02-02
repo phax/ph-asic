@@ -17,6 +17,8 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import javax.annotation.Nonnull;
+
 import com.helger.commons.mime.IMimeType;
 
 public interface IAsicWriter
@@ -184,7 +186,12 @@ public interface IAsicWriter
    * @return reference to this AsicWriter
    * @throws IOException
    */
-  IAsicWriter sign (File keyStoreFile, String keyStorePassword, String keyPassword) throws IOException;
+  default IAsicWriter sign (final File keyStoreFile,
+                            final String keyStorePassword,
+                            final String keyPassword) throws IOException
+  {
+    return sign (keyStoreFile, keyStorePassword, null, keyPassword);
+  }
 
   /**
    * Signs and closes the ASiC archive using the private and public key stored
@@ -202,7 +209,13 @@ public interface IAsicWriter
    * @return reference to this AsicWriter
    * @throws IOException
    */
-  IAsicWriter sign (File keyStoreFile, String keyStorePassword, String keyAlias, String keyPassword) throws IOException;
+  default IAsicWriter sign (final File keyStoreFile,
+                            final String keyStorePassword,
+                            final String keyAlias,
+                            final String keyPassword) throws IOException
+  {
+    return sign (new SignatureHelper (keyStoreFile, keyStorePassword, keyAlias, keyPassword));
+  }
 
   /**
    * Allows re-use of the same SignatureHelper object when creating multiple
@@ -214,5 +227,5 @@ public interface IAsicWriter
    * @see #sign(File, String, String, String)
    * @throws IOException
    */
-  IAsicWriter sign (SignatureHelper signatureHelper) throws IOException;
+  IAsicWriter sign (@Nonnull SignatureHelper signatureHelper) throws IOException;
 }

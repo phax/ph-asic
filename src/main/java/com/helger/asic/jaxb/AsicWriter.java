@@ -47,7 +47,9 @@ public class AsicWriter <JAXBTYPE> extends JAXBWriterBuilder <JAXBTYPE, AsicWrit
   @Nonnull
   public static AsicWriter <ASiCManifestType> asicManifest ()
   {
-    return new AsicWriter <> (EAsicDocumentType.ASIC_MANIFEST);
+    final AsicWriter <ASiCManifestType> ret = new AsicWriter <> (EAsicDocumentType.ASIC_MANIFEST);
+    ret.setFormattedOutput (true);
+    return ret;
   }
 
   /**

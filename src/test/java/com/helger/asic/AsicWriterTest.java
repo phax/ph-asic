@@ -103,7 +103,7 @@ public class AsicWriterTest
     {
       int matchCount = 0;
       final CadesAsicManifest asicManifest = (CadesAsicManifest) ((CadesAsicWriter) asicWriter).getAsicManifest ();
-      for (final DataObjectReferenceType dataObject : asicManifest.getASiCManifestType ().getDataObjectReference ())
+      for (final DataObjectReferenceType dataObject : asicManifest.getASiCManifest ().getDataObjectReference ())
       {
         if (dataObject.getURI ().equals (FilenameHelper.getWithoutPath (BII_ENVELOPE_XML)))
           matchCount++;
