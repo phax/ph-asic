@@ -13,6 +13,8 @@ package com.helger.asic;
 
 import java.io.InputStream;
 
+import javax.annotation.Nonnegative;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.helger.asic.jaxb.AsicReader;
@@ -36,14 +38,14 @@ class OasisManifest
     add ("/", mimeType);
   }
 
-  public OasisManifest (final InputStream inputStream)
+  public OasisManifest (@Nonnull final InputStream inputStream)
   {
     m_aManifest = AsicReader.oasisManifest ().read (inputStream);
     if (m_aManifest == null)
       throw new IllegalStateException ("Failed to read Manifest from IS");
   }
 
-  public void add (final String path, final MimeType mimeType)
+  public void add (@Nonnull final String path, @Nonnull final MimeType mimeType)
   {
     final FileEntry fileEntry = new FileEntry ();
     fileEntry.setMediaType (mimeType.toString ());
@@ -51,20 +53,28 @@ class OasisManifest
     m_aManifest.getFileEntry ().add (fileEntry);
   }
 
-  public void addAll (final OasisManifest aOther)
+  public void addAll (@Nonnull final OasisManifest aOther)
   {
     for (final FileEntry fileEntry : aOther.m_aManifest.getFileEntry ())
       if (!fileEntry.getFullPath ().equals ("/"))
         m_aManifest.getFileEntry ().add (fileEntry);
   }
 
-  public int size ()
+  @Nonnegative
+  public int getFileEntryCount ()
   {
     return m_aManifest.getFileEntry ().size ();
   }
 
-  public byte [] toBytes ()
+  @Nullable
+  public byte [] getAsBytes ()
   {
     return AsicWriter.oasisManifest ().getAsBytes (m_aManifest);
+  }
+
+  @Nullable
+  public String getAsString ()
+  {
+    return AsicWriter.oasisManifest ().getAsString (m_aManifest);
   }
 }

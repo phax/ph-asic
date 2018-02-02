@@ -104,11 +104,11 @@ public class XadesAsicManifest extends AbstractAsicManifest
       final ReferenceType reference = new ReferenceType ();
       reference.setId (id);
       reference.setURI (filename);
-      reference.setDigestValue (m_aMD.digest ());
+      reference.setDigestValue (internalGetMessageDigest ().digest ());
 
       // \XAdESSignature\Signature\SignedInfo\Reference\DigestMethod
       final DigestMethodType digestMethodType = new DigestMethodType ();
-      digestMethodType.setAlgorithm (m_aMessageDigestAlgorithm.getUri ());
+      digestMethodType.setAlgorithm (getMessageDigestAlgorithm ().getUri ());
       reference.setDigestMethod (digestMethodType);
 
       signedInfo.getReference ().add (reference);
@@ -273,7 +273,7 @@ public class XadesAsicManifest extends AbstractAsicManifest
 
       // \XAdESSignature\Signature\SignedInfo\Reference\DigestMethod
       final DigestMethodType digestMethodType = new DigestMethodType ();
-      digestMethodType.setAlgorithm (m_aMessageDigestAlgorithm.getUri ());
+      digestMethodType.setAlgorithm (getMessageDigestAlgorithm ().getUri ());
       reference.setDigestMethod (digestMethodType);
 
       signedInfo.getReference ().add (reference);

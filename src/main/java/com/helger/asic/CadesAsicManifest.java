@@ -64,14 +64,15 @@ public class CadesAsicManifest extends AbstractAsicManifest
     final DataObjectReferenceType dataObject = new DataObjectReferenceType ();
     dataObject.setURI (filename);
     dataObject.setMimeType (mimeType.toString ());
-    dataObject.setDigestValue (m_aMD.digest ());
+    dataObject.setDigestValue (internalGetMessageDigest ().digest ());
 
     final DigestMethodType digestMethodType = new DigestMethodType ();
-    digestMethodType.setAlgorithm (m_aMessageDigestAlgorithm.getUri ());
+    digestMethodType.setAlgorithm (getMessageDigestAlgorithm ().getUri ());
     dataObject.setDigestMethod (digestMethodType);
 
     ASiCManifestType.getDataObjectReference ().add (dataObject);
-    logger.debug ("Digest: {}", Base64.encode (dataObject.getDigestValue ()));
+    if (logger.isDebugEnabled ())
+      logger.debug ("Digest: " + Base64.encode (dataObject.getDigestValue ()));
   }
 
   /**

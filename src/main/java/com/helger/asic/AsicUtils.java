@@ -151,8 +151,8 @@ public class AsicUtils
       }
 
       // Add manifest if it contains the same amount of files as the container.
-      if (oasisManifest.size () == fileCounter + 1)
-        target.writeZipEntry ("META-INF/manifest.xml", oasisManifest.toBytes ());
+      if (oasisManifest.getFileEntryCount () == fileCounter + 1)
+        target.writeZipEntry ("META-INF/manifest.xml", oasisManifest.getAsBytes ());
 
       // Close target container
     }

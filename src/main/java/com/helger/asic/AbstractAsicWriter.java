@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 
 public abstract class AbstractAsicWriter implements IAsicWriter
 {
-  public static final Logger logger = LoggerFactory.getLogger (AbstractAsicWriter.class);
+  private static final Logger logger = LoggerFactory.getLogger (AbstractAsicWriter.class);
 
   protected AsicOutputStream m_aAsicOutputStream;
   protected AbstractAsicManifest m_aAsicManifest;
@@ -80,7 +80,7 @@ public abstract class AbstractAsicWriter implements IAsicWriter
 
     // Prepare for calculation of message digest
     final DigestOutputStream zipOutputStreamWithDigest = new DigestOutputStream (m_aAsicOutputStream,
-                                                                                 m_aAsicManifest.getMessageDigest ());
+                                                                                 m_aAsicManifest.getNewMessageDigest ());
 
     // Copy inputStream to zip output stream
     AsicUtils.copyStream (inputStream, zipOutputStreamWithDigest);
@@ -128,7 +128,7 @@ public abstract class AbstractAsicWriter implements IAsicWriter
     // Delegates the actual signature creation to the signature helper
     performSign (signatureHelper);
 
-    m_aAsicOutputStream.writeZipEntry ("META-INF/manifest.xml", m_aOasisManifest.toBytes ());
+    m_aAsicOutputStream.writeZipEntry ("META-INF/manifest.xml", m_aOasisManifest.getAsBytes ());
 
     // Close container
     try

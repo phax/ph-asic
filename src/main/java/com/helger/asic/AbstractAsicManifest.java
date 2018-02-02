@@ -15,11 +15,13 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 import javax.annotation.Nonnull;
+import javax.annotation.concurrent.NotThreadSafe;
 
+@NotThreadSafe
 public abstract class AbstractAsicManifest
 {
-  protected EMessageDigestAlgorithm m_aMessageDigestAlgorithm;
-  protected MessageDigest m_aMD;
+  private final EMessageDigestAlgorithm m_aMessageDigestAlgorithm;
+  private MessageDigest m_aMD;
 
   public AbstractAsicManifest (@Nonnull final EMessageDigestAlgorithm messageDigestAlgorithm)
   {
@@ -33,14 +35,23 @@ public abstract class AbstractAsicManifest
     }
     catch (final NoSuchAlgorithmException e)
     {
-      throw new IllegalStateException (String.format ("Algorithm %s not supported",
-                                                      messageDigestAlgorithm.getAlgorithm ()),
-                                       e);
+      throw new IllegalStateException ("Algorithm " + messageDigestAlgorithm.getAlgorithm () + " not supported", e);
     }
   }
 
   @Nonnull
-  public MessageDigest getMessageDigest ()
+  public final EMessageDigestAlgorithm getMessageDigestAlgorithm ()
+  {
+    return m_aMessageDigestAlgorithm;
+  }
+
+  protected final MessageDigest internalGetMessageDigest ()
+  {
+    return m_aMD;
+  }
+
+  @Nonnull
+  public MessageDigest getNewMessageDigest ()
   {
     m_aMD.reset ();
     return m_aMD;
