@@ -23,7 +23,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -34,6 +33,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.asic.jaxb.cades.DataObjectReferenceType;
+import com.helger.commons.io.file.FilenameHelper;
+import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.mime.CMimeType;
 
 /**
@@ -44,10 +45,10 @@ public final class AsicCadesWriterTest
   private static final Logger log = LoggerFactory.getLogger (AsicCadesWriterTest.class);
 
   public static final int BYTES_TO_CHECK = 40;
-  public static final String BII_ENVELOPE_XML = "bii-envelope.xml";
+  public static final String BII_ENVELOPE_XML = "/asic/bii-envelope.xml";
   public static final String BII_MESSAGE_XML = TestUtil.BII_SAMPLE_MESSAGE_XML;
-  private URL envelopeUrl;
-  private URL messageUrl;
+  private File envelopeFile;
+  private File messageFile;
   private File keystoreFile;
 
   private AsicWriterFactory asicWriterFactory;
@@ -56,11 +57,11 @@ public final class AsicCadesWriterTest
   @Before
   public void setUp ()
   {
-    envelopeUrl = AsicCadesWriterTest.class.getClassLoader ().getResource (BII_ENVELOPE_XML);
-    assertNotNull (envelopeUrl);
+    envelopeFile = new ClassPathResource (BII_ENVELOPE_XML).getAsFile ();
+    assertNotNull (envelopeFile);
 
-    messageUrl = AsicCadesWriterTest.class.getClassLoader ().getResource (BII_MESSAGE_XML);
-    assertNotNull (messageUrl);
+    messageFile = new ClassPathResource (BII_MESSAGE_XML).getAsFile ();
+    assertNotNull (messageFile);
 
     keystoreFile = TestUtil.keyStoreFile ();
     assertTrue ("Expected to find your private key and certificate in " + keystoreFile, keystoreFile.canRead ());
@@ -103,15 +104,13 @@ public final class AsicCadesWriterTest
     final File asicOutputFile = new File (System.getProperty ("java.io.tmpdir"), "asic-sample-cades.zip");
 
     final IAsicWriter asicWriter = asicWriterFactory.newContainer (asicOutputFile)
-                                                    .add (new File (envelopeUrl.toURI ()))
+                                                    .add (envelopeFile)
                                                     // Specifies the file, the
                                                     // archive entry name and
                                                     // explicitly names the MIME
                                                     // type
-                                                    .add (new File (messageUrl.toURI ()),
-                                                          BII_MESSAGE_XML,
-                                                          CMimeType.APPLICATION_XML)
-                                                    .setRootEntryName (envelopeUrl.toURI ().toString ())
+                                                    .add (messageFile, BII_MESSAGE_XML, CMimeType.APPLICATION_XML)
+                                                    .setRootEntryName (envelopeFile.toURI ().toString ())
                                                     .sign (keystoreFile,
                                                            TestUtil.keyStorePassword (),
                                                            TestUtil.keyPairAlias (),
@@ -123,7 +122,7 @@ public final class AsicCadesWriterTest
       final CadesAsicManifest asicManifest = (CadesAsicManifest) ((CadesAsicWriter) asicWriter).getAsicManifest ();
       for (final DataObjectReferenceType dataObject : asicManifest.getASiCManifestType ().getDataObjectReference ())
       {
-        if (dataObject.getURI ().equals (BII_ENVELOPE_XML))
+        if (dataObject.getURI ().equals (FilenameHelper.getWithoutPath (BII_ENVELOPE_XML)))
           matchCount++;
         if (dataObject.getURI ().equals (BII_MESSAGE_XML))
           matchCount++;
@@ -143,14 +142,15 @@ public final class AsicCadesWriterTest
       {
         final ZipEntry entry = entries.nextElement ();
         final String name = entry.getName ();
-        if (BII_ENVELOPE_XML.equals (name))
+        if (FilenameHelper.getWithoutPath (BII_ENVELOPE_XML).equals (name))
         {
           matchCount++;
         }
-        if (BII_MESSAGE_XML.equals (name))
-        {
-          matchCount++;
-        }
+        else
+          if (BII_MESSAGE_XML.equals (name))
+          {
+            matchCount++;
+          }
         log.info ("Found " + name);
         try (final InputStream stream = zipFile.getInputStream (entry))
         {
@@ -162,7 +162,7 @@ public final class AsicCadesWriterTest
 
     try
     {
-      asicWriter.add (new File (envelopeUrl.toURI ()));
+      asicWriter.add (new File (envelopeFile.toURI ()));
       fail ("Exception expected");
     }
     catch (final Exception e)

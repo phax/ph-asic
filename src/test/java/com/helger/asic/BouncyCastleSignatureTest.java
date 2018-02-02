@@ -12,7 +12,6 @@
 package com.helger.asic;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.math.BigInteger;
@@ -63,12 +62,12 @@ import com.helger.commons.base64.Base64;
 /**
  * @author steinar Date: 05.07.15 Time: 21.57
  */
-public class BouncyCastleSignatureTest
+public final class BouncyCastleSignatureTest
 {
+  private static final Logger log = LoggerFactory.getLogger (BouncyCastleSignatureTest.class);
+
   private KeyPair keyPair;
   private X509Certificate x509Certificate;
-
-  public static final Logger log = LoggerFactory.getLogger (BouncyCastleSignatureTest.class);
 
   @Before
   public void setUp ()
@@ -79,7 +78,6 @@ public class BouncyCastleSignatureTest
   @Test
   public void createSignature () throws Exception
   {
-
     final CMSProcessableByteArray msg = new CMSProcessableByteArray ("Hello world".getBytes (StandardCharsets.ISO_8859_1));
     // generateKeyPairAndCertificate();
     // Reads private key and certificate from our own
@@ -167,16 +165,16 @@ public class BouncyCastleSignatureTest
   {
     final KeyStore keyStore = KeyStore.getInstance ("JKS");
 
-    final FileInputStream fileInputStream = new FileInputStream (new File ("src/test/resources/keystore.jks"));
+    final FileInputStream fileInputStream = new FileInputStream (TestUtil.keyStoreFile ());
 
-    keyStore.load (fileInputStream, "changeit".toCharArray ());
+    keyStore.load (fileInputStream, TestUtil.keyStorePassword ().toCharArray ());
 
     final String alias = keyStore.aliases ().nextElement ();
     final X509Certificate certificate = (X509Certificate) keyStore.getCertificate (alias);
 
     x509Certificate = certificate;
 
-    final Key key = keyStore.getKey (alias, "changeit".toCharArray ());
+    final Key key = keyStore.getKey (alias, TestUtil.privateKeyPassword ().toCharArray ());
     final PrivateKey privateKey = (PrivateKey) key;
 
     return new KeyPair (certificate.getPublicKey (), privateKey);

@@ -29,10 +29,10 @@ import com.helger.xsds.xmldsig.DigestMethodType;
 /**
  * @author steinar Date: 03.07.15 Time: 09.09
  */
-public class AsicManifestReferenceTest
+public final class AsicManifestReferenceTest
 {
 
-  private static Logger log = LoggerFactory.getLogger (AsicManifestReferenceTest.class);
+  private static final Logger log = LoggerFactory.getLogger (AsicManifestReferenceTest.class);
 
   @Test
   public void createSampleManifest () throws Exception

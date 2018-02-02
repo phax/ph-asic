@@ -100,7 +100,7 @@ public class SignatureHelper
                           final String keyPassword) throws IOException
   {
     this (BCHelper.getProvider ());
-    try (InputStream inputStream = Files.newInputStream (keyStoreFile.toPath ()))
+    try (final InputStream inputStream = Files.newInputStream (keyStoreFile.toPath ()))
     {
       final KeyStore aKS = loadKeyStore (inputStream, keyStorePassword);
       loadCertificate (aKS, keyAlias, keyPassword);

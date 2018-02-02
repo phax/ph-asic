@@ -20,7 +20,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -37,6 +36,8 @@ import com.helger.asic.AsicWriterFactory;
 import com.helger.asic.IAsicReader;
 import com.helger.asic.IAsicWriter;
 import com.helger.asic.SignatureHelper;
+import com.helger.asic.TestUtil;
+import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.mime.CMimeType;
 
 public final class CmsEncryptedAsicTest
@@ -58,17 +59,15 @@ public final class CmsEncryptedAsicTest
     final IAsicWriter asicWriter = AsicWriterFactory.newFactory ().newContainer (byteArrayOutputStream);
     // Encapsulate ASiC archive to enable writing encrypted content
     final CmsEncryptedAsicWriter writer = new CmsEncryptedAsicWriter (asicWriter, certificate, CMSAlgorithm.AES128_GCM);
-    writer.add (getClass ().getResourceAsStream ("/image.bmp"), "simple.bmp", CMimeType.IMAGE_BMP);
-    writer.addEncrypted (getClass ().getResourceAsStream ("/image.bmp"), "encrypted.bmp", CMimeType.IMAGE_BMP);
-    writer.addEncrypted (Paths.get (getClass ().getResource ("/image.bmp").toURI ()),
-                         "encrypted2.bmp",
-                         CMimeType.IMAGE_BMP);
-    writer.addEncrypted (Paths.get (getClass ().getResource ("/image.bmp").toURI ()).toFile (), "encrypted3.xml");
+    writer.add (ClassPathResource.getInputStream ("/asic/image.bmp"), "simple.bmp", CMimeType.IMAGE_BMP);
+    writer.addEncrypted (ClassPathResource.getInputStream ("/asic/image.bmp"), "encrypted.bmp", CMimeType.IMAGE_BMP);
+    writer.addEncrypted (ClassPathResource.getAsFile ("/asic/image.bmp"), "encrypted2.bmp", CMimeType.IMAGE_BMP);
+    writer.addEncrypted (ClassPathResource.getAsFile ("/asic/image.bmp"), "encrypted3.xml");
     writer.setRootEntryName ("encrypted.bmp");
-    writer.sign (new SignatureHelper (getClass ().getResourceAsStream ("/keystore.jks"),
-                                      "changeit",
-                                      "selfsigned",
-                                      "changeit"));
+    writer.sign (new SignatureHelper (TestUtil.keyStoreFile (),
+                                      TestUtil.keyStorePassword (),
+                                      TestUtil.keyPairAlias (),
+                                      TestUtil.privateKeyPassword ()));
     // ByteArrayOutputStream now contains a signed ASiC archive containing one
     // encrypted file
 
@@ -133,7 +132,7 @@ public final class CmsEncryptedAsicTest
   {
     // Read JKS
     final KeyStore keyStore = KeyStore.getInstance ("JKS");
-    keyStore.load (getClass ().getResourceAsStream ("/keystore.jks"), "changeit".toCharArray ());
+    keyStore.load (ClassPathResource.getInputStream ("/asic/keystore.jks"), "changeit".toCharArray ());
     return keyStore;
   }
 
@@ -159,13 +158,13 @@ public final class CmsEncryptedAsicTest
       final CmsEncryptedAsicWriter writer = new CmsEncryptedAsicWriter (asicWriter, certificate);
 
       // Adds the SBDH
-      writer.add (getClass ().getResourceAsStream ("/sample-sbdh.xml"), "sbdh.xml", CMimeType.APPLICATION_XML);
+      writer.add (ClassPathResource.getInputStream ("/asic/sample-sbdh.xml"), "sbdh.xml", CMimeType.APPLICATION_XML);
 
       // Adds the plain text sample document
-      writer.add (getClass ().getResourceAsStream ("/bii-trns081.xml"), "sample.xml", CMimeType.APPLICATION_XML);
+      writer.add (ClassPathResource.getInputStream ("/asic/bii-trns081.xml"), "sample.xml", CMimeType.APPLICATION_XML);
 
       // Adds the encrypted version of the sample document
-      writer.addEncrypted (getClass ().getResourceAsStream ("/bii-trns081.xml"),
+      writer.addEncrypted (ClassPathResource.getInputStream ("/asic/bii-trns081.xml"),
                            "sample.xml",
                            CMimeType.APPLICATION_XML);
 
@@ -173,10 +172,10 @@ public final class CmsEncryptedAsicTest
       writer.setRootEntryName ("sample.xml");
 
       // Signs the archive
-      final SignatureHelper signatureHelper = new SignatureHelper (getClass ().getResourceAsStream ("/keystore.jks"),
-                                                                   "changeit",
-                                                                   "selfsigned",
-                                                                   "changeit");
+      final SignatureHelper signatureHelper = new SignatureHelper (TestUtil.keyStoreFile (),
+                                                                   TestUtil.keyStorePassword (),
+                                                                   TestUtil.keyPairAlias (),
+                                                                   TestUtil.privateKeyPassword ());
       writer.sign (signatureHelper);
 
     }

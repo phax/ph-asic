@@ -28,6 +28,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.commons.io.file.FileHelper;
 import com.helger.commons.mime.CMimeType;
 
 public final class AsicUtilsTest
@@ -36,13 +37,13 @@ public final class AsicUtilsTest
 
   private final AsicReaderFactory m_aAsicReaderFactory = AsicReaderFactory.newFactory ();
   private final AsicWriterFactory m_aAsicWriterFactory = AsicWriterFactory.newFactory ();
-  private final SignatureHelper signatureHelper = new SignatureHelper (getClass ().getResourceAsStream ("/keystore.jks"),
-                                                                       "changeit",
-                                                                       null,
-                                                                       "changeit");
+  private final SignatureHelper m_aSignatureHelper = new SignatureHelper (FileHelper.getInputStream (TestUtil.keyStoreFile ()),
+                                                                          TestUtil.keyStorePassword (),
+                                                                          TestUtil.keyPairAlias (),
+                                                                          TestUtil.privateKeyPassword ());
 
-  private final String fileContent1 = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam arcu eros, fermentum vel molestie ut, sagittis vel velit.";
-  private final String fileContent2 = "Fusce eu risus ipsum. Sed mattis laoreet justo. Fusce nisi magna, posuere ac placerat tincidunt, dignissim non lacus.";
+  private static final String fileContent1 = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam arcu eros, fermentum vel molestie ut, sagittis vel velit.";
+  private static final String fileContent2 = "Fusce eu risus ipsum. Sed mattis laoreet justo. Fusce nisi magna, posuere ac placerat tincidunt, dignissim non lacus.";
 
   @Test
   public void validatePatterns ()
@@ -75,13 +76,13 @@ public final class AsicUtilsTest
     final ByteArrayOutputStream source1 = new ByteArrayOutputStream ();
     m_aAsicWriterFactory.newContainer (source1)
                         .add (new ByteArrayInputStream (fileContent1.getBytes ()), "content1.txt", CMimeType.TEXT_PLAIN)
-                        .sign (signatureHelper);
+                        .sign (m_aSignatureHelper);
 
     // Create second container
     final ByteArrayOutputStream source2 = new ByteArrayOutputStream ();
     m_aAsicWriterFactory.newContainer (source2)
                         .add (new ByteArrayInputStream (fileContent2.getBytes ()), "content2.txt", CMimeType.TEXT_PLAIN)
-                        .sign (signatureHelper);
+                        .sign (m_aSignatureHelper);
 
     // Combine containers
     final ByteArrayOutputStream target = new ByteArrayOutputStream ();
@@ -134,13 +135,13 @@ public final class AsicUtilsTest
     final ByteArrayOutputStream source1 = new ByteArrayOutputStream ();
     m_aAsicWriterFactory.newContainer (source1)
                         .add (new ByteArrayInputStream (fileContent1.getBytes ()), "content1.txt", CMimeType.TEXT_PLAIN)
-                        .sign (signatureHelper);
+                        .sign (m_aSignatureHelper);
 
     // Create second container
     final ByteArrayOutputStream source2 = new ByteArrayOutputStream ();
     m_aAsicWriterFactory.newContainer (source2)
                         .add (new ByteArrayInputStream (fileContent2.getBytes ()), "content2.txt", CMimeType.TEXT_PLAIN)
-                        .sign (signatureHelper);
+                        .sign (m_aSignatureHelper);
 
     // Rewrite source2 to remove META-INF/manifest.xml
     try (final ByteArrayOutputStream source2simpler = new ByteArrayOutputStream ())
@@ -190,14 +191,14 @@ public final class AsicUtilsTest
     m_aAsicWriterFactory.newContainer (source1)
                         .add (new ByteArrayInputStream (fileContent1.getBytes ()), "content1.txt", CMimeType.TEXT_PLAIN)
                         .setRootEntryName ("content1.txt")
-                        .sign (signatureHelper);
+                        .sign (m_aSignatureHelper);
 
     // Create second container
     final ByteArrayOutputStream source2 = new ByteArrayOutputStream ();
     m_aAsicWriterFactory.newContainer (source2)
                         .add (new ByteArrayInputStream (fileContent2.getBytes ()), "content2.txt", CMimeType.TEXT_PLAIN)
                         .setRootEntryName ("content2.txt")
-                        .sign (signatureHelper);
+                        .sign (m_aSignatureHelper);
 
     // Combine containers
     try
@@ -222,13 +223,13 @@ public final class AsicUtilsTest
     final ByteArrayOutputStream source1 = new ByteArrayOutputStream ();
     aFactoryXades.newContainer (source1)
                  .add (new ByteArrayInputStream (fileContent1.getBytes ()), "content1.txt", CMimeType.TEXT_PLAIN)
-                 .sign (signatureHelper);
+                 .sign (m_aSignatureHelper);
 
     // Create second container
     final ByteArrayOutputStream source2 = new ByteArrayOutputStream ();
     aFactoryXades.newContainer (source2)
                  .add (new ByteArrayInputStream (fileContent2.getBytes ()), "content2.txt", CMimeType.TEXT_PLAIN)
-                 .sign (signatureHelper);
+                 .sign (m_aSignatureHelper);
 
     // Combine containers
     final ByteArrayOutputStream target = new ByteArrayOutputStream ();

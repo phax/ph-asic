@@ -20,8 +20,8 @@ import com.helger.commons.io.resource.ClassPathResource;
  */
 public final class TestUtil
 {
-  public static final String KEY_STORE_RESOURCE_NAME = "keystore.jks";
-  public static final String BII_SAMPLE_MESSAGE_XML = "bii-trns081.xml";
+  public static final String KEY_STORE_RESOURCE_NAME = "/asic/keystore.jks";
+  public static final String BII_SAMPLE_MESSAGE_XML = "/asic/bii-trns081.xml";
 
   /**
    * Provides simple access to the KeyStore file provided as part of the
@@ -34,7 +34,7 @@ public final class TestUtil
    */
   public static File keyStoreFile ()
   {
-    return new ClassPathResource (KEY_STORE_RESOURCE_NAME).getAsFile ();
+    return ClassPathResource.getAsFile (KEY_STORE_RESOURCE_NAME);
   }
 
   public static String keyStorePassword ()

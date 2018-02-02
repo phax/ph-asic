@@ -12,6 +12,7 @@
 package com.helger.asic;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -19,8 +20,6 @@ import static org.junit.Assert.fail;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -32,6 +31,8 @@ import org.slf4j.LoggerFactory;
 
 import com.helger.asic.jaxb.asic.AsicManifest;
 import com.helger.asic.jaxb.cades.DataObjectReferenceType;
+import com.helger.commons.io.file.FilenameHelper;
+import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.mime.CMimeType;
 
 /**
@@ -42,7 +43,7 @@ public class AsicWriterTest
 
   public static final Logger log = LoggerFactory.getLogger (AsicWriterTest.class);
 
-  public static final String BII_ENVELOPE_XML = "bii-envelope.xml";
+  public static final String BII_ENVELOPE_XML = "/asic/bii-envelope.xml";
   public static final String BII_MESSAGE_XML = TestUtil.BII_SAMPLE_MESSAGE_XML;
   private File keystoreFile;
 
@@ -53,38 +54,13 @@ public class AsicWriterTest
   @Before
   public void setUp ()
   {
-    try
-    {
-      final URL envelopeUrl = AsicWriterTest.class.getClassLoader ().getResource (BII_ENVELOPE_XML);
-      assertNotNull (envelopeUrl);
-
-      biiEnvelopeFile = new File (envelopeUrl.toURI ());
-    }
-    catch (final URISyntaxException e)
-    {
-      throw new IllegalStateException ("Unable to convert resource " +
-                                       BII_ENVELOPE_XML +
-                                       " into a File object using URIs:" +
-                                       e.getMessage (),
-                                       e);
-    }
-
-    try
-    {
-      URL messageUrl;
-      messageUrl = AsicWriterTest.class.getClassLoader ().getResource (BII_MESSAGE_XML);
-      assertNotNull (messageUrl);
-      biiMessageFile = new File (messageUrl.toURI ());
-    }
-    catch (final URISyntaxException e)
-    {
-      e.printStackTrace ();
-    }
+    biiEnvelopeFile = ClassPathResource.getAsFile (BII_ENVELOPE_XML);
+    biiMessageFile = ClassPathResource.getAsFile (BII_MESSAGE_XML);
     keystoreFile = TestUtil.keyStoreFile ();
     assertTrue ("Expected to find your private key and certificate in " + keystoreFile, keystoreFile.canRead ());
 
-    asicVerifierFactory = AsicVerifierFactory.newFactory (); // Assumes default
-                                                             // signature method
+    // Assumes default signature method
+    asicVerifierFactory = AsicVerifierFactory.newFactory ();
   }
 
   @Test
@@ -129,7 +105,7 @@ public class AsicWriterTest
       final CadesAsicManifest asicManifest = (CadesAsicManifest) ((CadesAsicWriter) asicWriter).getAsicManifest ();
       for (final DataObjectReferenceType dataObject : asicManifest.getASiCManifestType ().getDataObjectReference ())
       {
-        if (dataObject.getURI ().equals (BII_ENVELOPE_XML))
+        if (dataObject.getURI ().equals (FilenameHelper.getWithoutPath (BII_ENVELOPE_XML)))
           matchCount++;
         if (dataObject.getURI ().equals (BII_MESSAGE_XML))
           matchCount++;
@@ -151,14 +127,15 @@ public class AsicWriterTest
       {
         final ZipEntry entry = entries.nextElement ();
         final String name = entry.getName ();
-        if (BII_ENVELOPE_XML.equals (name))
+        if (FilenameHelper.getWithoutPath (BII_ENVELOPE_XML).equals (name))
         {
           matchCount++;
         }
-        if (BII_MESSAGE_XML.equals (name))
-        {
-          matchCount++;
-        }
+        else
+          if (BII_MESSAGE_XML.equals (name))
+          {
+            matchCount++;
+          }
         log.info ("Found " + name);
         try (final InputStream stream = zipFile.getInputStream (entry))
         {
@@ -197,9 +174,7 @@ public class AsicWriterTest
   @Test
   public void writeAndRead () throws Exception
   {
-    final URL brochureUrl = AsicWriterTest.class.getClassLoader ().getResource ("e-Delivery_target_architecture.pdf");
-    assertNotNull (brochureUrl);
-    final File brochurePdfFile = new File (brochureUrl.toURI ());
+    final File brochurePdfFile = ClassPathResource.getAsFile ("/asic/e-Delivery_target_architecture.pdf");
     assertTrue (brochurePdfFile.canRead ());
 
     // Name of the file to hold the the ASiC archive
@@ -213,9 +188,9 @@ public class AsicWriterTest
     asicWriterFactory.newContainer (archiveOutputFile)
                      // Adds file, explicitly naming the entry and specifying
                      // the MIME type
-                     .add (biiMessageFile, BII_MESSAGE_XML, CMimeType.APPLICATION_XML)
+                     .add (biiMessageFile, FilenameHelper.getWithoutPath (BII_MESSAGE_XML), CMimeType.APPLICATION_XML)
                      // Indicates which file is the root file
-                     .setRootEntryName (BII_MESSAGE_XML)
+                     .setRootEntryName (FilenameHelper.getWithoutPath (BII_MESSAGE_XML))
                      // Adds a PDF attachment, using the name of the file, i.e.
                      // with path removed, as the entry name
                      .add (brochurePdfFile)
@@ -225,51 +200,48 @@ public class AsicWriterTest
 
     log.debug ("Wrote ASiC-e container to " + archiveOutputFile);
     // Opens the generated archive and reads each entry
-    final IAsicReader asicReader = AsicReaderFactory.newFactory ().open (archiveOutputFile);
-
-    String entryName;
-
-    // Iterates over each entry and writes the contents into a file having same
-    // name as the entry
-    while ((entryName = asicReader.getNextFile ()) != null)
+    try (final IAsicReader asicReader = AsicReaderFactory.newFactory ().open (archiveOutputFile))
     {
-      log.debug ("Read entry " + entryName);
+      String entryName;
 
-      // Creates file with same name as entry
-      final File file = new File (entryName);
-      // Ensures we don't overwrite anything
-      if (file.exists ())
+      // Iterates over each entry and writes the contents into a file having
+      // same name as the entry
+      while ((entryName = asicReader.getNextFile ()) != null)
       {
-        throw new IllegalStateException ("File already exists");
+        if (log.isDebugEnabled ())
+          log.debug ("Read entry " + entryName);
+
+        // Creates file with same name as entry
+        final File file = new File (entryName);
+        // Ensures we don't overwrite anything
+        assertFalse (entryName + " already exists!", file.exists ());
+
+        asicReader.writeFile (file);
+
+        // Removes file immediately, since this is just a test
+        file.delete ();
       }
-      asicReader.writeFile (file);
 
-      // Removes file immediately, since this is just a test
-      file.delete ();
+      final AsicManifest asicManifest = asicReader.getAsicManifest ();
+      final String asicManifestRootfile = asicManifest.getRootfile ();
+      assertNotNull (asicManifestRootfile, "Root file not found");
+      assertEquals ("Invalid Rootfile found", asicManifestRootfile, FilenameHelper.getWithoutPath (BII_MESSAGE_XML));
     }
-    asicReader.close ();
-    final AsicManifest asicManifest = asicReader.getAsicManifest ();
-    final String asicManifestRootfile = asicManifest.getRootfile ();
-    assertNotNull (asicManifestRootfile, "Root file not found");
-    assertEquals ("Invalid Rootfile found", asicManifestRootfile, BII_MESSAGE_XML);
-
   }
 
   @Test
   public void unknownMimetype () throws Exception
   {
-    final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream ();
-
     try
     {
       final AsicWriterFactory asicWriterFactory = AsicWriterFactory.newFactory ();
-      asicWriterFactory.newContainer (byteArrayOutputStream).add (biiEnvelopeFile, "envelope.aaz");
+      final ByteArrayOutputStream aBAOS = new ByteArrayOutputStream ();
+      asicWriterFactory.newContainer (aBAOS).add (biiEnvelopeFile, "envelope.aaz");
       fail ("Expected exception, is .aaz a known extension?");
     }
     catch (final IllegalStateException e)
     {
-      log.info (e.getMessage ());
+      // expected
     }
-
   }
 }

@@ -22,6 +22,8 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.commons.io.resource.ClassPathResource;
+
 public class AsicXadesReferenceTest
 {
   private static final Logger log = LoggerFactory.getLogger (AsicXadesReferenceTest.class);
@@ -33,7 +35,7 @@ public class AsicXadesReferenceTest
   @Test
   public void validSdp () throws IOException
   {
-    final AsicVerifier asicVerifier = asicVerifierFactory.verify (getClass ().getResourceAsStream ("/asic-xades-external-sdp.asice"));
+    final AsicVerifier asicVerifier = asicVerifierFactory.verify (ClassPathResource.getInputStream ("/asic/asic-xades-external-sdp.asice"));
     assertEquals (asicVerifier.getAsicManifest ().getFile ().size (), 6);
   }
 
@@ -42,7 +44,7 @@ public class AsicXadesReferenceTest
   @Test
   public void validDigidoc4j () throws IOException
   {
-    final AsicVerifier asicVerifier = asicVerifierFactory.verify (getClass ().getResourceAsStream ("/asic-xades-external-digidoc4j.asice"));
+    final AsicVerifier asicVerifier = asicVerifierFactory.verify (ClassPathResource.getInputStream ("/asic/asic-xades-external-digidoc4j.asice"));
     assertEquals (asicVerifier.getAsicManifest ().getFile ().size (), 2);
     assertNotNull (asicVerifier.getOasisManifest ());
   }
@@ -52,7 +54,7 @@ public class AsicXadesReferenceTest
   @Test
   public void validDss () throws IOException
   {
-    final AsicVerifier asicVerifier = asicVerifierFactory.verify (getClass ().getResourceAsStream ("/asic-xades-external-dss.asice"));
+    final AsicVerifier asicVerifier = asicVerifierFactory.verify (ClassPathResource.getInputStream ("/asic/asic-xades-external-dss.asice"));
     assertEquals (asicVerifier.getAsicManifest ().getFile ().size (), 1);
     assertNotNull (asicVerifier.getOasisManifest ());
   }
@@ -63,7 +65,7 @@ public class AsicXadesReferenceTest
   {
     try
     {
-      asicVerifierFactory.verify (getClass ().getResourceAsStream ("/asic-xades-invalid-manifest.asice"));
+      asicVerifierFactory.verify (ClassPathResource.getInputStream ("/asic/asic-xades-invalid-manifest.asice"));
       fail ("Exception expected.");
     }
     catch (final IllegalStateException e)
@@ -78,7 +80,7 @@ public class AsicXadesReferenceTest
   {
     try
     {
-      asicVerifierFactory.verify (getClass ().getResourceAsStream ("/asic-xades-invalid-signature.asice"));
+      asicVerifierFactory.verify (ClassPathResource.getInputStream ("/asic/asic-xades-invalid-signature.asice"));
       fail ("Exception expected.");
     }
     catch (final IllegalStateException e)
@@ -93,7 +95,7 @@ public class AsicXadesReferenceTest
   {
     try
     {
-      asicVerifierFactory.verify (getClass ().getResourceAsStream ("/asic-xades-invalid-signedproperties.asice"));
+      asicVerifierFactory.verify (ClassPathResource.getInputStream ("/asic/asic-xades-invalid-signedproperties.asice"));
       fail ("Exception expected.");
     }
     catch (final IllegalStateException e)

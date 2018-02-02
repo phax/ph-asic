@@ -19,28 +19,30 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.commons.io.file.FileHelper;
+import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.mime.CMimeType;
 
 public class AsicReaderImplTest
 {
-
-  private static Logger log = LoggerFactory.getLogger (AsicReaderImplTest.class);
+  private static final Logger log = LoggerFactory.getLogger (AsicReaderImplTest.class);
 
   private final AsicReaderFactory asicReaderFactory = AsicReaderFactory.newFactory ();
   private final AsicWriterFactory asicWriterFactory = AsicWriterFactory.newFactory ();
-  private final SignatureHelper signatureHelper = new SignatureHelper (getClass ().getResourceAsStream ("/keystore.jks"),
-                                                                       "changeit",
-                                                                       null,
-                                                                       "changeit");
+  private final SignatureHelper signatureHelper = new SignatureHelper (FileHelper.getInputStream (TestUtil.keyStoreFile ()),
+                                                                       TestUtil.keyStorePassword (),
+                                                                       TestUtil.keyPairAlias (),
+                                                                       TestUtil.privateKeyPassword ());
 
-  private final String fileContent1 = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam arcu eros, fermentum vel molestie ut, sagittis vel velit.";
-  private final String fileContent2 = "Fusce eu risus ipsum. Sed mattis laoreet justo. Fusce nisi magna, posuere ac placerat tincidunt, dignissim non lacus.";
+  private static final String fileContent1 = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam arcu eros, fermentum vel molestie ut, sagittis vel velit.";
+  private static final String fileContent2 = "Fusce eu risus ipsum. Sed mattis laoreet justo. Fusce nisi magna, posuere ac placerat tincidunt, dignissim non lacus.";
 
   @Test
   public void writeAndReadSimpleContainer () throws IOException
@@ -50,8 +52,12 @@ public class AsicReaderImplTest
     final ByteArrayOutputStream containerOutput = new ByteArrayOutputStream ();
 
     asicWriterFactory.newContainer (containerOutput)
-                     .add (new ByteArrayInputStream (fileContent1.getBytes ()), "content1.txt", CMimeType.TEXT_PLAIN)
-                     .add (new ByteArrayInputStream (fileContent2.getBytes ()), "content2.txt", CMimeType.TEXT_PLAIN)
+                     .add (new ByteArrayInputStream (fileContent1.getBytes (StandardCharsets.ISO_8859_1)),
+                           "content1.txt",
+                           CMimeType.TEXT_PLAIN)
+                     .add (new ByteArrayInputStream (fileContent2.getBytes (StandardCharsets.ISO_8859_1)),
+                           "content2.txt",
+                           CMimeType.TEXT_PLAIN)
                      .sign (signatureHelper);
 
     // Step 2 - reads the contents of the ASiC archive
@@ -109,8 +115,12 @@ public class AsicReaderImplTest
     final File file = new File (tmpDir, "asic-reader-sample.ip");
 
     asicWriterFactory.newContainer (file)
-                     .add (new ByteArrayInputStream (fileContent1.getBytes ()), "content1.txt", CMimeType.TEXT_PLAIN)
-                     .add (new ByteArrayInputStream (fileContent2.getBytes ()), "content2.txt", CMimeType.TEXT_PLAIN)
+                     .add (new ByteArrayInputStream (fileContent1.getBytes (StandardCharsets.ISO_8859_1)),
+                           "content1.txt",
+                           CMimeType.TEXT_PLAIN)
+                     .add (new ByteArrayInputStream (fileContent2.getBytes (StandardCharsets.ISO_8859_1)),
+                           "content2.txt",
+                           CMimeType.TEXT_PLAIN)
                      .sign (signatureHelper);
 
     try (final IAsicReader asicReader = asicReaderFactory.open (file))
@@ -176,7 +186,7 @@ public class AsicReaderImplTest
   @Test
   public void exceptionOnInvalidMime () throws IOException
   {
-    try (final IAsicReader asicReader = asicReaderFactory.open (getClass ().getResourceAsStream ("/asic-general-test-invalid-mime.asice")))
+    try (final IAsicReader asicReader = asicReaderFactory.open (ClassPathResource.getInputStream ("/asic/asic-general-test-invalid-mime.asice")))
     {
       asicReader.getNextFile ();
       fail ("Didn't throw exception on wrong mimetype.");

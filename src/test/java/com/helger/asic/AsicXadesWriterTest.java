@@ -20,7 +20,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -30,6 +29,8 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.commons.io.file.FilenameHelper;
+import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.mime.CMimeType;
 import com.helger.xsds.xmldsig.ReferenceType;
 
@@ -40,10 +41,10 @@ public final class AsicXadesWriterTest
 {
   private static final Logger log = LoggerFactory.getLogger (AsicXadesWriterTest.class);
 
-  public static final String BII_ENVELOPE_XML = "bii-envelope.xml";
+  public static final String BII_ENVELOPE_XML = "/asic/bii-envelope.xml";
   public static final String BII_MESSAGE_XML = TestUtil.BII_SAMPLE_MESSAGE_XML;
-  private URL m_aEnvelopeUrl;
-  private URL m_aMessageUrl;
+  private File m_aEnvelopeFile;
+  private File m_aMessageFile;
   private File m_aKeystoreFile;
 
   private AsicWriterFactory m_aAsicWriterFactory;
@@ -51,13 +52,13 @@ public final class AsicXadesWriterTest
   @Before
   public void setUp ()
   {
-    m_aEnvelopeUrl = AsicXadesWriterTest.class.getClassLoader ().getResource (BII_ENVELOPE_XML);
-    assertNotNull (m_aEnvelopeUrl);
+    m_aEnvelopeFile = new ClassPathResource (BII_ENVELOPE_XML).getAsFile ();
+    assertNotNull (m_aEnvelopeFile);
 
-    m_aMessageUrl = AsicXadesWriterTest.class.getClassLoader ().getResource (BII_MESSAGE_XML);
-    assertNotNull (m_aMessageUrl);
+    m_aMessageFile = new ClassPathResource (BII_MESSAGE_XML).getAsFile ();
+    assertNotNull (m_aMessageFile);
 
-    m_aKeystoreFile = new File ("src/test/resources/keystore.jks");
+    m_aKeystoreFile = TestUtil.keyStoreFile ();
     assertTrue ("Expected to find your private key and certificate in " + m_aKeystoreFile, m_aKeystoreFile.canRead ());
 
     m_aAsicWriterFactory = AsicWriterFactory.newFactory (ESignatureMethod.XAdES);
@@ -83,8 +84,8 @@ public final class AsicXadesWriterTest
 
     final IAsicWriter asicWriter = m_aAsicWriterFactory.newContainer (new File (System.getProperty ("java.io.tmpdir")),
                                                                       "asic-sample-xades.zip")
-                                                       .add (new File (m_aEnvelopeUrl.toURI ()))
-                                                       .add (new File (m_aMessageUrl.toURI ()),
+                                                       .add (m_aEnvelopeFile)
+                                                       .add (m_aMessageFile,
                                                              TestUtil.BII_SAMPLE_MESSAGE_XML,
                                                              CMimeType.APPLICATION_XML)
                                                        .sign (signatureHelper);
@@ -102,7 +103,7 @@ public final class AsicXadesWriterTest
                                                        .getSignedInfo ()
                                                        .getReference ())
       {
-        if (reference.getURI ().equals (BII_ENVELOPE_XML))
+        if (reference.getURI ().equals (FilenameHelper.getWithoutPath (BII_ENVELOPE_XML)))
           matchCount++;
         if (reference.getURI ().equals (BII_MESSAGE_XML))
           matchCount++;
@@ -124,7 +125,7 @@ public final class AsicXadesWriterTest
         {
           final ZipEntry entry = entries.nextElement ();
           final String name = entry.getName ();
-          if (BII_ENVELOPE_XML.equals (name))
+          if (FilenameHelper.getWithoutPath (BII_ENVELOPE_XML).equals (name))
           {
             matchCount++;
           }
@@ -139,12 +140,12 @@ public final class AsicXadesWriterTest
     }
     try
     {
-      asicWriter.add (new File (m_aEnvelopeUrl.toURI ()));
+      asicWriter.add (m_aEnvelopeFile);
       fail ("Exception expected");
     }
-    catch (final Exception e)
+    catch (final IllegalStateException e)
     {
-      assertTrue (e instanceof IllegalStateException);
+      // fail
     }
 
     try
@@ -152,9 +153,9 @@ public final class AsicXadesWriterTest
       asicWriter.sign (m_aKeystoreFile, "changeit", "changeit");
       fail ("Exception expected");
     }
-    catch (final Exception e)
+    catch (final IllegalStateException e)
     {
-      assertTrue (e instanceof IllegalStateException);
+      // fail
     }
   }
 

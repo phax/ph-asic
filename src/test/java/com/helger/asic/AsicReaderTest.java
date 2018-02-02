@@ -18,21 +18,21 @@ import java.io.IOException;
 
 import org.junit.Test;
 
+import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.io.stream.NullOutputStream;
 
 /**
  * Testing functionality.
  */
-public class AsicReaderTest
+public final class AsicReaderTest
 {
-
   private final AsicReaderFactory asicReaderFactory = AsicReaderFactory.newFactory ();
 
   @Test
   public void readingContentWithWriteFile () throws IOException
   {
     // Testing using AsicReader::writeFile.
-    try (final IAsicReader asicReader = asicReaderFactory.open (getClass ().getResourceAsStream ("/asic-cades-test-valid.asice")))
+    try (final IAsicReader asicReader = asicReaderFactory.open (ClassPathResource.getInputStream ("/asic/asic-cades-test-valid.asice")))
     {
       while (asicReader.getNextFile () != null)
         asicReader.writeFile (new NullOutputStream ());
@@ -44,7 +44,7 @@ public class AsicReaderTest
   public void readingContentWithInputStream () throws IOException
   {
     // Testing using AsicReader::inputStream.
-    try (final IAsicReader asicReader = asicReaderFactory.open (getClass ().getResourceAsStream ("/asic-cades-test-valid.asice")))
+    try (final IAsicReader asicReader = asicReaderFactory.open (ClassPathResource.getInputStream ("/asic/asic-cades-test-valid.asice")))
     {
       while (asicReader.getNextFile () != null)
         AsicUtils.copyStream (asicReader.inputStream (), new NullOutputStream ());
@@ -56,7 +56,7 @@ public class AsicReaderTest
   public void readingContentWithoutReading () throws IOException
   {
     // Testing using no functionality to read content.
-    try (final IAsicReader asicReader = asicReaderFactory.open (getClass ().getResourceAsStream ("/asic-cades-test-valid.asice")))
+    try (final IAsicReader asicReader = asicReaderFactory.open (ClassPathResource.getInputStream ("/asic/asic-cades-test-valid.asice")))
     {
       while (asicReader.getNextFile () != null)
       {
@@ -69,7 +69,7 @@ public class AsicReaderTest
   @Test (expected = IllegalStateException.class)
   public void exceptionOnEmpty () throws IOException
   {
-    final IAsicReader asicReader = asicReaderFactory.open (getClass ().getResourceAsStream ("/asic-cades-test-valid.asice"));
+    final IAsicReader asicReader = asicReaderFactory.open (ClassPathResource.getInputStream ("/asic/asic-cades-test-valid.asice"));
     while (asicReader.getNextFile () != null)
       asicReader.writeFile (new NullOutputStream ());
 

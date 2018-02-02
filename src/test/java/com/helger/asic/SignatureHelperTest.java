@@ -15,13 +15,15 @@ import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
+import com.helger.commons.io.resource.ClassPathResource;
+
 public final class SignatureHelperTest
 {
   @SuppressWarnings ("unused")
   @Test
   public void loadNoProblems ()
   {
-    new SignatureHelper (getClass ().getResourceAsStream ("/keystore.jks"), "changeit", null, "changeit");
+    new SignatureHelper (ClassPathResource.getInputStream ("/asic/keystore.jks"), "changeit", null, "changeit");
   }
 
   @SuppressWarnings ("unused")
@@ -30,7 +32,7 @@ public final class SignatureHelperTest
   {
     try
     {
-      new SignatureHelper (getClass ().getResourceAsStream ("/keystore.jks"), "changed?", null, "changeit");
+      new SignatureHelper (ClassPathResource.getInputStream ("/asic/keystore.jks"), "changed?", null, "changeit");
       fail ("Exception expected.");
     }
     catch (final IllegalStateException e)
@@ -45,7 +47,7 @@ public final class SignatureHelperTest
   {
     try
     {
-      new SignatureHelper (getClass ().getResourceAsStream ("/keystore.jks"), "changeit", null, "changed?");
+      new SignatureHelper (ClassPathResource.getInputStream ("/asic/keystore.jks"), "changeit", null, "changed?");
       fail ("Exception expected.");
     }
     catch (final IllegalStateException e)
@@ -60,7 +62,7 @@ public final class SignatureHelperTest
   {
     try
     {
-      new SignatureHelper (getClass ().getResourceAsStream ("/keystore.jks"), "changeit", "asic", "changeit");
+      new SignatureHelper (ClassPathResource.getInputStream ("/asic/keystore.jks"), "changeit", "asic", "changeit");
       fail ("Exception expected.");
     }
     catch (final IllegalStateException e)
