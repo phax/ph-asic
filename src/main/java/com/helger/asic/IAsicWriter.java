@@ -17,6 +17,8 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import com.helger.commons.mime.IMimeType;
+
 public interface IAsicWriter
 {
   /**
@@ -115,7 +117,7 @@ public interface IAsicWriter
    * @return reference to this AsicWriter
    * @throws IOException
    */
-  default IAsicWriter add (final File file, final String entryName, final MimeType mimeType) throws IOException
+  default IAsicWriter add (final File file, final String entryName, final IMimeType mimeType) throws IOException
   {
     return add (file.toPath (), entryName, mimeType);
   }
@@ -134,7 +136,7 @@ public interface IAsicWriter
    * @throws IOException
    *         on IO error
    */
-  default IAsicWriter add (final Path path, final String entryName, final MimeType mimeType) throws IOException
+  default IAsicWriter add (final Path path, final String entryName, final IMimeType mimeType) throws IOException
   {
     try (InputStream inputStream = Files.newInputStream (path))
     {
@@ -157,7 +159,7 @@ public interface IAsicWriter
    * @throws IOException
    *         on IO error
    */
-  IAsicWriter add (InputStream inputStream, String entryName, MimeType mimeType) throws IOException;
+  IAsicWriter add (InputStream inputStream, String entryName, IMimeType mimeType) throws IOException;
 
   /**
    * Specifies which entry (file) represents the "root" document, i.e. which

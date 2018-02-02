@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 
 import com.helger.asic.jaxb.asic.AsicManifest;
 import com.helger.asic.jaxb.cades.DataObjectReferenceType;
+import com.helger.commons.mime.CMimeType;
 
 /**
  * @author steinar Date: 02.07.15 Time: 12.08
@@ -98,32 +99,28 @@ public class AsicWriterTest
     // Creates an AsicWriterFactory with default signature method
     final AsicWriterFactory asicWriterFactory = AsicWriterFactory.newFactory ();
 
-    // Creates the actual container with all the data objects (files) and signs
-    // it.
-    final IAsicWriter asicWriter = asicWriterFactory.newContainer (archiveOutputFile)
-                                                    // Adds an ordinary file,
-                                                    // using the file name as
-                                                    // the
-                                                    // entry name
-                                                    .add (biiEnvelopeFile)
-                                                    // Adds another file,
-                                                    // explicitly naming the
-                                                    // entry and specifying the
-                                                    // MIME type
-                                                    .add (biiMessageFile,
-                                                          BII_MESSAGE_XML,
-                                                          MimeType.forString ("application/xml"))
-                                                    // Indicates that the BII
-                                                    // message is the root
-                                                    // document
-                                                    .setRootEntryName (BII_MESSAGE_XML)
-                                                    // Signing the contents of
-                                                    // the archive, closes it
-                                                    // for
-                                                    // further changes.
-                                                    .sign (keystoreFile,
-                                                           TestUtil.keyStorePassword (),
-                                                           TestUtil.privateKeyPassword ());
+    /*
+     * Creates the actual container with all the data objects (files) and signs
+     * it.
+     */
+    final IAsicWriter asicWriter = asicWriterFactory.newContainer (archiveOutputFile);
+    /*
+     * Adds an ordinary file, using the file name as the entry name
+     */
+    asicWriter.add (biiEnvelopeFile);
+    /*
+     * Adds another file, explicitly naming the entry and specifying the MIME
+     * type
+     */
+    asicWriter.add (biiMessageFile, BII_MESSAGE_XML, CMimeType.APPLICATION_XML);
+    /*
+     * Indicates that the BII message is the root document
+     */
+    asicWriter.setRootEntryName (BII_MESSAGE_XML);
+    /*
+     * Signing the contents of the archive, closes it for further changes.
+     */
+    asicWriter.sign (keystoreFile, TestUtil.keyStorePassword (), TestUtil.privateKeyPassword ());
 
     // PART 2 - verify the contents of the archive.
 
@@ -142,34 +139,33 @@ public class AsicWriterTest
 
     assertTrue ("ASiC container can not be read", archiveOutputFile.canRead ());
 
-    log.info ("Generated file " + archiveOutputFile);
+    if (log.isInfoEnabled ())
+      log.info ("Generated file " + archiveOutputFile);
 
     try (final ZipFile zipFile = new ZipFile (archiveOutputFile))
     {
       final Enumeration <? extends ZipEntry> entries = zipFile.entries ();
 
+      int matchCount = 0;
+      while (entries.hasMoreElements ())
       {
-        int matchCount = 0;
-        while (entries.hasMoreElements ())
+        final ZipEntry entry = entries.nextElement ();
+        final String name = entry.getName ();
+        if (BII_ENVELOPE_XML.equals (name))
         {
-          final ZipEntry entry = entries.nextElement ();
-          final String name = entry.getName ();
-          if (BII_ENVELOPE_XML.equals (name))
-          {
-            matchCount++;
-          }
-          if (BII_MESSAGE_XML.equals (name))
-          {
-            matchCount++;
-          }
-          log.info ("Found " + name);
-          try (final InputStream stream = zipFile.getInputStream (entry))
-          {
-            // empty
-          }
+          matchCount++;
         }
-        assertEquals ("Number of items in archive did not match", matchCount, 2);
+        if (BII_MESSAGE_XML.equals (name))
+        {
+          matchCount++;
+        }
+        log.info ("Found " + name);
+        try (final InputStream stream = zipFile.getInputStream (entry))
+        {
+          // empty
+        }
       }
+      assertEquals ("Number of items in archive did not match", matchCount, 2);
     }
 
     try
@@ -217,7 +213,7 @@ public class AsicWriterTest
     asicWriterFactory.newContainer (archiveOutputFile)
                      // Adds file, explicitly naming the entry and specifying
                      // the MIME type
-                     .add (biiMessageFile, BII_MESSAGE_XML, MimeType.forString ("application/xml"))
+                     .add (biiMessageFile, BII_MESSAGE_XML, CMimeType.APPLICATION_XML)
                      // Indicates which file is the root file
                      .setRootEntryName (BII_MESSAGE_XML)
                      // Adds a PDF attachment, using the name of the file, i.e.

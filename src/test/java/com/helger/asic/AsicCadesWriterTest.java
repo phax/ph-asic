@@ -34,6 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.asic.jaxb.cades.DataObjectReferenceType;
+import com.helger.commons.mime.CMimeType;
 
 /**
  * @author steinar Date: 02.07.15 Time: 12.08
@@ -109,7 +110,7 @@ public final class AsicCadesWriterTest
                                                     // type
                                                     .add (new File (messageUrl.toURI ()),
                                                           BII_MESSAGE_XML,
-                                                          MimeType.forString ("application/xml"))
+                                                          CMimeType.APPLICATION_XML)
                                                     .setRootEntryName (envelopeUrl.toURI ().toString ())
                                                     .sign (keystoreFile,
                                                            TestUtil.keyStorePassword (),

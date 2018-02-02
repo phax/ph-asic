@@ -21,6 +21,8 @@ import java.util.zip.ZipEntry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.commons.mime.IMimeType;
+
 public abstract class AbstractAsicWriter implements IAsicWriter
 {
   private static final Logger logger = LoggerFactory.getLogger (AbstractAsicWriter.class);
@@ -57,14 +59,13 @@ public abstract class AbstractAsicWriter implements IAsicWriter
     m_aAsicOutputStream = new AsicOutputStream (aOS);
 
     // Add mimetype to OASIS OpenDocument manifest
-    m_aOasisManifest = new OasisManifest (MimeType.forString (AsicUtils.MIMETYPE_ASICE));
+    m_aOasisManifest = new OasisManifest (AsicUtils.MIMETYPE_ASICE);
   }
 
-  /** {@inheritDoc} */
   @Override
   public IAsicWriter add (final InputStream inputStream,
                           final String filename,
-                          final MimeType mimeType) throws IOException
+                          final IMimeType mimeType) throws IOException
   {
     // Check status
     if (m_bFinished)

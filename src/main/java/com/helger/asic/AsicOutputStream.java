@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.commons.annotation.Nonempty;
+import com.helger.commons.mime.IMimeType;
 
 /**
  * Stream handling requirements to ASiC files.
@@ -36,12 +37,13 @@ public class AsicOutputStream extends ZipOutputStream
   {
     super (aOS);
 
-    setComment ("mimetype=" + AsicUtils.MIMETYPE_ASICE);
+    setComment ("mimetype=" + AsicUtils.MIMETYPE_ASICE.getAsString ());
     _putMimeTypeAsFirstEntry (AsicUtils.MIMETYPE_ASICE);
   }
 
-  private void _putMimeTypeAsFirstEntry (@Nonnull @Nonempty final String sMimeType) throws IOException
+  private void _putMimeTypeAsFirstEntry (@Nonnull @Nonempty final IMimeType aMimeType) throws IOException
   {
+    final String sMimeType = aMimeType.getAsString ();
     final ZipEntry mimetypeEntry = new ZipEntry ("mimetype");
     mimetypeEntry.setComment ("mimetype=" + sMimeType);
     mimetypeEntry.setMethod (ZipEntry.STORED);

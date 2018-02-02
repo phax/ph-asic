@@ -36,8 +36,8 @@ import com.helger.asic.AsicReaderFactory;
 import com.helger.asic.AsicWriterFactory;
 import com.helger.asic.IAsicReader;
 import com.helger.asic.IAsicWriter;
-import com.helger.asic.MimeType;
 import com.helger.asic.SignatureHelper;
+import com.helger.commons.mime.CMimeType;
 
 public final class CmsEncryptedAsicTest
 {
@@ -58,13 +58,11 @@ public final class CmsEncryptedAsicTest
     final IAsicWriter asicWriter = AsicWriterFactory.newFactory ().newContainer (byteArrayOutputStream);
     // Encapsulate ASiC archive to enable writing encrypted content
     final CmsEncryptedAsicWriter writer = new CmsEncryptedAsicWriter (asicWriter, certificate, CMSAlgorithm.AES128_GCM);
-    writer.add (getClass ().getResourceAsStream ("/image.bmp"), "simple.bmp", MimeType.forString ("image/bmp"));
-    writer.addEncrypted (getClass ().getResourceAsStream ("/image.bmp"),
-                         "encrypted.bmp",
-                         MimeType.forString ("image/bmp"));
+    writer.add (getClass ().getResourceAsStream ("/image.bmp"), "simple.bmp", CMimeType.IMAGE_BMP);
+    writer.addEncrypted (getClass ().getResourceAsStream ("/image.bmp"), "encrypted.bmp", CMimeType.IMAGE_BMP);
     writer.addEncrypted (Paths.get (getClass ().getResource ("/image.bmp").toURI ()),
                          "encrypted2.bmp",
-                         MimeType.forString ("image/bmp"));
+                         CMimeType.IMAGE_BMP);
     writer.addEncrypted (Paths.get (getClass ().getResource ("/image.bmp").toURI ()).toFile (), "encrypted3.xml");
     writer.setRootEntryName ("encrypted.bmp");
     writer.sign (new SignatureHelper (getClass ().getResourceAsStream ("/keystore.jks"),
@@ -161,19 +159,15 @@ public final class CmsEncryptedAsicTest
       final CmsEncryptedAsicWriter writer = new CmsEncryptedAsicWriter (asicWriter, certificate);
 
       // Adds the SBDH
-      writer.add (getClass ().getResourceAsStream ("/sample-sbdh.xml"),
-                  "sbdh.xml",
-                  MimeType.forString ("application/xml"));
+      writer.add (getClass ().getResourceAsStream ("/sample-sbdh.xml"), "sbdh.xml", CMimeType.APPLICATION_XML);
 
       // Adds the plain text sample document
-      writer.add (getClass ().getResourceAsStream ("/bii-trns081.xml"),
-                  "sample.xml",
-                  MimeType.forString ("application/xml"));
+      writer.add (getClass ().getResourceAsStream ("/bii-trns081.xml"), "sample.xml", CMimeType.APPLICATION_XML);
 
       // Adds the encrypted version of the sample document
       writer.addEncrypted (getClass ().getResourceAsStream ("/bii-trns081.xml"),
                            "sample.xml",
-                           MimeType.forString ("application/xml"));
+                           CMimeType.APPLICATION_XML);
 
       // Indicates which document is the root entry (to be read first)
       writer.setRootEntryName ("sample.xml");

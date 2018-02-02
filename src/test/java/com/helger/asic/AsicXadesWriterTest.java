@@ -30,6 +30,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.commons.mime.CMimeType;
 import com.helger.xsds.xmldsig.ReferenceType;
 
 /**
@@ -85,7 +86,7 @@ public final class AsicXadesWriterTest
                                                        .add (new File (m_aEnvelopeUrl.toURI ()))
                                                        .add (new File (m_aMessageUrl.toURI ()),
                                                              TestUtil.BII_SAMPLE_MESSAGE_XML,
-                                                             MimeType.forString ("application/xml"))
+                                                             CMimeType.APPLICATION_XML)
                                                        .sign (signatureHelper);
 
     final File file = new File (System.getProperty ("java.io.tmpdir"), "asic-sample-xades.zip");

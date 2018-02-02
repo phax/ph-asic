@@ -28,6 +28,8 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.commons.mime.CMimeType;
+
 public final class AsicUtilsTest
 {
   private static final Logger log = LoggerFactory.getLogger (AsicUtilsTest.class);
@@ -72,17 +74,13 @@ public final class AsicUtilsTest
     // Create first container
     final ByteArrayOutputStream source1 = new ByteArrayOutputStream ();
     m_aAsicWriterFactory.newContainer (source1)
-                        .add (new ByteArrayInputStream (fileContent1.getBytes ()),
-                              "content1.txt",
-                              MimeType.forString ("text/plain"))
+                        .add (new ByteArrayInputStream (fileContent1.getBytes ()), "content1.txt", CMimeType.TEXT_PLAIN)
                         .sign (signatureHelper);
 
     // Create second container
     final ByteArrayOutputStream source2 = new ByteArrayOutputStream ();
     m_aAsicWriterFactory.newContainer (source2)
-                        .add (new ByteArrayInputStream (fileContent2.getBytes ()),
-                              "content2.txt",
-                              MimeType.forString ("text/plain"))
+                        .add (new ByteArrayInputStream (fileContent2.getBytes ()), "content2.txt", CMimeType.TEXT_PLAIN)
                         .sign (signatureHelper);
 
     // Combine containers
@@ -135,17 +133,13 @@ public final class AsicUtilsTest
     // Create first container
     final ByteArrayOutputStream source1 = new ByteArrayOutputStream ();
     m_aAsicWriterFactory.newContainer (source1)
-                        .add (new ByteArrayInputStream (fileContent1.getBytes ()),
-                              "content1.txt",
-                              MimeType.forString ("text/plain"))
+                        .add (new ByteArrayInputStream (fileContent1.getBytes ()), "content1.txt", CMimeType.TEXT_PLAIN)
                         .sign (signatureHelper);
 
     // Create second container
     final ByteArrayOutputStream source2 = new ByteArrayOutputStream ();
     m_aAsicWriterFactory.newContainer (source2)
-                        .add (new ByteArrayInputStream (fileContent2.getBytes ()),
-                              "content2.txt",
-                              MimeType.forString ("text/plain"))
+                        .add (new ByteArrayInputStream (fileContent2.getBytes ()), "content2.txt", CMimeType.TEXT_PLAIN)
                         .sign (signatureHelper);
 
     // Rewrite source2 to remove META-INF/manifest.xml
@@ -194,18 +188,14 @@ public final class AsicUtilsTest
     // Create first container
     final ByteArrayOutputStream source1 = new ByteArrayOutputStream ();
     m_aAsicWriterFactory.newContainer (source1)
-                        .add (new ByteArrayInputStream (fileContent1.getBytes ()),
-                              "content1.txt",
-                              MimeType.forString ("text/plain"))
+                        .add (new ByteArrayInputStream (fileContent1.getBytes ()), "content1.txt", CMimeType.TEXT_PLAIN)
                         .setRootEntryName ("content1.txt")
                         .sign (signatureHelper);
 
     // Create second container
     final ByteArrayOutputStream source2 = new ByteArrayOutputStream ();
     m_aAsicWriterFactory.newContainer (source2)
-                        .add (new ByteArrayInputStream (fileContent2.getBytes ()),
-                              "content2.txt",
-                              MimeType.forString ("text/plain"))
+                        .add (new ByteArrayInputStream (fileContent2.getBytes ()), "content2.txt", CMimeType.TEXT_PLAIN)
                         .setRootEntryName ("content2.txt")
                         .sign (signatureHelper);
 
@@ -231,17 +221,13 @@ public final class AsicUtilsTest
     // Create first container
     final ByteArrayOutputStream source1 = new ByteArrayOutputStream ();
     aFactoryXades.newContainer (source1)
-                 .add (new ByteArrayInputStream (fileContent1.getBytes ()),
-                       "content1.txt",
-                       MimeType.forString ("text/plain"))
+                 .add (new ByteArrayInputStream (fileContent1.getBytes ()), "content1.txt", CMimeType.TEXT_PLAIN)
                  .sign (signatureHelper);
 
     // Create second container
     final ByteArrayOutputStream source2 = new ByteArrayOutputStream ();
     aFactoryXades.newContainer (source2)
-                 .add (new ByteArrayInputStream (fileContent2.getBytes ()),
-                       "content2.txt",
-                       MimeType.forString ("text/plain"))
+                 .add (new ByteArrayInputStream (fileContent2.getBytes ()), "content2.txt", CMimeType.TEXT_PLAIN)
                  .sign (signatureHelper);
 
     // Combine containers

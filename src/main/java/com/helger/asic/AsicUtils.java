@@ -31,13 +31,16 @@ import org.slf4j.LoggerFactory;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.io.stream.NonClosingInputStream;
 import com.helger.commons.io.stream.StreamHelper;
+import com.helger.commons.mime.EMimeContentType;
+import com.helger.commons.mime.IMimeType;
+import com.helger.commons.mime.MimeTypeParser;
 
 public class AsicUtils
 {
   private static final Logger logger = LoggerFactory.getLogger (AsicUtils.class);
 
   /** The MIME type, which should be the very first entry in the container */
-  public static final String MIMETYPE_ASICE = "application/vnd.etsi.asic-e+zip";
+  public static final IMimeType MIMETYPE_ASICE = EMimeContentType.APPLICATION.buildMimeType ("vnd.etsi.asic-e+zip");
 
   static final Pattern PATTERN_CADES_MANIFEST = Pattern.compile ("META-INF/asicmanifest(.*)\\.xml",
                                                                  Pattern.CASE_INSENSITIVE);
@@ -76,7 +79,7 @@ public class AsicUtils
     try (final AsicOutputStream target = new AsicOutputStream (outputStream))
     {
       // Prepare to combine OASIS OpenDocument Manifests
-      final OasisManifest oasisManifest = new OasisManifest (MimeType.forString (MIMETYPE_ASICE));
+      final OasisManifest oasisManifest = new OasisManifest (MIMETYPE_ASICE);
 
       for (final InputStream inputStream : inputStreams)
       {
@@ -158,7 +161,7 @@ public class AsicUtils
     }
   }
 
-  public static MimeType detectMime (final String filename) throws IOException
+  public static IMimeType detectMime (final String filename) throws IOException
   {
     // Use Files to find content type
     String mimeType = Files.probeContentType (Paths.get (filename));
@@ -172,11 +175,9 @@ public class AsicUtils
 
     // Throw exception if content type is not detected
     if (mimeType == null)
-    {
       throw new IllegalStateException ("Unable to determine MIME type of " + filename);
-    }
 
-    return MimeType.forString (mimeType);
+    return MimeTypeParser.parseMimeType (mimeType);
   }
 
   public static void copyStream (@WillNotClose final InputStream aIS, @WillNotClose final OutputStream aOS)

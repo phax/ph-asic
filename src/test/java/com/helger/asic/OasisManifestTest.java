@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.commons.io.stream.NonBlockingByteArrayInputStream;
+import com.helger.commons.mime.CMimeType;
 
 public final class OasisManifestTest
 {
@@ -28,8 +29,8 @@ public final class OasisManifestTest
   @Test
   public void simpleTest ()
   {
-    final OasisManifest oasisManifest = new OasisManifest (MimeType.forString (AsicUtils.MIMETYPE_ASICE));
-    oasisManifest.add ("test.xml", MimeType.forString ("application/text"));
+    final OasisManifest oasisManifest = new OasisManifest (AsicUtils.MIMETYPE_ASICE);
+    oasisManifest.add ("test.xml", CMimeType.APPLICATION_XML);
 
     log.info (oasisManifest.getAsString ());
   }

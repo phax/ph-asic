@@ -15,18 +15,17 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateEncodingException;
-import java.util.GregorianCalendar;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
 import javax.xml.transform.stream.StreamSource;
 
 import com.helger.asic.jaxb.cades.XAdESSignaturesType;
+import com.helger.commons.mime.IMimeType;
+import com.helger.datetime.util.PDTXMLConverter;
 import com.helger.xsds.xades132.CertIDListType;
 import com.helger.xsds.xades132.CertIDType;
 import com.helger.xsds.xades132.DataObjectFormatType;
@@ -95,7 +94,7 @@ public class XadesAsicManifest extends AbstractAsicManifest
   }
 
   @Override
-  public void add (final String filename, final MimeType mimeType)
+  public void add (final String filename, final IMimeType aMimeType)
   {
     final String id = "ID_" + signedInfo.getReference ().size ();
 
@@ -118,7 +117,7 @@ public class XadesAsicManifest extends AbstractAsicManifest
       // \XAdESSignature\Signature\Object\QualifyingProperties\SignedProperties\SignedDataObjectProperties\DataObjectFormat
       final DataObjectFormatType dataObjectFormatType = new DataObjectFormatType ();
       dataObjectFormatType.setObjectReference ("#" + id);
-      dataObjectFormatType.setMimeType (mimeType.toString ());
+      dataObjectFormatType.setMimeType (aMimeType.getAsString ());
 
       signedDataObjectProperties.getDataObjectFormat ().add (dataObjectFormatType);
     }
@@ -199,16 +198,9 @@ public class XadesAsicManifest extends AbstractAsicManifest
   {
     // \XAdESSignature\Signature\Object\QualifyingProperties\SignedProperties\SignedSignatureProperties
     final SignedSignaturePropertiesType signedSignaturePropertiesType = new SignedSignaturePropertiesType ();
-    try
-    {
-      // \XAdESSignature\Signature\Object\QualifyingProperties\SignedProperties\SignedSignatureProperties\SigningTime
-      signedSignaturePropertiesType.setSigningTime (DatatypeFactory.newInstance ()
-                                                                   .newXMLGregorianCalendar (new GregorianCalendar ()));
-    }
-    catch (final DatatypeConfigurationException e)
-    {
-      throw new IllegalStateException ("Unable to use current DatatypeFactory", e);
-    }
+
+    // \XAdESSignature\Signature\Object\QualifyingProperties\SignedProperties\SignedSignatureProperties\SigningTime
+    signedSignaturePropertiesType.setSigningTime (PDTXMLConverter.createNewCalendar ());
 
     // \XAdESSignature\Signature\Object\QualifyingProperties\SignedProperties\SignedSignatureProperties\SigningCertificate
     final CertIDListType certIDListType = new CertIDListType ();

@@ -25,6 +25,8 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.commons.mime.CMimeType;
+
 public class AsicReaderImplTest
 {
 
@@ -48,12 +50,8 @@ public class AsicReaderImplTest
     final ByteArrayOutputStream containerOutput = new ByteArrayOutputStream ();
 
     asicWriterFactory.newContainer (containerOutput)
-                     .add (new ByteArrayInputStream (fileContent1.getBytes ()),
-                           "content1.txt",
-                           MimeType.forString ("text/plain"))
-                     .add (new ByteArrayInputStream (fileContent2.getBytes ()),
-                           "content2.txt",
-                           MimeType.forString ("text/plain"))
+                     .add (new ByteArrayInputStream (fileContent1.getBytes ()), "content1.txt", CMimeType.TEXT_PLAIN)
+                     .add (new ByteArrayInputStream (fileContent2.getBytes ()), "content2.txt", CMimeType.TEXT_PLAIN)
                      .sign (signatureHelper);
 
     // Step 2 - reads the contents of the ASiC archive
@@ -111,12 +109,8 @@ public class AsicReaderImplTest
     final File file = new File (tmpDir, "asic-reader-sample.ip");
 
     asicWriterFactory.newContainer (file)
-                     .add (new ByteArrayInputStream (fileContent1.getBytes ()),
-                           "content1.txt",
-                           MimeType.forString ("text/plain"))
-                     .add (new ByteArrayInputStream (fileContent2.getBytes ()),
-                           "content2.txt",
-                           MimeType.forString ("text/plain"))
+                     .add (new ByteArrayInputStream (fileContent1.getBytes ()), "content1.txt", CMimeType.TEXT_PLAIN)
+                     .add (new ByteArrayInputStream (fileContent2.getBytes ()), "content2.txt", CMimeType.TEXT_PLAIN)
                      .sign (signatureHelper);
 
     try (final IAsicReader asicReader = asicReaderFactory.open (file))

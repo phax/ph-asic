@@ -17,6 +17,8 @@ import java.security.NoSuchAlgorithmException;
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.NotThreadSafe;
 
+import com.helger.commons.mime.IMimeType;
+
 @NotThreadSafe
 public abstract class AbstractAsicManifest
 {
@@ -57,5 +59,5 @@ public abstract class AbstractAsicManifest
     return m_aMD;
   }
 
-  public abstract void add (String filename, MimeType mimeType);
+  public abstract void add (String filename, IMimeType mimeType);
 }

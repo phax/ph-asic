@@ -21,6 +21,7 @@ import com.helger.asic.jaxb.AsicReader;
 import com.helger.asic.jaxb.AsicWriter;
 import com.helger.asic.jaxb.opendocument.manifest.FileEntry;
 import com.helger.asic.jaxb.opendocument.manifest.Manifest;
+import com.helger.commons.mime.IMimeType;
 
 class OasisManifest
 {
@@ -32,7 +33,7 @@ class OasisManifest
 
   private final Manifest m_aManifest;
 
-  public OasisManifest (final MimeType mimeType)
+  public OasisManifest (@Nonnull final IMimeType mimeType)
   {
     m_aManifest = new Manifest ();
     add ("/", mimeType);
@@ -45,10 +46,10 @@ class OasisManifest
       throw new IllegalStateException ("Failed to read Manifest from IS");
   }
 
-  public void add (@Nonnull final String path, @Nonnull final MimeType mimeType)
+  public void add (@Nonnull final String path, @Nonnull final IMimeType mimeType)
   {
     final FileEntry fileEntry = new FileEntry ();
-    fileEntry.setMediaType (mimeType.toString ());
+    fileEntry.setMediaType (mimeType.getAsString ());
     fileEntry.setFullPath (path);
     m_aManifest.getFileEntry ().add (fileEntry);
   }

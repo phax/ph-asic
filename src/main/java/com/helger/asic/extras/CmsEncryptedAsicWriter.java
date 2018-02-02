@@ -33,8 +33,8 @@ import org.bouncycastle.cms.jcajce.JceKeyTransRecipientInfoGenerator;
 import com.helger.asic.AsicUtils;
 import com.helger.asic.BCHelper;
 import com.helger.asic.IAsicWriter;
-import com.helger.asic.MimeType;
 import com.helger.asic.SignatureHelper;
+import com.helger.commons.mime.IMimeType;
 
 /**
  * Wrapper to seamlessly encode specific files.
@@ -66,13 +66,10 @@ public class CmsEncryptedAsicWriter implements IAsicWriter
     m_aCmsAlgorithm = cmsAlgorithm;
   }
 
-  /**
-   * {@inheritDoc}
-   */
   @Override
   public IAsicWriter add (final InputStream inputStream,
                           final String filename,
-                          final MimeType mimeType) throws IOException
+                          final IMimeType mimeType) throws IOException
   {
     return m_aAsicWriter.add (inputStream, filename, mimeType);
   }
@@ -106,12 +103,12 @@ public class CmsEncryptedAsicWriter implements IAsicWriter
     return addEncrypted (inputStream, filename, AsicUtils.detectMime (filename));
   }
 
-  public IAsicWriter addEncrypted (final File file, final String entryName, final MimeType mimeType) throws IOException
+  public IAsicWriter addEncrypted (final File file, final String entryName, final IMimeType mimeType) throws IOException
   {
     return addEncrypted (file.toPath (), entryName, mimeType);
   }
 
-  public IAsicWriter addEncrypted (final Path path, final String entryName, final MimeType mimeType) throws IOException
+  public IAsicWriter addEncrypted (final Path path, final String entryName, final IMimeType mimeType) throws IOException
   {
     try (InputStream inputStream = Files.newInputStream (path))
     {
@@ -122,7 +119,7 @@ public class CmsEncryptedAsicWriter implements IAsicWriter
 
   public IAsicWriter addEncrypted (final InputStream inputStream,
                                    final String filename,
-                                   final MimeType mimeType) throws IOException
+                                   final IMimeType mimeType) throws IOException
   {
     try
     {

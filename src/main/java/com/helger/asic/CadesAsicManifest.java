@@ -28,6 +28,7 @@ import com.helger.asic.jaxb.cades.ASiCManifestType;
 import com.helger.asic.jaxb.cades.DataObjectReferenceType;
 import com.helger.asic.jaxb.cades.ObjectFactory;
 import com.helger.asic.jaxb.cades.SigReferenceType;
+import com.helger.commons.mime.IMimeType;
 import com.helger.xsds.xmldsig.DigestMethodType;
 
 public class CadesAsicManifest extends AbstractAsicManifest
@@ -59,11 +60,11 @@ public class CadesAsicManifest extends AbstractAsicManifest
   }
 
   @Override
-  public void add (final String filename, final MimeType mimeType)
+  public void add (final String filename, final IMimeType aMimeType)
   {
     final DataObjectReferenceType dataObject = new DataObjectReferenceType ();
     dataObject.setURI (filename);
-    dataObject.setMimeType (mimeType.toString ());
+    dataObject.setMimeType (aMimeType.getAsString ());
     dataObject.setDigestValue (internalGetMessageDigest ().digest ());
 
     final DigestMethodType digestMethodType = new DigestMethodType ();

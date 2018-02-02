@@ -38,14 +38,16 @@ public class AsicInputStream extends ZipInputStream
 
     if (zipEntry != null && zipEntry.getName ().equals ("mimetype"))
     {
-      final NonBlockingByteArrayOutputStream baos = new NonBlockingByteArrayOutputStream ();
-      AsicUtils.copyStream (this, baos);
-      final String sMimeType = baos.getAsString (StandardCharsets.ISO_8859_1);
+      try (final NonBlockingByteArrayOutputStream aBAOS = new NonBlockingByteArrayOutputStream ();)
+      {
+        AsicUtils.copyStream (this, aBAOS);
+        final String sMimeType = aBAOS.getAsString (StandardCharsets.ISO_8859_1);
 
-      if (logger.isDebugEnabled ())
-        logger.debug ("Content of mimetype: " + sMimeType);
-      if (!AsicUtils.MIMETYPE_ASICE.equals (sMimeType))
-        throw new IllegalStateException ("Content is not ASiC-E container.");
+        if (logger.isDebugEnabled ())
+          logger.debug ("Content of mimetype: " + sMimeType);
+        if (!AsicUtils.MIMETYPE_ASICE.getAsString ().equals (sMimeType))
+          throw new IllegalStateException ("Content is not ASiC-E container.");
+      }
 
       // Fetch next
       zipEntry = super.getNextEntry ();
