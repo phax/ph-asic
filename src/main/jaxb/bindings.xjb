@@ -1,4 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (C) 2015-2017 difi (www.difi.no)
+    Copyright (C) 2018 Philip Helger (www.helger.com)
+    philip[at]helger[dot]com
+
+    This Source Code Form is subject to the terms of the
+    Mozilla Public License, v. 2.0.
+    If a copy of the MPL was not distributed
+    with this file, You can obtain one at
+    https://mozilla.org/MPL/2.0/
+
+-->
 <bindings version="2.1" xmlns="http://java.sun.com/xml/ns/jaxb" xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc"
   extensionBindingPrefixes="xjc">
   <bindings schemaLocation="../resources/schemas/asic-model-1.0.xsd">
