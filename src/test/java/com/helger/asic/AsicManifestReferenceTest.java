@@ -11,18 +11,13 @@
  */
 package com.helger.asic;
 
-import java.io.ByteArrayOutputStream;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
-
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.asic.jaxb.AsicWriter;
 import com.helger.asic.jaxb.cades.ASiCManifestType;
 import com.helger.asic.jaxb.cades.DataObjectReferenceType;
-import com.helger.asic.jaxb.cades.ObjectFactory;
 import com.helger.asic.jaxb.cades.SigReferenceType;
 import com.helger.xsds.xmldsig.DigestMethodType;
 
@@ -37,23 +32,19 @@ public final class AsicManifestReferenceTest
   @Test
   public void createSampleManifest () throws Exception
   {
-
     final ASiCManifestType asicManifest = new ASiCManifestType ();
 
     final SigReferenceType sigReferenceType = new SigReferenceType ();
-    sigReferenceType.setURI ("META-INF/signature.p7s"); // TODO: implement
-                                                        // signature
-    sigReferenceType.setMimeType ("application/x-pkcs7-signature"); // TODO: use
-                                                                    // strong
-                                                                    // typed
-                                                                    // Mime
-                                                                    // types
+    // TODO: implement signature
+    sigReferenceType.setURI ("META-INF/signature.p7s");
+    // TODO: use strong typed Mime types
+    sigReferenceType.setMimeType ("application/x-pkcs7-signature");
     asicManifest.setSigReference (sigReferenceType);
 
     {
       final DataObjectReferenceType obj1 = new DataObjectReferenceType ();
-      obj1.setURI ("bii-envelope.xml"); // TODO: retrieve doc name from
-                                        // container
+      // TODO: retrieve doc name from container
+      obj1.setURI ("bii-envelope.xml");
       obj1.setMimeType ("application/xml");
 
       final DigestMethodType digestMethodType = new DigestMethodType ();
@@ -77,19 +68,6 @@ public final class AsicManifestReferenceTest
       asicManifest.getDataObjectReference ().add (obj2);
     }
 
-    final JAXBContext jaxbContext = JAXBContext.newInstance (ASiCManifestType.class);
-    final Marshaller marshaller = jaxbContext.createMarshaller ();
-    marshaller.setProperty (Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-
-    // The ASiCManifestType is not annotated
-    final ObjectFactory objectFactory = new ObjectFactory ();
-    // JAXBElement<ASiCManifestType> m =
-    // objectFactory.createASiCManifest(asicManifest);
-
-    // marshaller.marshal(m, System.out);
-    final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream ();
-    marshaller.marshal (objectFactory.createASiCManifest (asicManifest), byteArrayOutputStream);
-    log.info (byteArrayOutputStream.toString ());
+    log.info (AsicWriter.asicManifest ().getAsString (asicManifest));
   }
-
 }

@@ -47,27 +47,27 @@ public final class AsicCadesWriterTest
   public static final int BYTES_TO_CHECK = 40;
   public static final String BII_ENVELOPE_XML = "/asic/bii-envelope.xml";
   public static final String BII_MESSAGE_XML = TestUtil.BII_SAMPLE_MESSAGE_XML;
-  private File envelopeFile;
-  private File messageFile;
-  private File keystoreFile;
+  private File m_aEnvelopeFile;
+  private File m_aMessageFile;
+  private File m_aKeystoreFile;
 
-  private AsicWriterFactory asicWriterFactory;
-  private AsicVerifierFactory asicVerifierFactory;
+  private AsicWriterFactory m_aWriterFactory;
+  private AsicVerifierFactory m_aVerifierFactory;
 
   @Before
   public void setUp ()
   {
-    envelopeFile = new ClassPathResource (BII_ENVELOPE_XML).getAsFile ();
-    assertNotNull (envelopeFile);
+    m_aEnvelopeFile = new ClassPathResource (BII_ENVELOPE_XML).getAsFile ();
+    assertNotNull (m_aEnvelopeFile);
 
-    messageFile = new ClassPathResource (BII_MESSAGE_XML).getAsFile ();
-    assertNotNull (messageFile);
+    m_aMessageFile = new ClassPathResource (BII_MESSAGE_XML).getAsFile ();
+    assertNotNull (m_aMessageFile);
 
-    keystoreFile = TestUtil.keyStoreFile ();
-    assertTrue ("Expected to find your private key and certificate in " + keystoreFile, keystoreFile.canRead ());
+    m_aKeystoreFile = TestUtil.keyStoreFile ();
+    assertTrue ("Expected to find your private key and certificate in " + m_aKeystoreFile, m_aKeystoreFile.canRead ());
 
-    asicWriterFactory = AsicWriterFactory.newFactory ();
-    asicVerifierFactory = AsicVerifierFactory.newFactory ();
+    m_aWriterFactory = AsicWriterFactory.newFactory ();
+    m_aVerifierFactory = AsicVerifierFactory.newFactory ();
   }
 
   @Test
@@ -76,10 +76,10 @@ public final class AsicCadesWriterTest
     final File aDestFile = new File (System.getProperty ("java.io.tmpdir"), "asic-empty-sample-cades.zip");
 
     // A container MUST contain any entry
-    asicWriterFactory.newContainer (aDestFile).add (messageFile).sign (keystoreFile,
-                                                                       TestUtil.keyStorePassword (),
-                                                                       TestUtil.keyPairAlias (),
-                                                                       TestUtil.privateKeyPassword ());
+    m_aWriterFactory.newContainer (aDestFile).add (m_aMessageFile).sign (m_aKeystoreFile,
+                                                                         TestUtil.keyStorePassword (),
+                                                                         TestUtil.keyPairAlias (),
+                                                                         TestUtil.privateKeyPassword ());
 
     assertTrue (aDestFile + " can not be read", aDestFile.exists () && aDestFile.isFile () && aDestFile.canRead ());
     try (final FileInputStream fileInputStream = new FileInputStream (aDestFile);
@@ -108,23 +108,23 @@ public final class AsicCadesWriterTest
 
     final File asicOutputFile = new File (System.getProperty ("java.io.tmpdir"), "asic-sample-cades.zip");
 
-    final IAsicWriter asicWriter = asicWriterFactory.newContainer (asicOutputFile)
-                                                    .add (envelopeFile)
-                                                    // Specifies the file, the
-                                                    // archive entry name and
-                                                    // explicitly names the MIME
-                                                    // type
-                                                    .add (messageFile, BII_MESSAGE_XML, CMimeType.APPLICATION_XML)
-                                                    .setRootEntryName (envelopeFile.toURI ().toString ())
-                                                    .sign (keystoreFile,
-                                                           TestUtil.keyStorePassword (),
-                                                           TestUtil.keyPairAlias (),
-                                                           TestUtil.privateKeyPassword ());
+    final IAsicWriter asicWriter = m_aWriterFactory.newContainer (asicOutputFile)
+                                                   .add (m_aEnvelopeFile)
+                                                   // Specifies the file, the
+                                                   // archive entry name and
+                                                   // explicitly names the MIME
+                                                   // type
+                                                   .add (m_aMessageFile, BII_MESSAGE_XML, CMimeType.APPLICATION_XML)
+                                                   .setRootEntryName (m_aEnvelopeFile.toURI ().toString ())
+                                                   .sign (m_aKeystoreFile,
+                                                          TestUtil.keyStorePassword (),
+                                                          TestUtil.keyPairAlias (),
+                                                          TestUtil.privateKeyPassword ());
 
     // Verifies that both files have been added.
     {
       int matchCount = 0;
-      final CadesAsicManifest asicManifest = (CadesAsicManifest) ((CadesAsicWriter) asicWriter).getAsicManifest ();
+      final CadesAsicManifest asicManifest = ((CadesAsicWriter) asicWriter).getAsicManifest ();
       for (final DataObjectReferenceType dataObject : asicManifest.getASiCManifest ().getDataObjectReference ())
       {
         if (dataObject.getURI ().equals (FilenameHelper.getWithoutPath (BII_ENVELOPE_XML)))
@@ -167,7 +167,7 @@ public final class AsicCadesWriterTest
 
     try
     {
-      asicWriter.add (new File (envelopeFile.toURI ()));
+      asicWriter.add (new File (m_aEnvelopeFile.toURI ()));
       fail ("Exception expected");
     }
     catch (final Exception e)
@@ -177,7 +177,7 @@ public final class AsicCadesWriterTest
 
     try
     {
-      asicWriter.sign (new SignatureHelper (keystoreFile,
+      asicWriter.sign (new SignatureHelper (m_aKeystoreFile,
                                             TestUtil.keyStorePassword (),
                                             TestUtil.privateKeyPassword ()));
       fail ("Exception expected");
@@ -187,13 +187,13 @@ public final class AsicCadesWriterTest
       assertTrue (e instanceof IllegalStateException);
     }
 
-    asicVerifierFactory.verify (asicOutputFile);
+    m_aVerifierFactory.verify (asicOutputFile);
   }
 
   @Test
   public void writingToMetaInf () throws IOException
   {
-    final IAsicWriter asicWriter = asicWriterFactory.newContainer (new ByteArrayOutputStream ());
+    final IAsicWriter asicWriter = m_aWriterFactory.newContainer (new ByteArrayOutputStream ());
 
     try
     {

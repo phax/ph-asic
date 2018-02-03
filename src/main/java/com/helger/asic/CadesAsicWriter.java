@@ -15,6 +15,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.UUID;
 
+import javax.annotation.Nonnull;
+
 /**
  * Builds an ASiC-E Cades container using a variation of "builder pattern". This
  * class is not thread safe, as it indirectly holds a MessageDigest object.
@@ -23,7 +25,6 @@ import java.util.UUID;
  */
 public class CadesAsicWriter extends AbstractAsicWriter
 {
-
   /**
    * Prepares creation of a new container.
    *
@@ -43,13 +44,17 @@ public class CadesAsicWriter extends AbstractAsicWriter
     super (outputStream, closeStreamOnClose, new CadesAsicManifest (signatureMethod.getMessageDigestAlgorithm ()));
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  @Override
+  @Nonnull
+  public CadesAsicManifest getAsicManifest ()
+  {
+    return (CadesAsicManifest) super.getAsicManifest ();
+  }
+
   @Override
   public IAsicWriter setRootEntryName (final String name)
   {
-    ((CadesAsicManifest) m_aAsicManifest).setRootfileForEntry (name);
+    getAsicManifest ().setRootfileForEntry (name);
     return this;
   }
 
@@ -60,11 +65,11 @@ public class CadesAsicWriter extends AbstractAsicWriter
     final String signatureFilename = "META-INF/signature-" + UUID.randomUUID ().toString () + ".p7s";
 
     // Adding signature file to asic manifest before actual signing
-    ((CadesAsicManifest) m_aAsicManifest).setSignature (signatureFilename, "application/x-pkcs7-signature");
+    getAsicManifest ().setSignature (signatureFilename, "application/x-pkcs7-signature");
 
     // Generates and writes manifest (META-INF/asicmanifest.xml) to the zip
     // archive
-    final byte [] manifestBytes = ((CadesAsicManifest) m_aAsicManifest).toBytes ();
+    final byte [] manifestBytes = getAsicManifest ().toBytes ();
     m_aAsicOutputStream.writeZipEntry ("META-INF/asicmanifest.xml", manifestBytes);
 
     // Generates and writes signature (META-INF/signature-*.p7s) to the zip

@@ -14,6 +14,8 @@ package com.helger.asic;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import javax.annotation.Nonnull;
+
 public class XadesAsicWriter extends AbstractAsicWriter
 {
   public XadesAsicWriter (final ESignatureMethod eSM,
@@ -21,6 +23,13 @@ public class XadesAsicWriter extends AbstractAsicWriter
                           final boolean bCloseStreamOnClose) throws IOException
   {
     super (aOS, bCloseStreamOnClose, new XadesAsicManifest (eSM.getMessageDigestAlgorithm ()));
+  }
+
+  @Override
+  @Nonnull
+  public XadesAsicManifest getAsicManifest ()
+  {
+    return (XadesAsicManifest) super.getAsicManifest ();
   }
 
   @Override
@@ -33,9 +42,7 @@ public class XadesAsicWriter extends AbstractAsicWriter
   protected void performSign (final SignatureHelper signatureHelper) throws IOException
   {
     // Generate and write manifest (META-INF/signatures.xml)
-    final byte [] manifestBytes = ((XadesAsicManifest) m_aAsicManifest).toBytes (signatureHelper);
+    final byte [] manifestBytes = getAsicManifest ().toBytes (signatureHelper);
     m_aAsicOutputStream.writeZipEntry ("META-INF/signatures.xml", manifestBytes);
-
-    // System.out.println(new String(manifestBytes));
   }
 }

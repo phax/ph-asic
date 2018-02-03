@@ -11,6 +11,8 @@
  */
 package com.helger.asic;
 
+import javax.annotation.Nonnull;
+
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cms.CMSProcessableByteArray;
 import org.bouncycastle.cms.CMSSignedData;
@@ -22,19 +24,24 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.asic.jaxb.asic.Certificate;
+import com.helger.commons.annotation.PresentForCodeCoverage;
 
 /**
  * @author erlend
  */
-public class SignatureVerifier
+public final class SignatureVerifier
 {
   private static final Logger logger = LoggerFactory.getLogger (SignatureHelper.class);
 
-  private static JcaSimpleSignerInfoVerifierBuilder s_aJcaSimpleSignerInfoVerifierBuilder = new JcaSimpleSignerInfoVerifierBuilder ().setProvider (BCHelper.getProvider ());
+  private static final JcaSimpleSignerInfoVerifierBuilder s_aJcaSimpleSignerInfoVerifierBuilder = new JcaSimpleSignerInfoVerifierBuilder ().setProvider (BCHelper.getProvider ());
+
+  @PresentForCodeCoverage
+  private static final SignatureVerifier s_aInstance = new SignatureVerifier ();
 
   private SignatureVerifier ()
   {}
 
+  @Nonnull
   public static Certificate validate (final byte [] data, final byte [] signature)
   {
     Certificate certificate = null;
@@ -62,7 +69,7 @@ public class SignatureVerifier
     }
     catch (final Exception e)
     {
-      logger.warn (e.getMessage ());
+      logger.warn ("Error is signature validation", e);
       certificate = null;
     }
 

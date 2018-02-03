@@ -25,12 +25,6 @@ import com.helger.commons.mime.IMimeType;
 
 public class OasisManifest
 {
-  @Nullable
-  public static Manifest read (final byte [] aBytes)
-  {
-    return AsicReader.oasisManifest ().read (aBytes);
-  }
-
   private final Manifest m_aManifest;
 
   public OasisManifest (@Nonnull final IMimeType mimeType)

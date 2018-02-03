@@ -26,6 +26,7 @@ import org.bouncycastle.util.encoders.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.asic.jaxb.AsicReader;
 import com.helger.asic.jaxb.asic.AsicManifest;
 import com.helger.asic.jaxb.asic.Certificate;
 import com.helger.asic.jaxb.opendocument.manifest.Manifest;
@@ -194,12 +195,11 @@ public abstract class AbstractAsicReader implements Closeable
           if (filename.equals ("manifest.xml"))
           {
             // Read manifest.
-            m_aManifest = OasisManifest.read (contentsOfStream.toByteArray ());
+            m_aManifest = AsicReader.oasisManifest ().read (contentsOfStream.toByteArray ());
           }
           else
           {
-            throw new IllegalStateException (String.format ("Contains unknown metadata file: %s",
-                                                            m_aCurrentZipEntry.getName ()));
+            throw new IllegalStateException ("Contains unknown metadata file: " + m_aCurrentZipEntry.getName ());
           }
   }
 

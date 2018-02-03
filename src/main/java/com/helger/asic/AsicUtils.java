@@ -28,6 +28,7 @@ import javax.annotation.WillNotClose;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.commons.annotation.PresentForCodeCoverage;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.io.stream.NonClosingInputStream;
 import com.helger.commons.io.stream.StreamHelper;
@@ -35,26 +36,27 @@ import com.helger.commons.mime.EMimeContentType;
 import com.helger.commons.mime.IMimeType;
 import com.helger.commons.mime.MimeTypeParser;
 
-public class AsicUtils
+public final class AsicUtils
 {
   private static final Logger logger = LoggerFactory.getLogger (AsicUtils.class);
 
   /** The MIME type, which should be the very first entry in the container */
   public static final IMimeType MIMETYPE_ASICE = EMimeContentType.APPLICATION.buildMimeType ("vnd.etsi.asic-e+zip");
 
-  static final Pattern PATTERN_CADES_MANIFEST = Pattern.compile ("META-INF/asicmanifest(.*)\\.xml",
-                                                                 Pattern.CASE_INSENSITIVE);
-  static final Pattern PATTERN_CADES_SIGNATURE = Pattern.compile ("META-INF/signature(.*)\\.p7s",
-                                                                  Pattern.CASE_INSENSITIVE);
-  static final Pattern PATTERN_XADES_SIGNATURES = Pattern.compile ("META-INF/signatures(.*)\\.xml",
-                                                                   Pattern.CASE_INSENSITIVE);
+  public static final Pattern PATTERN_CADES_MANIFEST = Pattern.compile ("META-INF/asicmanifest(.*)\\.xml",
+                                                                        Pattern.CASE_INSENSITIVE);
+  public static final Pattern PATTERN_CADES_SIGNATURE = Pattern.compile ("META-INF/signature(.*)\\.p7s",
+                                                                         Pattern.CASE_INSENSITIVE);
+  public static final Pattern PATTERN_XADES_SIGNATURES = Pattern.compile ("META-INF/signatures(.*)\\.xml",
+                                                                          Pattern.CASE_INSENSITIVE);
 
-  static final Pattern PATTERN_EXTENSION_ASICE = Pattern.compile (".+\\.(asice|sce)", Pattern.CASE_INSENSITIVE);
+  public static final Pattern PATTERN_EXTENSION_ASICE = Pattern.compile (".+\\.(asice|sce)", Pattern.CASE_INSENSITIVE);
 
-  AsicUtils ()
-  {
-    // No action
-  }
+  @PresentForCodeCoverage
+  private static final AsicUtils s_aInstance = new AsicUtils ();
+
+  private AsicUtils ()
+  {}
 
   /**
    * Combine multiple containers to one container. OASIS OpenDocument manifest

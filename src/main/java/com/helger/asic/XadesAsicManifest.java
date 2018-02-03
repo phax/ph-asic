@@ -51,7 +51,6 @@ import com.helger.xsds.xmldsig.X509IssuerSerialType;
 
 public class XadesAsicManifest extends AbstractAsicManifest
 {
-
   private static JAXBContext jaxbContext; // Thread safe
   private static ObjectFactory objectFactory1_2 = new ObjectFactory ();
   private static com.helger.asic.jaxb.cades.ObjectFactory objectFactory1_3 = new com.helger.asic.jaxb.cades.ObjectFactory ();
@@ -136,12 +135,12 @@ public class XadesAsicManifest extends AbstractAsicManifest
 
     // \XAdESSignature\Signature\KeyInfo
     final KeyInfoType keyInfoType = new KeyInfoType ();
-    keyInfoType.getContent ().add (getX509Data (signatureHelper));
+    keyInfoType.getContent ().add (_getX509Data (signatureHelper));
     signatureType.setKeyInfo (keyInfoType);
 
     // \XAdESSignature\Signature\Object
     final ObjectType objectType = new ObjectType ();
-    objectType.getContent ().add (getQualifyingProperties (signatureHelper));
+    objectType.getContent ().add (_getQualifyingProperties (signatureHelper));
     signatureType.getObject ().add (objectType);
 
     // \XAdESSignature\Signature\Object\SignatureValue
@@ -152,7 +151,6 @@ public class XadesAsicManifest extends AbstractAsicManifest
 
   public byte [] toBytes (final SignatureHelper signatureHelper)
   {
-
     try
     {
       final Marshaller marshaller = jaxbContext.createMarshaller ();
@@ -167,10 +165,9 @@ public class XadesAsicManifest extends AbstractAsicManifest
     {
       throw new IllegalStateException ("Unable to marshall the XAdESSignature into string output", e);
     }
-
   }
 
-  private JAXBElement <X509DataType> getX509Data (final SignatureHelper signatureHelper)
+  private JAXBElement <X509DataType> _getX509Data (final SignatureHelper signatureHelper)
   {
     final com.helger.xsds.xmldsig.ObjectFactory objectFactory = new com.helger.xsds.xmldsig.ObjectFactory ();
 
@@ -194,7 +191,7 @@ public class XadesAsicManifest extends AbstractAsicManifest
     return objectFactory.createX509Data (x509DataType);
   }
 
-  private JAXBElement <QualifyingPropertiesType> getQualifyingProperties (final SignatureHelper signatureHelper)
+  private JAXBElement <QualifyingPropertiesType> _getQualifyingProperties (final SignatureHelper signatureHelper)
   {
     // \XAdESSignature\Signature\Object\QualifyingProperties\SignedProperties\SignedSignatureProperties
     final SignedSignaturePropertiesType signedSignaturePropertiesType = new SignedSignaturePropertiesType ();

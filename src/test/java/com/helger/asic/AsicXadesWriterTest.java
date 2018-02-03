@@ -95,7 +95,7 @@ public final class AsicXadesWriterTest
     // Verifies that both files have been added.
     {
       int matchCount = 0;
-      final XadesAsicManifest asicManifest = (XadesAsicManifest) ((XadesAsicWriter) asicWriter).getAsicManifest ();
+      final XadesAsicManifest asicManifest = ((XadesAsicWriter) asicWriter).getAsicManifest ();
 
       for (final ReferenceType reference : asicManifest.getCreateXAdESSignatures (signatureHelper)
                                                        .getSignature ()

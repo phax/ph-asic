@@ -43,12 +43,9 @@ public class ManifestVerifier
                       final String sigReference)
   {
     if (m_eMD != null && digestAlgorithm != null && !digestAlgorithm.equals (m_eMD.getUri ()))
-      throw new IllegalStateException (String.format ("Wrong digest method for file %s: %s",
-                                                      filename,
-                                                      digestAlgorithm));
+      throw new IllegalStateException ("Wrong digest method for file " + filename + ": " + digestAlgorithm);
 
     AsicFile asicFile = m_aAsicManifestMap.get (filename);
-
     if (asicFile == null)
     {
       asicFile = new AsicFile ();
@@ -62,7 +59,7 @@ public class ManifestVerifier
     else
     {
       if (!Arrays.equals (asicFile.getDigest (), digest))
-        throw new IllegalStateException (String.format ("Mismatching digest for file %s", filename));
+        throw new IllegalStateException ("Mismatching digest for file " + filename);
 
       asicFile.setVerified (true);
     }
@@ -76,7 +73,7 @@ public class ManifestVerifier
 
   public void addCertificate (final Certificate certificate)
   {
-    this.m_aAsicManifest.getCertificate ().add (certificate);
+    m_aAsicManifest.addCertificate (certificate);
   }
 
   public void setRootFilename (final String filename)
@@ -88,7 +85,7 @@ public class ManifestVerifier
   {
     for (final AsicFile asicFile : m_aAsicManifest.getFile ())
       if (!asicFile.isVerified ())
-        throw new IllegalStateException (String.format ("File not verified: %s", asicFile.getName ()));
+        throw new IllegalStateException ("File not verified: " + asicFile.getName ());
   }
 
   public AsicManifest getAsicManifest ()

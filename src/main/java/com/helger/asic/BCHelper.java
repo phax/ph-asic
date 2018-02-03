@@ -14,6 +14,8 @@ package com.helger.asic;
 import java.security.Provider;
 import java.security.Security;
 
+import javax.annotation.Nonnull;
+
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 /**
@@ -37,6 +39,7 @@ public final class BCHelper
     }
   }
 
+  @Nonnull
   public static Provider getProvider ()
   {
     return PROVIDER;

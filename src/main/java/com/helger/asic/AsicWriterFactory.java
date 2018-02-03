@@ -17,8 +17,12 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import javax.annotation.Nonnull;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.helger.commons.ValueEnforcer;
 
 /**
  * Creates AsicWriter instances according to the supplied parameters.
@@ -33,6 +37,7 @@ public class AsicWriterFactory
    *
    * @return instantiated AsicWriterFactory
    */
+  @Nonnull
   public static AsicWriterFactory newFactory ()
   {
     return newFactory (ESignatureMethod.CAdES);
@@ -46,15 +51,17 @@ public class AsicWriterFactory
    * @return instantiated AsicWriterFactory
    * @see ESignatureMethod
    */
-  public static AsicWriterFactory newFactory (final ESignatureMethod signatureMethod)
+  @Nonnull
+  public static AsicWriterFactory newFactory (@Nonnull final ESignatureMethod signatureMethod)
   {
     return new AsicWriterFactory (signatureMethod);
   }
 
   private final ESignatureMethod m_eSM;
 
-  protected AsicWriterFactory (final ESignatureMethod eSM)
+  protected AsicWriterFactory (@Nonnull final ESignatureMethod eSM)
   {
+    ValueEnforcer.notNull (eSM, "SM");
     m_eSM = eSM;
   }
 
@@ -70,6 +77,7 @@ public class AsicWriterFactory
    * @throws IOException
    *         on IO error
    */
+  @Nonnull
   public IAsicWriter newContainer (final File outputDir, final String filename) throws IOException
   {
     return newContainer (new File (outputDir, filename));
@@ -85,11 +93,13 @@ public class AsicWriterFactory
    * @throws IOException
    *         on IO error
    */
+  @Nonnull
   public IAsicWriter newContainer (final File file) throws IOException
   {
     return newContainer (file.toPath ());
   }
 
+  @Nonnull
   public IAsicWriter newContainer (final Path path) throws IOException
   {
     // Conformance to ETSI TS 102 918, 6.2.1 1)
@@ -109,11 +119,13 @@ public class AsicWriterFactory
    * @throws IOException
    *         on IO error
    */
+  @Nonnull
   public IAsicWriter newContainer (final OutputStream outputStream) throws IOException
   {
     return newContainer (outputStream, false);
   }
 
+  @Nonnull
   public IAsicWriter newContainer (final OutputStream outputStream, final boolean closeStreamOnClose) throws IOException
   {
     switch (m_eSM)
