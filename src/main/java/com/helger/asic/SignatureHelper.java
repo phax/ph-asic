@@ -24,7 +24,9 @@ import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 import java.util.Collections;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.WillClose;
 
 import org.bouncycastle.cert.jcajce.JcaCertStore;
 import org.bouncycastle.cms.CMSProcessableByteArray;
@@ -40,6 +42,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.commons.base64.Base64;
+import com.helger.commons.io.stream.StreamHelper;
 
 /**
  * Helper class to assist when creating a signature.
@@ -94,10 +97,10 @@ public class SignatureHelper
    * @throws IOException
    *         on IO error
    */
-  public SignatureHelper (final File keyStoreFile,
-                          final String keyStorePassword,
-                          final String keyAlias,
-                          final String keyPassword) throws IOException
+  public SignatureHelper (@Nonnull final File keyStoreFile,
+                          @Nonnull final String keyStorePassword,
+                          @Nullable final String keyAlias,
+                          @Nonnull final String keyPassword) throws IOException
   {
     this (BCHelper.getProvider ());
     try (final InputStream inputStream = Files.newInputStream (keyStoreFile.toPath ()))
@@ -119,13 +122,20 @@ public class SignatureHelper
    * @param keyPassword
    *        Key password
    */
-  public SignatureHelper (final InputStream keyStoreStream,
+  public SignatureHelper (@WillClose final InputStream keyStoreStream,
                           final String keyStorePassword,
                           final String keyAlias,
                           final String keyPassword)
   {
     this (BCHelper.getProvider ());
-    loadCertificate (loadKeyStore (keyStoreStream, keyStorePassword), keyAlias, keyPassword);
+    try
+    {
+      loadCertificate (loadKeyStore (keyStoreStream, keyStorePassword), keyAlias, keyPassword);
+    }
+    finally
+    {
+      StreamHelper.close (keyStoreStream);
+    }
   }
 
   protected SignatureHelper (@Nullable final Provider aProvider)
@@ -137,7 +147,7 @@ public class SignatureHelper
       m_aJcaDigestCalculatorProviderBuilder.setProvider (aProvider);
   }
 
-  protected KeyStore loadKeyStore (final InputStream keyStoreStream, final String keyStorePassword)
+  protected KeyStore loadKeyStore (@Nonnull final InputStream keyStoreStream, @Nonnull final String keyStorePassword)
   {
     try
     {
@@ -156,7 +166,9 @@ public class SignatureHelper
     }
   }
 
-  protected void loadCertificate (final KeyStore keyStore, final String keyAlias, final String keyPassword)
+  protected void loadCertificate (@Nonnull final KeyStore keyStore,
+                                  @Nullable final String keyAlias,
+                                  @Nonnull final String keyPassword)
   {
     try
     {

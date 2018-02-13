@@ -18,6 +18,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.WillNotClose;
 
 import com.helger.commons.mime.IMimeType;
 
@@ -31,8 +33,10 @@ public interface IAsicWriter
    *        entry is extracted from the File object.
    * @return reference to this AsicWriter
    * @throws IOException
+   *         in case of IO error
    */
-  default IAsicWriter add (final File file) throws IOException
+  @Nonnull
+  default IAsicWriter add (@Nonnull final File file) throws IOException
   {
     return add (file.toPath ());
   }
@@ -47,8 +51,10 @@ public interface IAsicWriter
    *        the archive entry name to be used.
    * @return reference to this AsicWriter
    * @throws IOException
+   *         in case of error
    */
-  default IAsicWriter add (final File file, final String entryName) throws IOException
+  @Nonnull
+  default IAsicWriter add (@Nonnull final File file, final String entryName) throws IOException
   {
     return add (file.toPath (), entryName);
   }
@@ -60,9 +66,11 @@ public interface IAsicWriter
    *        references the file to be added.
    * @return reference to this AsicWriter
    * @throws IOException
+   *         in case of an IO error
    * @see #add(File)
    */
-  default IAsicWriter add (final Path path) throws IOException
+  @Nonnull
+  default IAsicWriter add (@Nonnull final Path path) throws IOException
   {
     return add (path, path.toFile ().getName ());
   }
@@ -77,9 +85,11 @@ public interface IAsicWriter
    *        the archive entry name to be used.
    * @return reference to this AsicWriter
    * @throws IOException
+   *         in case of an IO error
    * @see #add(File, String)
    */
-  default IAsicWriter add (final Path path, final String entryName) throws IOException
+  @Nonnull
+  default IAsicWriter add (@Nonnull final Path path, final String entryName) throws IOException
   {
     try (final InputStream inputStream = Files.newInputStream (path))
     {
@@ -99,8 +109,11 @@ public interface IAsicWriter
    *        order to determine the MIME type.
    * @return reference to this AsicWriter
    * @throws IOException
+   *         in case of an IO error
    */
-  default IAsicWriter add (final InputStream inputStream, final String filename) throws IOException
+  @Nonnull
+  default IAsicWriter add (@Nonnull @WillNotClose final InputStream inputStream,
+                           final String filename) throws IOException
   {
     // Add file to container
     return add (inputStream, filename, AsicUtils.detectMime (filename));
@@ -118,8 +131,12 @@ public interface IAsicWriter
    *        explicitly identifies the MIME type of the entry.
    * @return reference to this AsicWriter
    * @throws IOException
+   *         in case of an IO error
    */
-  default IAsicWriter add (final File file, final String entryName, final IMimeType mimeType) throws IOException
+  @Nonnull
+  default IAsicWriter add (@Nonnull final File file,
+                           final String entryName,
+                           final IMimeType mimeType) throws IOException
   {
     return add (file.toPath (), entryName, mimeType);
   }
@@ -138,7 +155,10 @@ public interface IAsicWriter
    * @throws IOException
    *         on IO error
    */
-  default IAsicWriter add (final Path path, final String entryName, final IMimeType mimeType) throws IOException
+  @Nonnull
+  default IAsicWriter add (@Nonnull final Path path,
+                           final String entryName,
+                           final IMimeType mimeType) throws IOException
   {
     try (InputStream inputStream = Files.newInputStream (path))
     {
@@ -161,7 +181,8 @@ public interface IAsicWriter
    * @throws IOException
    *         on IO error
    */
-  IAsicWriter add (InputStream inputStream, String entryName, IMimeType mimeType) throws IOException;
+  @Nonnull
+  IAsicWriter add (@Nonnull InputStream inputStream, String entryName, IMimeType mimeType) throws IOException;
 
   /**
    * Specifies which entry (file) represents the "root" document, i.e. which
@@ -185,7 +206,9 @@ public interface IAsicWriter
    *        password protecting the private key.
    * @return reference to this AsicWriter
    * @throws IOException
+   *         in case of an IO error
    */
+  @Nonnull
   default IAsicWriter sign (final File keyStoreFile,
                             final String keyStorePassword,
                             final String keyPassword) throws IOException
@@ -208,11 +231,13 @@ public interface IAsicWriter
    *        password protecting the private key.
    * @return reference to this AsicWriter
    * @throws IOException
+   *         in case of an IO error
    */
-  default IAsicWriter sign (final File keyStoreFile,
-                            final String keyStorePassword,
-                            final String keyAlias,
-                            final String keyPassword) throws IOException
+  @Nonnull
+  default IAsicWriter sign (@Nonnull final File keyStoreFile,
+                            @Nonnull final String keyStorePassword,
+                            @Nullable final String keyAlias,
+                            @Nonnull final String keyPassword) throws IOException
   {
     return sign (new SignatureHelper (keyStoreFile, keyStorePassword, keyAlias, keyPassword));
   }
@@ -226,6 +251,8 @@ public interface IAsicWriter
    * @return reference to this AsicWriter
    * @see #sign(File, String, String, String)
    * @throws IOException
+   *         in case of an IO error
    */
+  @Nonnull
   IAsicWriter sign (@Nonnull SignatureHelper signatureHelper) throws IOException;
 }

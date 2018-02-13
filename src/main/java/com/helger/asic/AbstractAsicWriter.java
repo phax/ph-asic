@@ -143,6 +143,11 @@ public abstract class AbstractAsicWriter implements IAsicWriter
   /**
    * Creating the signature and writing it into the archive is delegated to the
    * actual implementation
+   *
+   * @param signatureHelper
+   *        Signature helper for signing details
+   * @throws IOException
+   *         in case of IO error
    */
   protected abstract void performSign (SignatureHelper signatureHelper) throws IOException;
 

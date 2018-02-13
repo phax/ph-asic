@@ -19,6 +19,9 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import javax.annotation.Nonnull;
+import javax.annotation.WillNotClose;
+
 import com.helger.asic.jaxb.asic.AsicManifest;
 
 public interface IAsicReader extends Closeable
@@ -29,6 +32,7 @@ public interface IAsicReader extends Closeable
    *
    * @return name of next entry in archive.
    * @throws IOException
+   *         in case of an IO error
    */
   String getNextFile () throws IOException;
 
@@ -38,8 +42,9 @@ public interface IAsicReader extends Closeable
    * @param file
    *        into which the contents should be written.
    * @throws IOException
+   *         in case of an IO error
    */
-  default void writeFile (final File file) throws IOException
+  default void writeFile (@Nonnull final File file) throws IOException
   {
     writeFile (file.toPath ());
   }
@@ -50,8 +55,9 @@ public interface IAsicReader extends Closeable
    * @param path
    *        into which the contents of current entry should be written.
    * @throws IOException
+   *         in case of an IO error
    */
-  default void writeFile (final Path path) throws IOException
+  default void writeFile (@Nonnull final Path path) throws IOException
   {
     try (final OutputStream outputStream = Files.newOutputStream (path))
     {
@@ -65,14 +71,16 @@ public interface IAsicReader extends Closeable
    * @param outputStream
    *        into which data from current entry should be written.
    * @throws IOException
+   *         in case of an IO error
    */
-  void writeFile (OutputStream outputStream) throws IOException;
+  void writeFile (@Nonnull @WillNotClose OutputStream outputStream) throws IOException;
 
   /**
    * Returns InputStream to read the content.
    *
    * @return Content
    * @throws IOException
+   *         in case of an IO error
    */
   InputStream inputStream () throws IOException;
 

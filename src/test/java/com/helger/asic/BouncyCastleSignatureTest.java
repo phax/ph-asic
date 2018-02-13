@@ -35,6 +35,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.annotation.Nonnull;
+
 import org.bouncycastle.asn1.x500.X500NameBuilder;
 import org.bouncycastle.asn1.x500.style.BCStyle;
 import org.bouncycastle.cert.jcajce.JcaCertStore;
@@ -64,7 +66,7 @@ public final class BouncyCastleSignatureTest
   private static final Logger log = LoggerFactory.getLogger (BouncyCastleSignatureTest.class);
 
   private KeyPair m_aKeyPair;
-  private X509Certificate x509Certificate;
+  private X509Certificate m_aX509Certificate;
 
   @Test
   public void createSignature () throws Exception
@@ -87,7 +89,7 @@ public final class BouncyCastleSignatureTest
     final DigestCalculatorProvider digestCalculatorProvider = new JcaDigestCalculatorProviderBuilder ().setProvider (BCHelper.getProvider ())
                                                                                                        .build ();
     final SignerInfoGenerator signerInfoGenerator = new JcaSignerInfoGeneratorBuilder (digestCalculatorProvider).build (sha1Signer,
-                                                                                                                        x509Certificate);
+                                                                                                                        m_aX509Certificate);
     cmsSignedDataGenerator.addSignerInfoGenerator (signerInfoGenerator);
     cmsSignedDataGenerator.addCertificates (jcaCertStore);
     final CMSSignedData sigData = cmsSignedDataGenerator.generate (msg, false);
@@ -119,21 +121,22 @@ public final class BouncyCastleSignatureTest
                                                                                  nameBuilder.build (),
                                                                                  m_aKeyPair.getPublic ());
 
-    x509Certificate = new JcaX509CertificateConverter ().setProvider (BCHelper.getProvider ())
-                                                        .getCertificate (certGen.build (sigGen));
+    m_aX509Certificate = new JcaX509CertificateConverter ().setProvider (BCHelper.getProvider ())
+                                                           .getCertificate (certGen.build (sigGen));
 
-    x509Certificate.checkValidity (new Date ());
+    m_aX509Certificate.checkValidity (new Date ());
 
-    x509Certificate.verify (m_aKeyPair.getPublic ());
+    m_aX509Certificate.verify (m_aKeyPair.getPublic ());
 
-    final ByteArrayInputStream bIn = new ByteArrayInputStream (x509Certificate.getEncoded ());
+    final ByteArrayInputStream bIn = new ByteArrayInputStream (m_aX509Certificate.getEncoded ());
     final CertificateFactory fact = CertificateFactory.getInstance ("X.509", BCHelper.getProvider ());
 
-    x509Certificate = (X509Certificate) fact.generateCertificate (bIn);
+    m_aX509Certificate = (X509Certificate) fact.generateCertificate (bIn);
 
-    System.out.println (x509Certificate);
+    System.out.println (m_aX509Certificate);
   }
 
+  @Nonnull
   private static X500NameBuilder _createStdBuilder ()
   {
     final X500NameBuilder builder = new X500NameBuilder (BCStyle.INSTANCE);
@@ -155,19 +158,19 @@ public final class BouncyCastleSignatureTest
   {
     final KeyStore keyStore = KeyStore.getInstance ("JKS");
 
-    final FileInputStream fileInputStream = new FileInputStream (TestUtil.keyStoreFile ());
+    try (final FileInputStream fileInputStream = new FileInputStream (TestUtil.keyStoreFile ()))
+    {
+      keyStore.load (fileInputStream, TestUtil.keyStorePassword ().toCharArray ());
 
-    keyStore.load (fileInputStream, TestUtil.keyStorePassword ().toCharArray ());
+      final String alias = keyStore.aliases ().nextElement ();
+      final X509Certificate certificate = (X509Certificate) keyStore.getCertificate (alias);
 
-    final String alias = keyStore.aliases ().nextElement ();
-    final X509Certificate certificate = (X509Certificate) keyStore.getCertificate (alias);
+      m_aX509Certificate = certificate;
 
-    x509Certificate = certificate;
+      final Key key = keyStore.getKey (alias, TestUtil.privateKeyPassword ().toCharArray ());
+      final PrivateKey privateKey = (PrivateKey) key;
 
-    final Key key = keyStore.getKey (alias, TestUtil.privateKeyPassword ().toCharArray ());
-    final PrivateKey privateKey = (PrivateKey) key;
-
-    return new KeyPair (certificate.getPublicKey (), privateKey);
+      return new KeyPair (certificate.getPublicKey (), privateKey);
+    }
   }
-
 }

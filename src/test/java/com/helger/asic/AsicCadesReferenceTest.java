@@ -17,6 +17,7 @@ import static org.junit.Assert.fail;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
@@ -45,7 +46,8 @@ public final class AsicCadesReferenceTest
   @Test
   public void valid () throws Exception
   {
-    try (final AsicVerifier asicVerifier = asicVerifierFactory.verify (ClassPathResource.getInputStream ("/asic/asic-cades-test-valid.asice")))
+    try (final InputStream aIS = ClassPathResource.getInputStream ("/asic/asic-cades-test-valid.asice");
+         final AsicVerifier asicVerifier = asicVerifierFactory.verify (aIS))
     {
       assertEquals (asicVerifier.getAsicManifest ().getFile ().size (), 2);
 
