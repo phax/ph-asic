@@ -19,24 +19,22 @@ import java.io.IOException;
 
 import org.junit.Ignore;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.helger.commons.io.resource.ClassPathResource;
 
-public class AsicXadesReferenceTest
+public final class AsicXadesReferenceTest
 {
-  private static final Logger log = LoggerFactory.getLogger (AsicXadesReferenceTest.class);
-
-  private final AsicVerifierFactory asicVerifierFactory = AsicVerifierFactory.newFactory (ESignatureMethod.XAdES);
+  private final AsicVerifierFactory m_aAsicVerifierFactory = AsicVerifierFactory.newFactory (ESignatureMethod.XAdES);
 
   // Fetched from
   // http://begrep.difi.no/SikkerDigitalPost/1.2.0/eksempler/post.asice.zip
   @Test
   public void validSdp () throws IOException
   {
-    final AsicVerifier asicVerifier = asicVerifierFactory.verify (ClassPathResource.getInputStream ("/asic/asic-xades-external-sdp.asice"));
-    assertEquals (asicVerifier.getAsicManifest ().getFile ().size (), 6);
+    try (final AsicVerifier asicVerifier = m_aAsicVerifierFactory.verify (ClassPathResource.getInputStream ("/asic/asic-xades-external-sdp.asice")))
+    {
+      assertEquals (asicVerifier.getAsicManifest ().getFile ().size (), 6);
+    }
   }
 
   // Fetched from
@@ -44,9 +42,11 @@ public class AsicXadesReferenceTest
   @Test
   public void validDigidoc4j () throws IOException
   {
-    final AsicVerifier asicVerifier = asicVerifierFactory.verify (ClassPathResource.getInputStream ("/asic/asic-xades-external-digidoc4j.asice"));
-    assertEquals (asicVerifier.getAsicManifest ().getFile ().size (), 2);
-    assertNotNull (asicVerifier.getOasisManifest ());
+    try (final AsicVerifier asicVerifier = m_aAsicVerifierFactory.verify (ClassPathResource.getInputStream ("/asic/asic-xades-external-digidoc4j.asice")))
+    {
+      assertEquals (asicVerifier.getAsicManifest ().getFile ().size (), 2);
+      assertNotNull (asicVerifier.getOasisManifest ());
+    }
   }
 
   // Fetched from
@@ -54,9 +54,11 @@ public class AsicXadesReferenceTest
   @Test
   public void validDss () throws IOException
   {
-    final AsicVerifier asicVerifier = asicVerifierFactory.verify (ClassPathResource.getInputStream ("/asic/asic-xades-external-dss.asice"));
-    assertEquals (asicVerifier.getAsicManifest ().getFile ().size (), 1);
-    assertNotNull (asicVerifier.getOasisManifest ());
+    try (final AsicVerifier asicVerifier = m_aAsicVerifierFactory.verify (ClassPathResource.getInputStream ("/asic/asic-xades-external-dss.asice")))
+    {
+      assertEquals (asicVerifier.getAsicManifest ().getFile ().size (), 1);
+      assertNotNull (asicVerifier.getOasisManifest ());
+    }
   }
 
   @Test
@@ -65,12 +67,12 @@ public class AsicXadesReferenceTest
   {
     try
     {
-      asicVerifierFactory.verify (ClassPathResource.getInputStream ("/asic/asic-xades-invalid-manifest.asice"));
+      m_aAsicVerifierFactory.verify (ClassPathResource.getInputStream ("/asic/asic-xades-invalid-manifest.asice"));
       fail ("Exception expected.");
     }
     catch (final IllegalStateException e)
     {
-      log.info (e.getMessage ());
+      // Ignore
     }
   }
 
@@ -80,12 +82,12 @@ public class AsicXadesReferenceTest
   {
     try
     {
-      asicVerifierFactory.verify (ClassPathResource.getInputStream ("/asic/asic-xades-invalid-signature.asice"));
+      m_aAsicVerifierFactory.verify (ClassPathResource.getInputStream ("/asic/asic-xades-invalid-signature.asice"));
       fail ("Exception expected.");
     }
     catch (final IllegalStateException e)
     {
-      log.info (e.getMessage ());
+      // Ignore
     }
   }
 
@@ -95,12 +97,12 @@ public class AsicXadesReferenceTest
   {
     try
     {
-      asicVerifierFactory.verify (ClassPathResource.getInputStream ("/asic/asic-xades-invalid-signedproperties.asice"));
+      m_aAsicVerifierFactory.verify (ClassPathResource.getInputStream ("/asic/asic-xades-invalid-signedproperties.asice"));
       fail ("Exception expected.");
     }
     catch (final IllegalStateException e)
     {
-      log.info (e.getMessage ());
+      // Ignore
     }
   }
 }

@@ -18,6 +18,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import javax.annotation.Nonnull;
+import javax.annotation.WillCloseWhenClosed;
 
 import com.helger.commons.ValueEnforcer;
 
@@ -30,12 +31,12 @@ public class AsicVerifierFactory
     return newFactory (EMessageDigestAlgorithm.SHA256);
   }
 
-  public static AsicVerifierFactory newFactory (final ESignatureMethod eSM)
+  public static AsicVerifierFactory newFactory (@Nonnull final ESignatureMethod eSM)
   {
     return newFactory (eSM.getMessageDigestAlgorithm ());
   }
 
-  static AsicVerifierFactory newFactory (final EMessageDigestAlgorithm eMDAlgorithm)
+  static AsicVerifierFactory newFactory (@Nonnull final EMessageDigestAlgorithm eMDAlgorithm)
   {
     return new AsicVerifierFactory (eMDAlgorithm);
   }
@@ -47,19 +48,19 @@ public class AsicVerifierFactory
   }
 
   @Nonnull
-  public AsicVerifier verify (final File file) throws IOException
+  public AsicVerifier verify (@Nonnull final File file) throws IOException
   {
     return verify (file.toPath ());
   }
 
   @Nonnull
-  public AsicVerifier verify (final Path file) throws IOException
+  public AsicVerifier verify (@Nonnull final Path file) throws IOException
   {
     return verify (Files.newInputStream (file));
   }
 
   @Nonnull
-  public AsicVerifier verify (final InputStream inputStream) throws IOException
+  public AsicVerifier verify (@Nonnull @WillCloseWhenClosed final InputStream inputStream) throws IOException
   {
     return new AsicVerifier (m_eMessageDigestAlgorithm, inputStream);
   }

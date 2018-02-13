@@ -16,12 +16,12 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -35,6 +35,7 @@ import com.helger.asic.jaxb.cades.DataObjectReferenceType;
 import com.helger.commons.io.file.FilenameHelper;
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.io.stream.NonBlockingBufferedInputStream;
+import com.helger.commons.io.stream.NonBlockingByteArrayInputStream;
 import com.helger.commons.mime.CMimeType;
 
 /**
@@ -182,12 +183,15 @@ public final class AsicCadesWriterTest
                                             TestUtil.privateKeyPassword ()));
       fail ("Exception expected");
     }
-    catch (final Exception e)
+    catch (final IllegalStateException e)
     {
-      assertTrue (e instanceof IllegalStateException);
+      // empty
     }
 
-    m_aVerifierFactory.verify (asicOutputFile);
+    try (final AsicVerifier aVerifier = m_aVerifierFactory.verify (asicOutputFile))
+    {
+      // nada
+    }
   }
 
   @Test
@@ -197,12 +201,13 @@ public final class AsicCadesWriterTest
 
     try
     {
-      asicWriter.add (new ByteArrayInputStream ("Demo".getBytes ()), "META-INF/demo.xml");
+      asicWriter.add (new NonBlockingByteArrayInputStream ("Demo".getBytes (StandardCharsets.ISO_8859_1)),
+                      "META-INF/demo.xml");
       fail ("Exception expected.");
     }
     catch (final IllegalStateException e)
     {
-      log.debug (e.getMessage ());
+      // empty
     }
   }
 }

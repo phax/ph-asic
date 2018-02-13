@@ -40,27 +40,26 @@ import com.helger.commons.mime.CMimeType;
  */
 public class AsicWriterTest
 {
+  private static final Logger log = LoggerFactory.getLogger (AsicWriterTest.class);
 
-  public static final Logger log = LoggerFactory.getLogger (AsicWriterTest.class);
+  private static final String BII_ENVELOPE_XML = "/asic/bii-envelope.xml";
+  private static final String BII_MESSAGE_XML = TestUtil.BII_SAMPLE_MESSAGE_XML;
+  private File m_aKeystoreFile;
 
-  public static final String BII_ENVELOPE_XML = "/asic/bii-envelope.xml";
-  public static final String BII_MESSAGE_XML = TestUtil.BII_SAMPLE_MESSAGE_XML;
-  private File keystoreFile;
-
-  private AsicVerifierFactory asicVerifierFactory;
-  private File biiEnvelopeFile;
-  private File biiMessageFile;
+  private AsicVerifierFactory m_aAsicVerifierFactory;
+  private File m_aEnvelopeFile;
+  private File m_aMessageFile;
 
   @Before
   public void setUp ()
   {
-    biiEnvelopeFile = ClassPathResource.getAsFile (BII_ENVELOPE_XML);
-    biiMessageFile = ClassPathResource.getAsFile (BII_MESSAGE_XML);
-    keystoreFile = TestUtil.keyStoreFile ();
-    assertTrue ("Expected to find your private key and certificate in " + keystoreFile, keystoreFile.canRead ());
+    m_aEnvelopeFile = ClassPathResource.getAsFile (BII_ENVELOPE_XML);
+    m_aMessageFile = ClassPathResource.getAsFile (BII_MESSAGE_XML);
+    m_aKeystoreFile = TestUtil.keyStoreFile ();
+    assertTrue ("Expected to find your private key and certificate in " + m_aKeystoreFile, m_aKeystoreFile.canRead ());
 
     // Assumes default signature method
-    asicVerifierFactory = AsicVerifierFactory.newFactory ();
+    m_aAsicVerifierFactory = AsicVerifierFactory.newFactory ();
   }
 
   @Test
@@ -83,12 +82,12 @@ public class AsicWriterTest
     /*
      * Adds an ordinary file, using the file name as the entry name
      */
-    asicWriter.add (biiEnvelopeFile);
+    asicWriter.add (m_aEnvelopeFile);
     /*
      * Adds another file, explicitly naming the entry and specifying the MIME
      * type
      */
-    asicWriter.add (biiMessageFile, BII_MESSAGE_XML, CMimeType.APPLICATION_XML);
+    asicWriter.add (m_aMessageFile, BII_MESSAGE_XML, CMimeType.APPLICATION_XML);
     /*
      * Indicates that the BII message is the root document
      */
@@ -96,7 +95,7 @@ public class AsicWriterTest
     /*
      * Signing the contents of the archive, closes it for further changes.
      */
-    asicWriter.sign (keystoreFile, TestUtil.keyStorePassword (), TestUtil.privateKeyPassword ());
+    asicWriter.sign (m_aKeystoreFile, TestUtil.keyStorePassword (), TestUtil.privateKeyPassword ());
 
     // PART 2 - verify the contents of the archive.
 
@@ -147,7 +146,7 @@ public class AsicWriterTest
 
     try
     {
-      asicWriter.add (biiEnvelopeFile);
+      asicWriter.add (m_aEnvelopeFile);
       fail ("Exception expected");
     }
     catch (final IllegalStateException e)
@@ -157,7 +156,7 @@ public class AsicWriterTest
 
     try
     {
-      asicWriter.sign (new SignatureHelper (keystoreFile,
+      asicWriter.sign (new SignatureHelper (m_aKeystoreFile,
                                             TestUtil.keyStorePassword (),
                                             TestUtil.privateKeyPassword ()));
       fail ("Exception expected");
@@ -167,8 +166,10 @@ public class AsicWriterTest
       // ignore
     }
 
-    final AsicVerifier asicVerifier = asicVerifierFactory.verify (archiveOutputFile);
-    assertEquals (asicVerifier.getAsicManifest ().getFile ().size (), 2);
+    try (final AsicVerifier asicVerifier = m_aAsicVerifierFactory.verify (archiveOutputFile))
+    {
+      assertEquals (asicVerifier.getAsicManifest ().getFile ().size (), 2);
+    }
   }
 
   @Test
@@ -188,7 +189,7 @@ public class AsicWriterTest
     asicWriterFactory.newContainer (archiveOutputFile)
                      // Adds file, explicitly naming the entry and specifying
                      // the MIME type
-                     .add (biiMessageFile, FilenameHelper.getWithoutPath (BII_MESSAGE_XML), CMimeType.APPLICATION_XML)
+                     .add (m_aMessageFile, FilenameHelper.getWithoutPath (BII_MESSAGE_XML), CMimeType.APPLICATION_XML)
                      // Indicates which file is the root file
                      .setRootEntryName (FilenameHelper.getWithoutPath (BII_MESSAGE_XML))
                      // Adds a PDF attachment, using the name of the file, i.e.
@@ -196,7 +197,7 @@ public class AsicWriterTest
                      .add (brochurePdfFile)
                      // Signing the contents of the archive, closes it for
                      // further changes.
-                     .sign (keystoreFile, TestUtil.keyStorePassword (), TestUtil.privateKeyPassword ());
+                     .sign (m_aKeystoreFile, TestUtil.keyStorePassword (), TestUtil.privateKeyPassword ());
 
     log.debug ("Wrote ASiC-e container to " + archiveOutputFile);
     // Opens the generated archive and reads each entry
@@ -236,7 +237,7 @@ public class AsicWriterTest
     {
       final AsicWriterFactory asicWriterFactory = AsicWriterFactory.newFactory ();
       final ByteArrayOutputStream aBAOS = new ByteArrayOutputStream ();
-      asicWriterFactory.newContainer (aBAOS).add (biiEnvelopeFile, "envelope.aaz");
+      asicWriterFactory.newContainer (aBAOS).add (m_aEnvelopeFile, "envelope.aaz");
       fail ("Expected exception, is .aaz a known extension?");
     }
     catch (final IllegalStateException e)

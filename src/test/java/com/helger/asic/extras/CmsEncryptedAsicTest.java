@@ -30,6 +30,8 @@ import java.security.cert.X509Certificate;
 import org.bouncycastle.cms.CMSAlgorithm;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.helger.asic.AsicReaderFactory;
 import com.helger.asic.AsicWriterFactory;
@@ -38,14 +40,16 @@ import com.helger.asic.IAsicWriter;
 import com.helger.asic.SignatureHelper;
 import com.helger.asic.TestUtil;
 import com.helger.commons.io.resource.ClassPathResource;
+import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.mime.CMimeType;
 
 public final class CmsEncryptedAsicTest
 {
+  private static final Logger s_aLogger = LoggerFactory.getLogger (CmsEncryptedAsicTest.class);
+
   @Test
   public void simple () throws Exception
   {
-
     // WRITE TO ASIC
     final KeyStore keyStore = loadKeyStore ();
 
@@ -53,79 +57,83 @@ public final class CmsEncryptedAsicTest
     final X509Certificate certificate = (X509Certificate) keyStore.getCertificate ("selfsigned");
 
     // Store result in ByteArrayOutputStream
-    final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream ();
-
-    // Create a new ASiC archive
-    final IAsicWriter asicWriter = AsicWriterFactory.newFactory ().newContainer (byteArrayOutputStream);
-    // Encapsulate ASiC archive to enable writing encrypted content
-    final CmsEncryptedAsicWriter writer = new CmsEncryptedAsicWriter (asicWriter, certificate, CMSAlgorithm.AES128_GCM);
-    writer.add (ClassPathResource.getInputStream ("/asic/image.bmp"), "simple.bmp", CMimeType.IMAGE_BMP);
-    writer.addEncrypted (ClassPathResource.getInputStream ("/asic/image.bmp"), "encrypted.bmp", CMimeType.IMAGE_BMP);
-    writer.addEncrypted (ClassPathResource.getAsFile ("/asic/image.bmp"), "encrypted2.bmp", CMimeType.IMAGE_BMP);
-    writer.addEncrypted (ClassPathResource.getAsFile ("/asic/image.bmp"), "encrypted3.xml");
-    writer.setRootEntryName ("encrypted.bmp");
-    writer.sign (new SignatureHelper (TestUtil.keyStoreFile (),
-                                      TestUtil.keyStorePassword (),
-                                      TestUtil.keyPairAlias (),
-                                      TestUtil.privateKeyPassword ()));
-    // ByteArrayOutputStream now contains a signed ASiC archive containing one
-    // encrypted file
-
-    // READ FROM ASIC
-
-    // Fetch private key from keystore
-    final PrivateKey privateKey = (PrivateKey) keyStore.getKey ("selfsigned", "changeit".toCharArray ());
-
-    // Open content of ByteArrayOutputStream for reading
-    try (final IAsicReader asicReader = AsicReaderFactory.newFactory ()
-                                                         .open (new ByteArrayInputStream (byteArrayOutputStream.toByteArray ())))
+    try (final NonBlockingByteArrayOutputStream byteArrayOutputStream = new NonBlockingByteArrayOutputStream ())
     {
-      // Encapsulate ASiC archive to enable reading encrypted content
-      try (final CmsEncryptedAsicReader reader = new CmsEncryptedAsicReader (asicReader, privateKey))
+
+      // Create a new ASiC archive
+      final IAsicWriter asicWriter = AsicWriterFactory.newFactory ().newContainer (byteArrayOutputStream);
+      // Encapsulate ASiC archive to enable writing encrypted content
+      final CmsEncryptedAsicWriter writer = new CmsEncryptedAsicWriter (asicWriter,
+                                                                        certificate,
+                                                                        CMSAlgorithm.AES128_GCM);
+      writer.add (ClassPathResource.getInputStream ("/asic/image.bmp"), "simple.bmp", CMimeType.IMAGE_BMP);
+      writer.addEncrypted (ClassPathResource.getInputStream ("/asic/image.bmp"), "encrypted.bmp", CMimeType.IMAGE_BMP);
+      writer.addEncrypted (ClassPathResource.getAsFile ("/asic/image.bmp"), "encrypted2.bmp", CMimeType.IMAGE_BMP);
+      writer.addEncrypted (ClassPathResource.getAsFile ("/asic/image.bmp"), "encrypted3.xml");
+      writer.setRootEntryName ("encrypted.bmp");
+      writer.sign (new SignatureHelper (TestUtil.keyStoreFile (),
+                                        TestUtil.keyStorePassword (),
+                                        TestUtil.keyPairAlias (),
+                                        TestUtil.privateKeyPassword ()));
+      // ByteArrayOutputStream now contains a signed ASiC archive containing one
+      // encrypted file
+
+      // READ FROM ASIC
+
+      // Fetch private key from keystore
+      final PrivateKey privateKey = (PrivateKey) keyStore.getKey ("selfsigned", "changeit".toCharArray ());
+
+      // Open content of ByteArrayOutputStream for reading
+      try (final IAsicReader asicReader = AsicReaderFactory.newFactory ()
+                                                           .open (new ByteArrayInputStream (byteArrayOutputStream.toByteArray ())))
       {
-        // Read plain file
-        assertEquals (reader.getNextFile (), "simple.bmp");
-        final ByteArrayOutputStream file1 = new ByteArrayOutputStream ();
-        reader.writeFile (file1);
+        // Encapsulate ASiC archive to enable reading encrypted content
+        try (final CmsEncryptedAsicReader reader = new CmsEncryptedAsicReader (asicReader, privateKey))
+        {
+          // Read plain file
+          assertEquals (reader.getNextFile (), "simple.bmp");
+          final ByteArrayOutputStream file1 = new ByteArrayOutputStream ();
+          reader.writeFile (file1);
 
-        // Read encrypted file
-        assertEquals (reader.getNextFile (), "encrypted.bmp");
-        final ByteArrayOutputStream file2 = new ByteArrayOutputStream ();
-        reader.writeFile (file2);
+          // Read encrypted file
+          assertEquals (reader.getNextFile (), "encrypted.bmp");
+          final ByteArrayOutputStream file2 = new ByteArrayOutputStream ();
+          reader.writeFile (file2);
 
-        // Read encrypted file 2
-        assertEquals (reader.getNextFile (), "encrypted2.bmp");
-        final ByteArrayOutputStream file3 = new ByteArrayOutputStream ();
-        reader.writeFile (file3);
+          // Read encrypted file 2
+          assertEquals (reader.getNextFile (), "encrypted2.bmp");
+          final ByteArrayOutputStream file3 = new ByteArrayOutputStream ();
+          reader.writeFile (file3);
 
-        // Read encrypted file 3
-        assertEquals (reader.getNextFile (), "encrypted3.xml");
-        final ByteArrayOutputStream file4 = new ByteArrayOutputStream ();
-        reader.writeFile (file4);
+          // Read encrypted file 3
+          assertEquals (reader.getNextFile (), "encrypted3.xml");
+          final ByteArrayOutputStream file4 = new ByteArrayOutputStream ();
+          reader.writeFile (file4);
 
-        // Verify both files contain the same data
-        assertArrayEquals (file2.toByteArray (), file1.toByteArray ());
+          // Verify both files contain the same data
+          assertArrayEquals (file2.toByteArray (), file1.toByteArray ());
 
-        // Verify no more files are found
-        assertNull (reader.getNextFile ());
+          // Verify no more files are found
+          assertNull (reader.getNextFile ());
 
-        // Verify certificate used for signing of ASiC is the same as the one
-        // used
-        // for signing
-        assertArrayEquals (reader.getAsicManifest ().getCertificate ().get (0).getCertificate (),
-                           certificate.getEncoded ());
+          // Verify certificate used for signing of ASiC is the same as the one
+          // used
+          // for signing
+          assertArrayEquals (reader.getAsicManifest ().getCertificate ().get (0).getCertificate (),
+                             certificate.getEncoded ());
 
-        assertEquals (reader.getAsicManifest ().getRootfile (), "encrypted.bmp");
+          assertEquals (reader.getAsicManifest ().getRootfile (), "encrypted.bmp");
+        }
       }
-    }
 
-    // Writes the ASiC file to temporary directory
-    final File sample = File.createTempFile ("sample", ".asice");
-    try (FileOutputStream fileOutputStream = new FileOutputStream (sample))
-    {
-      fileOutputStream.write (byteArrayOutputStream.toByteArray ());
+      // Writes the ASiC file to temporary directory
+      final File sample = File.createTempFile ("sample", ".asice");
+      try (final FileOutputStream fileOutputStream = new FileOutputStream (sample))
+      {
+        fileOutputStream.write (byteArrayOutputStream.toByteArray ());
+      }
+      s_aLogger.info ("Wrote sample ASiC to " + sample);
     }
-    System.out.println ("Wrote sample ASiC to " + sample);
   }
 
   private KeyStore loadKeyStore () throws KeyStoreException, IOException, NoSuchAlgorithmException, CertificateException
@@ -149,9 +157,8 @@ public final class CmsEncryptedAsicTest
 
     // Store result in outputfile
     final File sample = File.createTempFile ("sample-bits", ".asice");
-    try (FileOutputStream fileOutputStream = new FileOutputStream (sample))
+    try (final FileOutputStream fileOutputStream = new FileOutputStream (sample))
     {
-
       // Create a new ASiC archive
       final IAsicWriter asicWriter = AsicWriterFactory.newFactory ().newContainer (fileOutputStream);
       // Encapsulate ASiC archive to enable writing encrypted content
@@ -180,7 +187,7 @@ public final class CmsEncryptedAsicTest
 
     }
 
-    System.out.println ("Wrote sample ASiC to " + sample);
+    s_aLogger.info ("Wrote sample ASiC to " + sample);
   }
 
 }

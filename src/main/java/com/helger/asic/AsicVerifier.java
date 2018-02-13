@@ -14,18 +14,26 @@ package com.helger.asic;
 import java.io.IOException;
 import java.io.InputStream;
 
+import javax.annotation.Nonnull;
+import javax.annotation.WillClose;
+
 import com.helger.commons.io.stream.NullOutputStream;
 
 public class AsicVerifier extends AbstractAsicReader
 {
-  protected AsicVerifier (final EMessageDigestAlgorithm messageDigestAlgorithm,
-                          final InputStream inputStream) throws IOException
+  protected AsicVerifier (@Nonnull final EMessageDigestAlgorithm messageDigestAlgorithm,
+                          @Nonnull @WillClose final InputStream inputStream) throws IOException
   {
     super (messageDigestAlgorithm, inputStream);
 
-    while (getNextFile () != null)
-      internalWriteFile (new NullOutputStream ());
-
-    close ();
+    try
+    {
+      while (getNextFile () != null)
+        internalWriteFile (new NullOutputStream ());
+    }
+    finally
+    {
+      close ();
+    }
   }
 }

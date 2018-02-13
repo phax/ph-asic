@@ -17,7 +17,6 @@ import static org.junit.Assert.fail;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
@@ -34,7 +33,7 @@ public final class AsicCadesReferenceTest
 {
   private static final Logger log = LoggerFactory.getLogger (AsicCadesReferenceTest.class);
 
-  private final AsicVerifierFactory asicVerifierFactory = AsicVerifierFactory.newFactory (ESignatureMethod.CAdES);
+  private final AsicVerifierFactory m_aAsicVerifierFactory = AsicVerifierFactory.newFactory (ESignatureMethod.CAdES);
   private final AsicReaderFactory asicRederFactory = AsicReaderFactory.newFactory (ESignatureMethod.CAdES);
 
   @BeforeClass
@@ -46,8 +45,7 @@ public final class AsicCadesReferenceTest
   @Test
   public void valid () throws Exception
   {
-    try (final InputStream aIS = ClassPathResource.getInputStream ("/asic/asic-cades-test-valid.asice");
-         final AsicVerifier asicVerifier = asicVerifierFactory.verify (aIS))
+    try (final AsicVerifier asicVerifier = m_aAsicVerifierFactory.verify (ClassPathResource.getInputStream ("/asic/asic-cades-test-valid.asice")))
     {
       assertEquals (asicVerifier.getAsicManifest ().getFile ().size (), 2);
 
@@ -68,7 +66,7 @@ public final class AsicCadesReferenceTest
   {
     try
     {
-      asicVerifierFactory.verify (ClassPathResource.getInputStream ("/asic/asic-cades-test-invalid-manifest.asice"));
+      m_aAsicVerifierFactory.verify (ClassPathResource.getInputStream ("/asic/asic-cades-test-invalid-manifest.asice"));
       fail ("Exception expected.");
     }
     catch (final IllegalStateException e)
@@ -93,7 +91,7 @@ public final class AsicCadesReferenceTest
   {
     try
     {
-      asicVerifierFactory.verify (ClassPathResource.getInputStream ("/asic/asic-cades-test-invalid-signature.asice"));
+      m_aAsicVerifierFactory.verify (ClassPathResource.getInputStream ("/asic/asic-cades-test-invalid-signature.asice"));
       fail ("Exception expected.");
     }
     catch (final IllegalStateException e)
@@ -107,7 +105,7 @@ public final class AsicCadesReferenceTest
   {
     try
     {
-      asicVerifierFactory.verify (ClassPathResource.getInputStream ("/asic/asic-cades-test-invalid-metadata-file.asice"));
+      m_aAsicVerifierFactory.verify (ClassPathResource.getInputStream ("/asic/asic-cades-test-invalid-metadata-file.asice"));
       fail ("Exception expected.");
     }
     catch (final IllegalStateException e)
@@ -121,7 +119,7 @@ public final class AsicCadesReferenceTest
   {
     try
     {
-      asicVerifierFactory.verify (ClassPathResource.getInputStream ("/asic/asic-cades-test-invalid-sigreference.asice"));
+      m_aAsicVerifierFactory.verify (ClassPathResource.getInputStream ("/asic/asic-cades-test-invalid-sigreference.asice"));
       fail ("Exception expected.");
     }
     catch (final IllegalStateException e)
