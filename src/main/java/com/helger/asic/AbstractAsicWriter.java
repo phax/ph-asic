@@ -17,6 +17,8 @@ import java.io.OutputStream;
 import java.security.DigestOutputStream;
 import java.util.zip.ZipEntry;
 
+import javax.annotation.Nonnull;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,14 +26,14 @@ import com.helger.commons.mime.IMimeType;
 
 public abstract class AbstractAsicWriter implements IAsicWriter
 {
-  private static final Logger logger = LoggerFactory.getLogger (AbstractAsicWriter.class);
+  private static final Logger LOG = LoggerFactory.getLogger (AbstractAsicWriter.class);
 
   protected AsicOutputStream m_aAsicOutputStream;
   protected AbstractAsicManifest m_aAsicManifest;
 
   protected boolean m_bFinished = false;
   protected OutputStream m_aContainerOS;
-  protected boolean m_bCloseStreamOnClose = false;
+  protected boolean m_bCloseStreamOnSign = false;
 
   protected OasisManifest m_aOasisManifest;
 
@@ -40,16 +42,18 @@ public abstract class AbstractAsicWriter implements IAsicWriter
    *
    * @param aOS
    *        Stream used to write container.
-   * @param bCloseStreamOnClose
+   * @param bCloseStreamOnSign
+   *        close output stream after signing
    * @param aAsicManifest
+   *        The asic manifest to use
    */
-  AbstractAsicWriter (final OutputStream aOS,
-                      final boolean bCloseStreamOnClose,
-                      final AbstractAsicManifest aAsicManifest) throws IOException
+  protected AbstractAsicWriter (@Nonnull final OutputStream aOS,
+                                final boolean bCloseStreamOnSign,
+                                @Nonnull final AbstractAsicManifest aAsicManifest) throws IOException
   {
     // Keep original output stream
     m_aContainerOS = aOS;
-    m_bCloseStreamOnClose = bCloseStreamOnClose;
+    m_bCloseStreamOnSign = bCloseStreamOnSign;
 
     // Initiate manifest
     m_aAsicManifest = aAsicManifest;
@@ -74,8 +78,8 @@ public abstract class AbstractAsicWriter implements IAsicWriter
       throw new IllegalStateException ("Adding files to META-INF is not allowed.");
 
     // Creates new zip entry
-    if (logger.isDebugEnabled ())
-      logger.debug ("Writing file '" + filename + "' to container");
+    if (LOG.isDebugEnabled ())
+      LOG.debug ("Writing file '" + filename + "' to container");
     m_aAsicOutputStream.putNextEntry (new ZipEntry (filename));
 
     // Prepare for calculation of message digest
@@ -124,7 +128,7 @@ public abstract class AbstractAsicWriter implements IAsicWriter
       throw new IllegalStateException ("Unable to finish the container", e);
     }
 
-    if (m_bCloseStreamOnClose)
+    if (m_bCloseStreamOnSign)
     {
       try
       {

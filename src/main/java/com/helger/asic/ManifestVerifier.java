@@ -15,9 +15,12 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.Nonnull;
+
 import com.helger.asic.jaxb.asic.AsicFile;
 import com.helger.asic.jaxb.asic.AsicManifest;
 import com.helger.asic.jaxb.asic.Certificate;
+import com.helger.commons.ValueEnforcer;
 
 public class ManifestVerifier
 {
@@ -26,9 +29,10 @@ public class ManifestVerifier
   private final AsicManifest m_aAsicManifest = new AsicManifest ();
   private final Map <String, AsicFile> m_aAsicManifestMap = new HashMap <> ();
 
-  public ManifestVerifier (final EMessageDigestAlgorithm messageDigestAlgorithm)
+  public ManifestVerifier (@Nonnull final EMessageDigestAlgorithm eMD)
   {
-    m_eMD = messageDigestAlgorithm;
+    ValueEnforcer.notNull (eMD, "MD");
+    m_eMD = eMD;
   }
 
   public void update (final String filename, final byte [] digest, final String sigReference)
@@ -88,6 +92,7 @@ public class ManifestVerifier
         throw new IllegalStateException ("File not verified: " + asicFile.getName ());
   }
 
+  @Nonnull
   public AsicManifest getAsicManifest ()
   {
     return m_aAsicManifest;

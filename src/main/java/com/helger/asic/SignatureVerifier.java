@@ -31,7 +31,7 @@ import com.helger.commons.annotation.PresentForCodeCoverage;
  */
 public final class SignatureVerifier
 {
-  private static final Logger logger = LoggerFactory.getLogger (SignatureHelper.class);
+  private static final Logger LOG = LoggerFactory.getLogger (SignatureHelper.class);
 
   private static final JcaSimpleSignerInfoVerifierBuilder s_aJcaSimpleSignerInfoVerifierBuilder = new JcaSimpleSignerInfoVerifierBuilder ().setProvider (BCHelper.getProvider ());
 
@@ -57,7 +57,8 @@ public final class SignatureVerifier
         final X509CertificateHolder x509Certificate = (X509CertificateHolder) store.getMatches (signerInformation.getSID ())
                                                                                    .iterator ()
                                                                                    .next ();
-        logger.info (x509Certificate.getSubject ().toString ());
+        if (LOG.isDebugEnabled ())
+          LOG.debug (x509Certificate.getSubject ().toString ());
 
         if (signerInformation.verify (s_aJcaSimpleSignerInfoVerifierBuilder.build (x509Certificate)))
         {
@@ -69,7 +70,7 @@ public final class SignatureVerifier
     }
     catch (final Exception e)
     {
-      logger.warn ("Error is signature validation", e);
+      LOG.warn ("Error in signature validation", e);
       certificate = null;
     }
 

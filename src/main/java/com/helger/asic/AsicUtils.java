@@ -38,7 +38,7 @@ import com.helger.commons.mime.MimeTypeParser;
 
 public final class AsicUtils
 {
-  private static final Logger logger = LoggerFactory.getLogger (AsicUtils.class);
+  private static final Logger LOG = LoggerFactory.getLogger (AsicUtils.class);
 
   /** The MIME type, which should be the very first entry in the container */
   public static final IMimeType MIMETYPE_ASICE = EMimeContentType.APPLICATION.buildMimeType ("vnd.etsi.asic-e+zip");
@@ -171,7 +171,7 @@ public final class AsicUtils
     // Use URLConnection to find content type
     if (mimeType == null)
     {
-      logger.info ("Unable to determine MIME type of '" +
+      LOG.info ("Unable to determine MIME type of '" +
                    filename +
                    "' using Files.probeContentType(), trying URLConnection.getFileNameMap()");
       mimeType = URLConnection.getFileNameMap ().getContentTypeFor (filename);

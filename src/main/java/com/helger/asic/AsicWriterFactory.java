@@ -29,7 +29,7 @@ import com.helger.commons.ValueEnforcer;
  */
 public class AsicWriterFactory
 {
-  private static final Logger logger = LoggerFactory.getLogger (AsicWriterFactory.class);
+  private static final Logger LOG = LoggerFactory.getLogger (AsicWriterFactory.class);
 
   /**
    * Creates an AsicWriterFactory, which utilises the default signature method,
@@ -78,7 +78,7 @@ public class AsicWriterFactory
    *         on IO error
    */
   @Nonnull
-  public IAsicWriter newContainer (final File outputDir, final String filename) throws IOException
+  public IAsicWriter newContainer (@Nonnull final File outputDir, @Nonnull final String filename) throws IOException
   {
     return newContainer (new File (outputDir, filename));
   }
@@ -94,17 +94,17 @@ public class AsicWriterFactory
    *         on IO error
    */
   @Nonnull
-  public IAsicWriter newContainer (final File file) throws IOException
+  public IAsicWriter newContainer (@Nonnull final File file) throws IOException
   {
     return newContainer (file.toPath ());
   }
 
   @Nonnull
-  public IAsicWriter newContainer (final Path path) throws IOException
+  public IAsicWriter newContainer (@Nonnull final Path path) throws IOException
   {
     // Conformance to ETSI TS 102 918, 6.2.1 1)
     if (!AsicUtils.PATTERN_EXTENSION_ASICE.matcher (path.toString ()).matches ())
-      logger.warn ("ASiC-E files should use \"asice\" as file extension.");
+      LOG.warn ("ASiC-E files should use \"asice\" as file extension.");
 
     return newContainer (Files.newOutputStream (path), true);
   }
@@ -120,20 +120,21 @@ public class AsicWriterFactory
    *         on IO error
    */
   @Nonnull
-  public IAsicWriter newContainer (final OutputStream outputStream) throws IOException
+  public IAsicWriter newContainer (@Nonnull final OutputStream outputStream) throws IOException
   {
     return newContainer (outputStream, false);
   }
 
   @Nonnull
-  public IAsicWriter newContainer (final OutputStream outputStream, final boolean closeStreamOnClose) throws IOException
+  public IAsicWriter newContainer (@Nonnull final OutputStream outputStream,
+                                   final boolean bCloseStreamOnSign) throws IOException
   {
     switch (m_eSM)
     {
       case CAdES:
-        return new CadesAsicWriter (m_eSM, outputStream, closeStreamOnClose);
+        return new CadesAsicWriter (m_eSM, outputStream, bCloseStreamOnSign);
       case XAdES:
-        return new XadesAsicWriter (m_eSM, outputStream, closeStreamOnClose);
+        return new XadesAsicWriter (m_eSM, outputStream, bCloseStreamOnSign);
       default:
         throw new IllegalStateException ("Not implemented: " + m_eSM);
     }

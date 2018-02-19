@@ -22,6 +22,8 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.zip.ZipEntry;
 
+import javax.annotation.Nonnull;
+
 import org.bouncycastle.util.encoders.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,7 +45,7 @@ import com.helger.commons.io.stream.StreamHelper;
  */
 public abstract class AbstractAsicReader implements Closeable
 {
-  private static final Logger logger = LoggerFactory.getLogger (AbstractAsicReader.class);
+  private static final Logger LOG = LoggerFactory.getLogger (AbstractAsicReader.class);
 
   private MessageDigest m_aMD;
 
@@ -62,7 +64,7 @@ public abstract class AbstractAsicReader implements Closeable
    */
   private final ICommonsMap <String, byte []> m_aSigningContent = new CommonsHashMap <> ();
 
-  protected AbstractAsicReader (final EMessageDigestAlgorithm eMDAlgo, final InputStream inputStream)
+  protected AbstractAsicReader (@Nonnull final EMessageDigestAlgorithm eMDAlgo, @Nonnull final InputStream inputStream)
   {
     m_aManifestVerifier = new ManifestVerifier (eMDAlgo);
 
@@ -90,13 +92,15 @@ public abstract class AbstractAsicReader implements Closeable
     if (m_aCurrentZipEntry != null)
     {
       final byte [] digest = m_aMD.digest ();
-      logger.debug ("Digest: {}", Base64.encode (digest));
+      if (LOG.isDebugEnabled ())
+        LOG.debug ("Digest: " + Base64.encode (digest));
       m_aManifestVerifier.update (m_aCurrentZipEntry.getName (), digest, null);
     }
 
     while ((m_aCurrentZipEntry = m_aZipInputStream.getNextEntry ()) != null)
     {
-      logger.info ("Found file: {}", m_aCurrentZipEntry.getName ());
+      if (LOG.isDebugEnabled ())
+        LOG.debug ("Found file: " + m_aCurrentZipEntry.getName ());
 
       // Files used for validation are not exposed
       if (m_aCurrentZipEntry.getName ().startsWith ("META-INF/"))
@@ -122,7 +126,7 @@ public abstract class AbstractAsicReader implements Closeable
     return null;
   }
 
-  protected final void internalWriteFile (final OutputStream outputStream) throws IOException
+  protected final void internalWriteFile (@Nonnull final OutputStream outputStream) throws IOException
   {
     if (m_aCurrentZipEntry == null)
       throw new IllegalStateException ("No file to read.");
@@ -137,6 +141,7 @@ public abstract class AbstractAsicReader implements Closeable
     m_bContentIsWritten = true;
   }
 
+  @Nonnull
   protected InputStream internalInputStream ()
   {
     if (m_aCurrentZipEntry == null)

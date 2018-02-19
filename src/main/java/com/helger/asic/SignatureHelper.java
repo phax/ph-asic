@@ -53,7 +53,7 @@ import com.helger.commons.io.stream.StreamHelper;
  */
 public class SignatureHelper
 {
-  private static final Logger logger = LoggerFactory.getLogger (SignatureHelper.class);
+  private static final Logger LOG = LoggerFactory.getLogger (SignatureHelper.class);
 
   private final Provider m_aProvider;
   private final JcaDigestCalculatorProviderBuilder m_aJcaDigestCalculatorProviderBuilder;
@@ -216,12 +216,13 @@ public class SignatureHelper
       cmsSignedDataGenerator.addCertificates (new JcaCertStore (Collections.singletonList (m_aX509Certificate)));
       final CMSSignedData cmsSignedData = cmsSignedDataGenerator.generate (new CMSProcessableByteArray (data), false);
 
-      logger.debug (Base64.encodeBytes (cmsSignedData.getEncoded ()));
+      if (LOG.isDebugEnabled ())
+        LOG.debug (Base64.encodeBytes (cmsSignedData.getEncoded ()));
       return cmsSignedData.getEncoded ();
     }
     catch (final Exception e)
     {
-      throw new IllegalStateException (String.format ("Unable to sign: %s", e.getMessage ()), e);
+      throw new IllegalStateException ("Unable to sign: " + e.getMessage (), e);
     }
   }
 

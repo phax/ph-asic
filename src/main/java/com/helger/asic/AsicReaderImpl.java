@@ -15,6 +15,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import javax.annotation.Nonnull;
+
 public class AsicReaderImpl extends AbstractAsicReader implements IAsicReader
 {
   protected AsicReaderImpl (final EMessageDigestAlgorithm eMDAlgorithm, final InputStream aIS)
@@ -23,12 +25,13 @@ public class AsicReaderImpl extends AbstractAsicReader implements IAsicReader
   }
 
   @Override
-  public void writeFile (final OutputStream outputStream) throws IOException
+  public void writeFile (@Nonnull final OutputStream outputStream) throws IOException
   {
     super.internalWriteFile (outputStream);
   }
 
   @Override
+  @Nonnull
   public InputStream inputStream ()
   {
     return super.internalInputStream ();

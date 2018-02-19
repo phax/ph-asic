@@ -2,6 +2,13 @@
 [![CodeCov](https://codecov.io/gh/phax/ph-asic/branch/master/graph/badge.svg)](https://codecov.io/gh/phax/ph-asic)
 [![Maven Central](https://img.shields.io/maven-central/v/com.helger/ph-asic.svg)](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.helger%22%20AND%20a%3A%22ph-asic%22)
 
+# News and Noteworthy
+
+* v1.0.1 - work in progress
+  * Less verbose logging
+* v1.0.0 - 2018-02-13
+  * Initial version as rip of difi/asic
+
 # Associated Signature Container (ASiC)
 
 An ASiC file is simply a ZIP archive created according to some rules set forth in the specifications. 

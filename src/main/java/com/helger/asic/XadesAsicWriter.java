@@ -18,11 +18,11 @@ import javax.annotation.Nonnull;
 
 public class XadesAsicWriter extends AbstractAsicWriter
 {
-  public XadesAsicWriter (final ESignatureMethod eSM,
-                          final OutputStream aOS,
-                          final boolean bCloseStreamOnClose) throws IOException
+  public XadesAsicWriter (@Nonnull final ESignatureMethod eSM,
+                          @Nonnull final OutputStream aOS,
+                          final boolean bCloseStreamOnSign) throws IOException
   {
-    super (aOS, bCloseStreamOnClose, new XadesAsicManifest (eSM.getMessageDigestAlgorithm ()));
+    super (aOS, bCloseStreamOnSign, new XadesAsicManifest (eSM.getMessageDigestAlgorithm ()));
   }
 
   @Override
@@ -39,10 +39,10 @@ public class XadesAsicWriter extends AbstractAsicWriter
   }
 
   @Override
-  protected void performSign (final SignatureHelper signatureHelper) throws IOException
+  protected void performSign (@Nonnull final SignatureHelper aSignatureHelper) throws IOException
   {
     // Generate and write manifest (META-INF/signatures.xml)
-    final byte [] manifestBytes = getAsicManifest ().toBytes (signatureHelper);
+    final byte [] manifestBytes = getAsicManifest ().toBytes (aSignatureHelper);
     m_aAsicOutputStream.writeZipEntry ("META-INF/signatures.xml", manifestBytes);
   }
 }

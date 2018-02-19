@@ -24,7 +24,7 @@ import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 
 public class AsicInputStream extends ZipInputStream
 {
-  private static final Logger logger = LoggerFactory.getLogger (AsicInputStream.class);
+  private static final Logger LOG = LoggerFactory.getLogger (AsicInputStream.class);
 
   public AsicInputStream (final InputStream aIS)
   {
@@ -43,8 +43,8 @@ public class AsicInputStream extends ZipInputStream
         AsicUtils.copyStream (this, aBAOS);
         final String sMimeType = aBAOS.getAsString (StandardCharsets.ISO_8859_1);
 
-        if (logger.isDebugEnabled ())
-          logger.debug ("Content of mimetype: " + sMimeType);
+        if (LOG.isDebugEnabled ())
+          LOG.debug ("Content of mimetype: " + sMimeType);
         if (!AsicUtils.MIMETYPE_ASICE.getAsString ().equals (sMimeType))
           throw new IllegalStateException ("Content is not ASiC-E container.");
       }

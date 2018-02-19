@@ -28,20 +28,20 @@ public class CadesAsicWriter extends AbstractAsicWriter
   /**
    * Prepares creation of a new container.
    *
-   * @param signatureMethod
+   * @param eSM
    *        signature method
-   * @param outputStream
+   * @param aOS
    *        Stream used to write container.
-   * @param closeStreamOnClose
-   *        close stream when this is closed
+   * @param bCloseStreamOnSign
+   *        close stream when this is signed
    * @throws IOException
    *         on IO error
    */
-  public CadesAsicWriter (final ESignatureMethod signatureMethod,
-                          final OutputStream outputStream,
-                          final boolean closeStreamOnClose) throws IOException
+  public CadesAsicWriter (@Nonnull final ESignatureMethod eSM,
+                          @Nonnull final OutputStream aOS,
+                          final boolean bCloseStreamOnSign) throws IOException
   {
-    super (outputStream, closeStreamOnClose, new CadesAsicManifest (signatureMethod.getMessageDigestAlgorithm ()));
+    super (aOS, bCloseStreamOnSign, new CadesAsicManifest (eSM.getMessageDigestAlgorithm ()));
   }
 
   @Override

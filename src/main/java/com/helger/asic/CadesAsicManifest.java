@@ -25,7 +25,7 @@ import com.helger.xsds.xmldsig.DigestMethodType;
 
 public class CadesAsicManifest extends AbstractAsicManifest
 {
-  private static final Logger logger = LoggerFactory.getLogger (AbstractAsicManifest.class);
+  private static final Logger LOG = LoggerFactory.getLogger (AbstractAsicManifest.class);
 
   private final ASiCManifestType m_aManifest = new ASiCManifestType ();
   private boolean m_bRootFilenameIsSet = false;
@@ -48,8 +48,8 @@ public class CadesAsicManifest extends AbstractAsicManifest
     dataObject.setDigestMethod (digestMethodType);
 
     m_aManifest.getDataObjectReference ().add (dataObject);
-    if (logger.isDebugEnabled ())
-      logger.debug ("Digest: " + Base64.encode (dataObject.getDigestValue ()));
+    if (LOG.isDebugEnabled ())
+      LOG.debug ("Digest: " + Base64.encode (dataObject.getDigestValue ()));
   }
 
   /**
