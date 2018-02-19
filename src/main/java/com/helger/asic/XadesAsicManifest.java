@@ -30,7 +30,6 @@ import com.helger.xsds.xades132.CertIDListType;
 import com.helger.xsds.xades132.CertIDType;
 import com.helger.xsds.xades132.DataObjectFormatType;
 import com.helger.xsds.xades132.DigestAlgAndValueType;
-import com.helger.xsds.xades132.ObjectFactory;
 import com.helger.xsds.xades132.QualifyingPropertiesType;
 import com.helger.xsds.xades132.SignedDataObjectPropertiesType;
 import com.helger.xsds.xades132.SignedPropertiesType;
@@ -52,7 +51,7 @@ import com.helger.xsds.xmldsig.X509IssuerSerialType;
 public class XadesAsicManifest extends AbstractAsicManifest
 {
   private static JAXBContext jaxbContext; // Thread safe
-  private static ObjectFactory objectFactory1_2 = new ObjectFactory ();
+  private static com.helger.xsds.xades132.ObjectFactory objectFactory1_2 = new com.helger.xsds.xades132.ObjectFactory ();
   private static com.helger.asic.jaxb.cades.ObjectFactory objectFactory1_3 = new com.helger.asic.jaxb.cades.ObjectFactory ();
 
   static
@@ -65,7 +64,7 @@ public class XadesAsicManifest extends AbstractAsicManifest
     }
     catch (final JAXBException e)
     {
-      throw new IllegalStateException (String.format ("Unable to create JAXBContext: %s ", e.getMessage ()), e);
+      throw new IllegalStateException ("Unable to create JAXBContext: " + e.getMessage (), e);
     }
   }
 

@@ -152,17 +152,12 @@ public class SignatureHelper
     try
     {
       final KeyStore keyStore = KeyStore.getInstance ("JKS");
-      keyStore.load (keyStoreStream, keyStorePassword.toCharArray ()); // TODO:
-                                                                       // find
-                                                                       // password
-                                                                       // of
-                                                                       // keystore
-
+      keyStore.load (keyStoreStream, keyStorePassword.toCharArray ());
       return keyStore;
     }
     catch (final Exception e)
     {
-      throw new IllegalStateException (String.format ("Load keystore; %s", e.getMessage ()), e);
+      throw new IllegalStateException ("Load keystore; " + e.getMessage (), e);
     }
   }
 
@@ -182,16 +177,13 @@ public class SignatureHelper
 
       m_aKeyPair = new KeyPair (m_aX509Certificate.getPublicKey (), privateKey);
 
-      m_aJcaContentSignerBuilder = new JcaContentSignerBuilder (String.format ("SHA1with%s",
-                                                                               privateKey.getAlgorithm ()));
+      m_aJcaContentSignerBuilder = new JcaContentSignerBuilder ("SHA1with" + privateKey.getAlgorithm ());
       if (m_aProvider != null)
         m_aJcaContentSignerBuilder.setProvider (m_aProvider);
     }
     catch (final Exception e)
     {
-      throw new IllegalStateException (String.format ("Unable to retrieve private key from keystore: %s",
-                                                      e.getMessage ()),
-                                       e);
+      throw new IllegalStateException ("Unable to retrieve private key from keystore: " + e.getMessage (), e);
     }
   }
 

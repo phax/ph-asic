@@ -75,7 +75,7 @@ public abstract class AbstractAsicReader implements Closeable
     }
     catch (final NoSuchAlgorithmException e)
     {
-      throw new IllegalStateException (String.format ("Algorithm %s not supported", eMDAlgo.getAlgorithm ()), e);
+      throw new IllegalStateException ("Algorithm " + eMDAlgo.getAlgorithm () + " not supported", e);
     }
 
     m_aZipInputStream = new AsicInputStream (inputStream);
