@@ -6,6 +6,7 @@
 
 * v1.0.1 - 2018-02-20
   * Less verbose logging
+  * Improved speed
 * v1.0.0 - 2018-02-13
   * Initial version as rip of difi/asic
 
