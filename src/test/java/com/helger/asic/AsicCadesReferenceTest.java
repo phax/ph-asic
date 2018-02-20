@@ -15,8 +15,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
@@ -28,13 +28,14 @@ import org.slf4j.LoggerFactory;
 
 import com.helger.asic.jaxb.asic.AsicManifest;
 import com.helger.commons.io.resource.ClassPathResource;
+import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 
 public final class AsicCadesReferenceTest
 {
   private static final Logger log = LoggerFactory.getLogger (AsicCadesReferenceTest.class);
 
   private final AsicVerifierFactory m_aAsicVerifierFactory = AsicVerifierFactory.newFactory (ESignatureMethod.CAdES);
-  private final AsicReaderFactory asicRederFactory = AsicReaderFactory.newFactory (ESignatureMethod.CAdES);
+  private final AsicReaderFactory m_aAsicRederFactory = AsicReaderFactory.newFactory (ESignatureMethod.CAdES);
 
   @BeforeClass
   public static void beforeClass ()
@@ -54,10 +55,10 @@ public final class AsicCadesReferenceTest
       final Marshaller marshaller = jaxbContext.createMarshaller ();
       marshaller.setProperty (Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 
-      final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream ();
+      final NonBlockingByteArrayOutputStream byteArrayOutputStream = new NonBlockingByteArrayOutputStream ();
       marshaller.marshal (asicVerifier.getAsicManifest (), byteArrayOutputStream);
 
-      log.info (byteArrayOutputStream.toString ());
+      log.info (byteArrayOutputStream.getAsString (StandardCharsets.UTF_8));
     }
   }
 
@@ -74,7 +75,7 @@ public final class AsicCadesReferenceTest
       // empty
     }
 
-    try (final IAsicReader asicReader = asicRederFactory.open (ClassPathResource.getInputStream ("/asic/asic-cades-test-invalid-manifest.asice")))
+    try (final IAsicReader asicReader = m_aAsicRederFactory.open (ClassPathResource.getInputStream ("/asic/asic-cades-test-invalid-manifest.asice")))
     {
       asicReader.getNextFile ();
       fail ("Exception expected");

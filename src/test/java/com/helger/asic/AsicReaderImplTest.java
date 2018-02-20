@@ -15,8 +15,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -28,6 +26,8 @@ import org.slf4j.LoggerFactory;
 
 import com.helger.commons.io.file.FileHelper;
 import com.helger.commons.io.resource.ClassPathResource;
+import com.helger.commons.io.stream.NonBlockingByteArrayInputStream;
+import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.mime.CMimeType;
 
 public class AsicReaderImplTest
@@ -47,55 +47,55 @@ public class AsicReaderImplTest
   @Test
   public void writeAndReadSimpleContainer () throws IOException
   {
-
     // Step 1 - creates the ASiC archive
-    final ByteArrayOutputStream containerOutput = new ByteArrayOutputStream ();
+    final NonBlockingByteArrayOutputStream containerOutput = new NonBlockingByteArrayOutputStream ();
 
     asicWriterFactory.newContainer (containerOutput)
-                     .add (new ByteArrayInputStream (fileContent1.getBytes (StandardCharsets.ISO_8859_1)),
+                     .add (new NonBlockingByteArrayInputStream (fileContent1.getBytes (StandardCharsets.ISO_8859_1)),
                            "content1.txt",
                            CMimeType.TEXT_PLAIN)
-                     .add (new ByteArrayInputStream (fileContent2.getBytes (StandardCharsets.ISO_8859_1)),
+                     .add (new NonBlockingByteArrayInputStream (fileContent2.getBytes (StandardCharsets.ISO_8859_1)),
                            "content2.txt",
                            CMimeType.TEXT_PLAIN)
                      .sign (signatureHelper);
 
     // Step 2 - reads the contents of the ASiC archive
-    try (final IAsicReader asicReader = asicReaderFactory.open (new ByteArrayInputStream (containerOutput.toByteArray ())))
+    try (final IAsicReader asicReader = asicReaderFactory.open (containerOutput.getAsInputStream ()))
     {
-      ByteArrayOutputStream fileStream;
+      NonBlockingByteArrayOutputStream fileStream;
       {
         assertEquals ("content1.txt", asicReader.getNextFile ());
 
-        fileStream = new ByteArrayOutputStream ();
+        fileStream = new NonBlockingByteArrayOutputStream ();
         asicReader.writeFile (fileStream);
-        assertEquals (fileContent1, fileStream.toString ());
+        assertEquals (fileContent1, fileStream.getAsString (StandardCharsets.ISO_8859_1));
       }
 
       {
         assertEquals ("content2.txt", asicReader.getNextFile ());
 
-        fileStream = new ByteArrayOutputStream ();
+        fileStream = new NonBlockingByteArrayOutputStream ();
         asicReader.writeFile (fileStream);
-        assertEquals (fileContent2, fileStream.toString ());
+        assertEquals (fileContent2, fileStream.getAsString (StandardCharsets.ISO_8859_1));
       }
 
       assertNull (asicReader.getNextFile ());
 
       try
       {
-        asicReader.writeFile (new ByteArrayOutputStream ());
+        asicReader.writeFile (new NonBlockingByteArrayOutputStream ());
         fail ("Exception expected");
       }
       catch (final IllegalStateException e)
       {
-        log.info (e.getMessage ());
+        // expected
       }
 
       asicReader.close ();
 
       try
       {
+        // Try again
         asicReader.close ();
       }
       catch (final IllegalStateException e)
@@ -115,10 +115,10 @@ public class AsicReaderImplTest
     final File file = new File (tmpDir, "asic-reader-sample.ip");
 
     asicWriterFactory.newContainer (file)
-                     .add (new ByteArrayInputStream (fileContent1.getBytes (StandardCharsets.ISO_8859_1)),
+                     .add (new NonBlockingByteArrayInputStream (fileContent1.getBytes (StandardCharsets.ISO_8859_1)),
                            "content1.txt",
                            CMimeType.TEXT_PLAIN)
-                     .add (new ByteArrayInputStream (fileContent2.getBytes (StandardCharsets.ISO_8859_1)),
+                     .add (new NonBlockingByteArrayInputStream (fileContent2.getBytes (StandardCharsets.ISO_8859_1)),
                            "content2.txt",
                            CMimeType.TEXT_PLAIN)
                      .sign (signatureHelper);
@@ -127,7 +127,7 @@ public class AsicReaderImplTest
     {
       File contentFile;
       String filename;
-      ByteArrayOutputStream fileStream;
+      NonBlockingByteArrayOutputStream fileStream;
       {
         filename = asicReader.getNextFile ();
         assertEquals ("content1.txt", filename);
@@ -135,9 +135,9 @@ public class AsicReaderImplTest
         contentFile = new File (tmpDir, "asic-" + filename);
         asicReader.writeFile (contentFile);
 
-        fileStream = new ByteArrayOutputStream ();
+        fileStream = new NonBlockingByteArrayOutputStream ();
         AsicUtils.copyStream (Files.newInputStream (contentFile.toPath ()), fileStream);
-        assertEquals (fileContent1, fileStream.toString ());
+        assertEquals (fileContent1, fileStream.getAsString (StandardCharsets.ISO_8859_1));
 
         Files.delete (contentFile.toPath ());
       }
@@ -149,9 +149,9 @@ public class AsicReaderImplTest
         contentFile = new File (tmpDir, "asic-" + filename);
         asicReader.writeFile (contentFile);
 
-        fileStream = new ByteArrayOutputStream ();
+        fileStream = new NonBlockingByteArrayOutputStream ();
         AsicUtils.copyStream (Files.newInputStream (contentFile.toPath ()), fileStream);
-        assertEquals (fileContent2, fileStream.toString ());
+        assertEquals (fileContent2, fileStream.getAsString (StandardCharsets.ISO_8859_1));
 
         Files.delete (contentFile.toPath ());
       }
@@ -160,12 +160,12 @@ public class AsicReaderImplTest
 
       try
       {
-        asicReader.writeFile (new ByteArrayOutputStream ());
+        asicReader.writeFile (new NonBlockingByteArrayOutputStream ());
         fail ("Exception expected");
       }
       catch (final IllegalStateException e)
       {
-        log.info (e.getMessage ());
+        // Expected
       }
 
       asicReader.close ();

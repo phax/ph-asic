@@ -11,6 +11,8 @@
  */
 package com.helger.asic;
 
+import java.nio.charset.StandardCharsets;
+
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +52,7 @@ public final class AsicManifestReferenceTest
       final DigestMethodType digestMethodType = new DigestMethodType ();
       digestMethodType.setAlgorithm ("http://www.w3.org/2001/04/xmlenc#sha256");
       obj1.setDigestMethod (digestMethodType);
-      obj1.setDigestValue ("j61wx3SAvKTMUP4NbeZ1".getBytes ());
+      obj1.setDigestValue ("j61wx3SAvKTMUP4NbeZ1".getBytes (StandardCharsets.ISO_8859_1));
 
       asicManifest.getDataObjectReference ().add (obj1);
     }
@@ -63,7 +65,7 @@ public final class AsicManifestReferenceTest
       final DigestMethodType digestMethodType = new DigestMethodType ();
       digestMethodType.setAlgorithm ("http://www.w3.org/2001/04/xmlenc#sha256");
       obj2.setDigestMethod (digestMethodType);
-      obj2.setDigestValue ("j61wx3SAvKTMUP4NbeZ1".getBytes ());
+      obj2.setDigestValue ("j61wx3SAvKTMUP4NbeZ1".getBytes (StandardCharsets.ISO_8859_1));
 
       asicManifest.getDataObjectReference ().add (obj2);
     }

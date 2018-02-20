@@ -15,8 +15,6 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -56,7 +54,7 @@ public final class CmsEncryptedAsicTest
     // Fetching certificate
     final X509Certificate certificate = (X509Certificate) keyStore.getCertificate ("selfsigned");
 
-    // Store result in ByteArrayOutputStream
+    // Store result in NonBlockingByteArrayOutputStream
     try (final NonBlockingByteArrayOutputStream byteArrayOutputStream = new NonBlockingByteArrayOutputStream ())
     {
 
@@ -75,7 +73,8 @@ public final class CmsEncryptedAsicTest
                                         TestUtil.keyStorePassword (),
                                         TestUtil.keyPairAlias (),
                                         TestUtil.privateKeyPassword ()));
-      // ByteArrayOutputStream now contains a signed ASiC archive containing one
+      // NonBlockingByteArrayOutputStream now contains a signed ASiC archive
+      // containing one
       // encrypted file
 
       // READ FROM ASIC
@@ -83,31 +82,31 @@ public final class CmsEncryptedAsicTest
       // Fetch private key from keystore
       final PrivateKey privateKey = (PrivateKey) keyStore.getKey ("selfsigned", "changeit".toCharArray ());
 
-      // Open content of ByteArrayOutputStream for reading
+      // Open content of NonBlockingByteArrayOutputStream for reading
       try (final IAsicReader asicReader = AsicReaderFactory.newFactory ()
-                                                           .open (new ByteArrayInputStream (byteArrayOutputStream.toByteArray ())))
+                                                           .open (byteArrayOutputStream.getAsInputStream ()))
       {
         // Encapsulate ASiC archive to enable reading encrypted content
         try (final CmsEncryptedAsicReader reader = new CmsEncryptedAsicReader (asicReader, privateKey))
         {
           // Read plain file
           assertEquals (reader.getNextFile (), "simple.bmp");
-          final ByteArrayOutputStream file1 = new ByteArrayOutputStream ();
+          final NonBlockingByteArrayOutputStream file1 = new NonBlockingByteArrayOutputStream ();
           reader.writeFile (file1);
 
           // Read encrypted file
           assertEquals (reader.getNextFile (), "encrypted.bmp");
-          final ByteArrayOutputStream file2 = new ByteArrayOutputStream ();
+          final NonBlockingByteArrayOutputStream file2 = new NonBlockingByteArrayOutputStream ();
           reader.writeFile (file2);
 
           // Read encrypted file 2
           assertEquals (reader.getNextFile (), "encrypted2.bmp");
-          final ByteArrayOutputStream file3 = new ByteArrayOutputStream ();
+          final NonBlockingByteArrayOutputStream file3 = new NonBlockingByteArrayOutputStream ();
           reader.writeFile (file3);
 
           // Read encrypted file 3
           assertEquals (reader.getNextFile (), "encrypted3.xml");
-          final ByteArrayOutputStream file4 = new ByteArrayOutputStream ();
+          final NonBlockingByteArrayOutputStream file4 = new NonBlockingByteArrayOutputStream ();
           reader.writeFile (file4);
 
           // Verify both files contain the same data
@@ -127,12 +126,12 @@ public final class CmsEncryptedAsicTest
       }
 
       // Writes the ASiC file to temporary directory
-      final File sample = File.createTempFile ("sample", ".asice");
-      try (final FileOutputStream fileOutputStream = new FileOutputStream (sample))
+      final File aSampleFile = File.createTempFile ("sample", ".asice");
+      try (final FileOutputStream fileOutputStream = new FileOutputStream (aSampleFile))
       {
         fileOutputStream.write (byteArrayOutputStream.toByteArray ());
       }
-      s_aLogger.info ("Wrote sample ASiC to " + sample);
+      s_aLogger.info ("Wrote sample ASiC to " + aSampleFile);
     }
   }
 

@@ -11,7 +11,6 @@
  */
 package com.helger.asic;
 
-import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.math.BigInteger;
@@ -57,6 +56,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.commons.base64.Base64;
+import com.helger.commons.io.stream.NonBlockingByteArrayInputStream;
 
 /**
  * @author steinar Date: 05.07.15 Time: 21.57
@@ -128,10 +128,11 @@ public final class BouncyCastleSignatureTest
 
     m_aX509Certificate.verify (m_aKeyPair.getPublic ());
 
-    final ByteArrayInputStream bIn = new ByteArrayInputStream (m_aX509Certificate.getEncoded ());
-    final CertificateFactory fact = CertificateFactory.getInstance ("X.509", BCHelper.getProvider ());
-
-    m_aX509Certificate = (X509Certificate) fact.generateCertificate (bIn);
+    try (final NonBlockingByteArrayInputStream aBAIS = new NonBlockingByteArrayInputStream (m_aX509Certificate.getEncoded ()))
+    {
+      final CertificateFactory fact = CertificateFactory.getInstance ("X.509", BCHelper.getProvider ());
+      m_aX509Certificate = (X509Certificate) fact.generateCertificate (aBAIS);
+    }
 
     System.out.println (m_aX509Certificate);
   }

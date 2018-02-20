@@ -17,7 +17,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.util.Enumeration;
@@ -33,6 +32,7 @@ import com.helger.asic.jaxb.asic.AsicManifest;
 import com.helger.asic.jaxb.cades.DataObjectReferenceType;
 import com.helger.commons.io.file.FilenameHelper;
 import com.helger.commons.io.resource.ClassPathResource;
+import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.mime.CMimeType;
 
 /**
@@ -236,9 +236,11 @@ public class AsicWriterTest
     try
     {
       final AsicWriterFactory asicWriterFactory = AsicWriterFactory.newFactory ();
-      final ByteArrayOutputStream aBAOS = new ByteArrayOutputStream ();
-      asicWriterFactory.newContainer (aBAOS).add (m_aEnvelopeFile, "envelope.aaz");
-      fail ("Expected exception, is .aaz a known extension?");
+      try (final NonBlockingByteArrayOutputStream aBAOS = new NonBlockingByteArrayOutputStream ())
+      {
+        asicWriterFactory.newContainer (aBAOS).add (m_aEnvelopeFile, "envelope.aaz");
+        fail ("Expected exception, is .aaz a known extension?");
+      }
     }
     catch (final IllegalStateException e)
     {

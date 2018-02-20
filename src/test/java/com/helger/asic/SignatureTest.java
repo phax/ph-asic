@@ -13,7 +13,6 @@ package com.helger.asic;
 
 import static org.junit.Assert.assertNotNull;
 
-import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.security.DigestOutputStream;
 import java.security.MessageDigest;
@@ -24,13 +23,14 @@ import org.slf4j.LoggerFactory;
 
 import com.helger.commons.base64.Base64;
 import com.helger.commons.io.resource.ClassPathResource;
+import com.helger.commons.io.stream.NullOutputStream;
 
 /**
  * @author steinar Date: 03.07.15 Time: 14.47
  */
 public final class SignatureTest
 {
-  private static final Logger log = LoggerFactory.getLogger (SignatureTest.class);
+  private static final Logger LOG = LoggerFactory.getLogger (SignatureTest.class);
 
   @Test
   public void createSampleDigest () throws Exception
@@ -39,9 +39,8 @@ public final class SignatureTest
     {
       assertNotNull (is);
 
-      final MessageDigest md = MessageDigest.getInstance ("SHA-256");
-      final ByteArrayOutputStream baos = new ByteArrayOutputStream ();
-      try (final DigestOutputStream outputStream = new DigestOutputStream (baos, md))
+      final MessageDigest aMD = MessageDigest.getInstance ("SHA-256");
+      try (final DigestOutputStream outputStream = new DigestOutputStream (new NullOutputStream (), aMD))
       {
         int c;
         while ((c = is.read ()) > -1)
@@ -50,9 +49,9 @@ public final class SignatureTest
         }
       }
 
-      final byte [] digest = md.digest ();
-      if (log.isDebugEnabled ())
-        log.debug (Base64.encodeBytes (digest));
+      final byte [] digest = aMD.digest ();
+      if (LOG.isDebugEnabled ())
+        LOG.debug (Base64.encodeBytes (digest));
     }
   }
 }

@@ -49,6 +49,8 @@ public abstract class AbstractAsicWriter implements IAsicWriter
    *        close output stream after signing
    * @param aAsicManifest
    *        The asic manifest to use
+   * @throws IOException
+   *         in case of IO error
    */
   protected AbstractAsicWriter (@Nonnull final OutputStream aOS,
                                 final boolean bCloseStreamOnSign,
@@ -108,15 +110,14 @@ public abstract class AbstractAsicWriter implements IAsicWriter
    * Creating the signature and writing it into the archive is delegated to the
    * actual implementation
    *
-   * @param signatureHelper
+   * @param aSH
    *        Signature helper for signing details
    * @throws IOException
    *         in case of IO error
    */
-  protected abstract void performSign (SignatureHelper signatureHelper) throws IOException;
+  protected abstract void performSign (@Nonnull SignatureHelper aSH) throws IOException;
 
-  @Override
-  public IAsicWriter sign (final SignatureHelper signatureHelper) throws IOException
+  public IAsicWriter sign (@Nonnull final SignatureHelper aSH) throws IOException
   {
     // You may only sign once
     if (m_bFinished)
@@ -126,7 +127,7 @@ public abstract class AbstractAsicWriter implements IAsicWriter
     m_bFinished = true;
 
     // Delegates the actual signature creation to the signature helper
-    performSign (signatureHelper);
+    performSign (aSH);
 
     m_aAsicOutputStream.writeZipEntry ("META-INF/manifest.xml", m_aOasisManifest.getAsBytes ());
 

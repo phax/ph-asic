@@ -11,12 +11,11 @@
  */
 package com.helger.asic;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.regex.Pattern;
@@ -62,31 +61,31 @@ public final class AsicUtils
    * Combine multiple containers to one container. OASIS OpenDocument manifest
    * is regenerated if all source containers contains valid manifest.
    *
-   * @param outputStream
+   * @param aOS
    *        Stream for target container.
    * @param inputStreams
    *        Streams for source containers.
    * @throws IOException
    *         in case of error
    */
-  public static void combine (@Nonnull final OutputStream outputStream,
+  public static void combine (@Nonnull final OutputStream aOS,
                               @Nonnull final InputStream... inputStreams) throws IOException
   {
     // Statuses
-    int manifestCounter = 0;
-    int fileCounter = 0;
-    boolean containsRootFile = false;
+    int nManifestCounter = 0;
+    int nFileCounter = 0;
+    boolean bContainsRootFile = false;
 
     // Open target container
-    try (final AsicOutputStream target = new AsicOutputStream (outputStream))
+    try (final AsicOutputStream target = new AsicOutputStream (aOS))
     {
       // Prepare to combine OASIS OpenDocument Manifests
-      final OasisManifest oasisManifest = new OasisManifest (MIMETYPE_ASICE);
+      final OasisManifest aOasisManifest = new OasisManifest (MIMETYPE_ASICE);
 
-      for (final InputStream inputStream : inputStreams)
+      for (final InputStream aIS : inputStreams)
       {
         // Open source container
-        try (final AsicInputStream source = new AsicInputStream (inputStream))
+        try (final AsicInputStream source = new AsicInputStream (aIS))
         {
           // Read entries
           ZipEntry zipEntry;
@@ -95,32 +94,33 @@ public final class AsicUtils
             if (PATTERN_CADES_MANIFEST.matcher (zipEntry.getName ()).matches ())
             {
               // Fetch content
-              final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream ();
+              final NonBlockingByteArrayOutputStream byteArrayOutputStream = new NonBlockingByteArrayOutputStream ();
               copyStream (source, byteArrayOutputStream);
 
               // Read manifest
               final ManifestVerifier manifestVerifier = new ManifestVerifier (null);
-              CadesAsicManifest.extractAndVerify (byteArrayOutputStream.toString (), manifestVerifier);
+              CadesAsicManifest.extractAndVerify (byteArrayOutputStream.getAsString (StandardCharsets.UTF_8),
+                                                  manifestVerifier);
 
               // Make sure only on rootfile makes it to the source container
               if (manifestVerifier.getAsicManifest ().getRootfile () != null)
               {
-                if (containsRootFile)
+                if (bContainsRootFile)
                   throw new IllegalStateException ("Multiple rootfiles is not allowed when combining containers.");
-                containsRootFile = true;
+                bContainsRootFile = true;
               }
 
               // Write manifest to container
-              ++manifestCounter;
-              target.putNextEntry (new ZipEntry ("META-INF/asicmanifest" + manifestCounter + ".xml"));
-              copyStream (new ByteArrayInputStream (byteArrayOutputStream.toByteArray ()), target);
+              ++nManifestCounter;
+              target.putNextEntry (new ZipEntry ("META-INF/asicmanifest" + nManifestCounter + ".xml"));
+              copyStream (byteArrayOutputStream.getAsInputStream (), target);
             }
             else
               if (PATTERN_XADES_SIGNATURES.matcher (zipEntry.getName ()).matches ())
               {
                 // Copy content to target container
-                ++manifestCounter;
-                target.putNextEntry (new ZipEntry ("META-INF/signatures" + manifestCounter + ".xml"));
+                ++nManifestCounter;
+                target.putNextEntry (new ZipEntry ("META-INF/signatures" + nManifestCounter + ".xml"));
                 copyStream (source, target);
               }
               else
@@ -131,7 +131,7 @@ public final class AsicUtils
                   copyStream (source, aBAOS);
 
                   // Copy entries
-                  oasisManifest.addAll (new OasisManifest (aBAOS.getAsInputStream ()));
+                  aOasisManifest.addAll (new OasisManifest (aBAOS.getAsInputStream ()));
 
                   // Nothing to write to target container
                   target.closeEntry ();
@@ -144,7 +144,7 @@ public final class AsicUtils
                   copyStream (source, target);
 
                   if (!zipEntry.getName ().startsWith ("META-INF/"))
-                    fileCounter++;
+                    nFileCounter++;
                 }
 
             source.closeEntry ();
@@ -156,8 +156,8 @@ public final class AsicUtils
       }
 
       // Add manifest if it contains the same amount of files as the container.
-      if (oasisManifest.getFileEntryCount () == fileCounter + 1)
-        target.writeZipEntry ("META-INF/manifest.xml", oasisManifest.getAsBytes ());
+      if (aOasisManifest.getFileEntryCount () == nFileCounter + 1)
+        target.writeZipEntry ("META-INF/manifest.xml", aOasisManifest.getAsBytes ());
 
       // Close target container
     }
@@ -172,8 +172,8 @@ public final class AsicUtils
     if (mimeType == null)
     {
       LOG.info ("Unable to determine MIME type of '" +
-                   filename +
-                   "' using Files.probeContentType(), trying URLConnection.getFileNameMap()");
+                filename +
+                "' using Files.probeContentType(), trying URLConnection.getFileNameMap()");
       mimeType = URLConnection.getFileNameMap ().getContentTypeFor (filename);
     }
 

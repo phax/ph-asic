@@ -200,7 +200,7 @@ public abstract class AbstractAsicReader implements Closeable
           if (filename.equals ("manifest.xml"))
           {
             // Read manifest.
-            m_aManifest = AsicReader.oasisManifest ().read (contentsOfStream.toByteArray ());
+            m_aManifest = AsicReader.oasisManifest ().read (contentsOfStream.getAsInputStream ());
           }
           else
           {

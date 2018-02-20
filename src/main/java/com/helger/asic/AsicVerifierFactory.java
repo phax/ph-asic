@@ -26,17 +26,20 @@ public class AsicVerifierFactory
 {
   private final EMessageDigestAlgorithm m_eMessageDigestAlgorithm;
 
+  @Nonnull
   public static AsicVerifierFactory newFactory ()
   {
     return newFactory (EMessageDigestAlgorithm.SHA256);
   }
 
+  @Nonnull
   public static AsicVerifierFactory newFactory (@Nonnull final ESignatureMethod eSM)
   {
     return newFactory (eSM.getMessageDigestAlgorithm ());
   }
 
-  static AsicVerifierFactory newFactory (@Nonnull final EMessageDigestAlgorithm eMDAlgorithm)
+  @Nonnull
+  public static AsicVerifierFactory newFactory (@Nonnull final EMessageDigestAlgorithm eMDAlgorithm)
   {
     return new AsicVerifierFactory (eMDAlgorithm);
   }
@@ -48,15 +51,15 @@ public class AsicVerifierFactory
   }
 
   @Nonnull
-  public AsicVerifier verify (@Nonnull final File file) throws IOException
+  public AsicVerifier verify (@Nonnull final File aFile) throws IOException
   {
-    return verify (file.toPath ());
+    return verify (aFile.toPath ());
   }
 
   @Nonnull
-  public AsicVerifier verify (@Nonnull final Path file) throws IOException
+  public AsicVerifier verify (@Nonnull final Path aFile) throws IOException
   {
-    return verify (Files.newInputStream (file));
+    return verify (Files.newInputStream (aFile));
   }
 
   @Nonnull

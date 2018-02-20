@@ -17,9 +17,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -28,6 +27,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.commons.io.file.FileHelper;
+import com.helger.commons.io.stream.NonBlockingByteArrayInputStream;
+import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.mime.CMimeType;
 
 public final class AsicUtilsTest
@@ -72,48 +73,50 @@ public final class AsicUtilsTest
   public void simpleCombine () throws IOException
   {
     // Create first container
-    final ByteArrayOutputStream source1 = new ByteArrayOutputStream ();
+    final NonBlockingByteArrayOutputStream source1 = new NonBlockingByteArrayOutputStream ();
     m_aAsicWriterFactory.newContainer (source1)
-                        .add (new ByteArrayInputStream (fileContent1.getBytes ()), "content1.txt", CMimeType.TEXT_PLAIN)
+                        .add (new NonBlockingByteArrayInputStream (fileContent1.getBytes (StandardCharsets.ISO_8859_1)),
+                              "content1.txt",
+                              CMimeType.TEXT_PLAIN)
                         .sign (m_aSignatureHelper);
 
     // Create second container
-    final ByteArrayOutputStream source2 = new ByteArrayOutputStream ();
+    final NonBlockingByteArrayOutputStream source2 = new NonBlockingByteArrayOutputStream ();
     m_aAsicWriterFactory.newContainer (source2)
-                        .add (new ByteArrayInputStream (fileContent2.getBytes ()), "content2.txt", CMimeType.TEXT_PLAIN)
+                        .add (new NonBlockingByteArrayInputStream (fileContent2.getBytes (StandardCharsets.ISO_8859_1)),
+                              "content2.txt",
+                              CMimeType.TEXT_PLAIN)
                         .sign (m_aSignatureHelper);
 
     // Combine containers
-    final ByteArrayOutputStream target = new ByteArrayOutputStream ();
-    AsicUtils.combine (target,
-                       new ByteArrayInputStream (source1.toByteArray ()),
-                       new ByteArrayInputStream (source2.toByteArray ()));
+    final NonBlockingByteArrayOutputStream target = new NonBlockingByteArrayOutputStream ();
+    AsicUtils.combine (target, source1.getAsInputStream (), source2.getAsInputStream ());
 
     // Read container (asic)
-    try (final IAsicReader asicReader = m_aAsicReaderFactory.open (new ByteArrayInputStream (target.toByteArray ())))
+    try (final IAsicReader asicReader = m_aAsicReaderFactory.open (target.getAsInputStream ()))
     {
-      ByteArrayOutputStream fileStream;
+      NonBlockingByteArrayOutputStream fileStream;
       {
         assertEquals (asicReader.getNextFile (), "content1.txt");
 
-        fileStream = new ByteArrayOutputStream ();
+        fileStream = new NonBlockingByteArrayOutputStream ();
         asicReader.writeFile (fileStream);
-        assertEquals (fileStream.toString (), fileContent1);
+        assertEquals (fileStream.getAsString (StandardCharsets.ISO_8859_1), fileContent1);
       }
 
       {
         assertEquals (asicReader.getNextFile (), "content2.txt");
 
-        fileStream = new ByteArrayOutputStream ();
+        fileStream = new NonBlockingByteArrayOutputStream ();
         asicReader.writeFile (fileStream);
-        assertEquals (fileStream.toString (), fileContent2);
+        assertEquals (fileStream.getAsString (StandardCharsets.ISO_8859_1), fileContent2);
       }
 
       assertNull (asicReader.getNextFile ());
     }
 
     // Read container (zip)
-    try (final ZipInputStream zipInputStream = new ZipInputStream (new ByteArrayInputStream (target.toByteArray ())))
+    try (final ZipInputStream zipInputStream = new ZipInputStream (target.getAsInputStream ()))
     {
       assertEquals (zipInputStream.getNextEntry ().getName (), "mimetype");
       assertEquals (zipInputStream.getNextEntry ().getName (), "content1.txt");
@@ -131,21 +134,25 @@ public final class AsicUtilsTest
   public void combineWhereOnlyOneHasManifest () throws IOException
   {
     // Create first container
-    final ByteArrayOutputStream source1 = new ByteArrayOutputStream ();
+    final NonBlockingByteArrayOutputStream source1 = new NonBlockingByteArrayOutputStream ();
     m_aAsicWriterFactory.newContainer (source1)
-                        .add (new ByteArrayInputStream (fileContent1.getBytes ()), "content1.txt", CMimeType.TEXT_PLAIN)
+                        .add (new NonBlockingByteArrayInputStream (fileContent1.getBytes (StandardCharsets.ISO_8859_1)),
+                              "content1.txt",
+                              CMimeType.TEXT_PLAIN)
                         .sign (m_aSignatureHelper);
 
     // Create second container
-    final ByteArrayOutputStream source2 = new ByteArrayOutputStream ();
+    final NonBlockingByteArrayOutputStream source2 = new NonBlockingByteArrayOutputStream ();
     m_aAsicWriterFactory.newContainer (source2)
-                        .add (new ByteArrayInputStream (fileContent2.getBytes ()), "content2.txt", CMimeType.TEXT_PLAIN)
+                        .add (new NonBlockingByteArrayInputStream (fileContent2.getBytes (StandardCharsets.ISO_8859_1)),
+                              "content2.txt",
+                              CMimeType.TEXT_PLAIN)
                         .sign (m_aSignatureHelper);
 
     // Rewrite source2 to remove META-INF/manifest.xml
-    try (final ByteArrayOutputStream source2simpler = new ByteArrayOutputStream ())
+    try (final NonBlockingByteArrayOutputStream source2simpler = new NonBlockingByteArrayOutputStream ())
     {
-      try (final AsicInputStream source2input = new AsicInputStream (new ByteArrayInputStream (source2.toByteArray ()));
+      try (final AsicInputStream source2input = new AsicInputStream (source2.getAsInputStream ());
            final AsicOutputStream source2output = new AsicOutputStream (source2simpler))
       {
         ZipEntry zipEntry;
@@ -162,13 +169,11 @@ public final class AsicUtilsTest
       }
 
       // Combine containers
-      final ByteArrayOutputStream target = new ByteArrayOutputStream ();
-      AsicUtils.combine (target,
-                         new ByteArrayInputStream (source1.toByteArray ()),
-                         new ByteArrayInputStream (source2simpler.toByteArray ()));
+      final NonBlockingByteArrayOutputStream target = new NonBlockingByteArrayOutputStream ();
+      AsicUtils.combine (target, source1.getAsInputStream (), source2simpler.getAsInputStream ());
 
       // Read container (zip)
-      try (final ZipInputStream zipInputStream = new ZipInputStream (new ByteArrayInputStream (target.toByteArray ())))
+      try (final ZipInputStream zipInputStream = new ZipInputStream (target.getAsInputStream ()))
       {
         assertEquals (zipInputStream.getNextEntry ().getName (), "mimetype");
         assertEquals (zipInputStream.getNextEntry ().getName (), "content1.txt");
@@ -186,25 +191,29 @@ public final class AsicUtilsTest
   public void simpleMultipleRootfiles () throws IOException
   {
     // Create first container
-    final ByteArrayOutputStream source1 = new ByteArrayOutputStream ();
+    final NonBlockingByteArrayOutputStream source1 = new NonBlockingByteArrayOutputStream ();
     m_aAsicWriterFactory.newContainer (source1)
-                        .add (new ByteArrayInputStream (fileContent1.getBytes ()), "content1.txt", CMimeType.TEXT_PLAIN)
+                        .add (new NonBlockingByteArrayInputStream (fileContent1.getBytes (StandardCharsets.ISO_8859_1)),
+                              "content1.txt",
+                              CMimeType.TEXT_PLAIN)
                         .setRootEntryName ("content1.txt")
                         .sign (m_aSignatureHelper);
 
     // Create second container
-    final ByteArrayOutputStream source2 = new ByteArrayOutputStream ();
+    final NonBlockingByteArrayOutputStream source2 = new NonBlockingByteArrayOutputStream ();
     m_aAsicWriterFactory.newContainer (source2)
-                        .add (new ByteArrayInputStream (fileContent2.getBytes ()), "content2.txt", CMimeType.TEXT_PLAIN)
+                        .add (new NonBlockingByteArrayInputStream (fileContent2.getBytes (StandardCharsets.ISO_8859_1)),
+                              "content2.txt",
+                              CMimeType.TEXT_PLAIN)
                         .setRootEntryName ("content2.txt")
                         .sign (m_aSignatureHelper);
 
     // Combine containers
     try
     {
-      AsicUtils.combine (new ByteArrayOutputStream (),
-                         new ByteArrayInputStream (source1.toByteArray ()),
-                         new ByteArrayInputStream (source2.toByteArray ()));
+      AsicUtils.combine (new NonBlockingByteArrayOutputStream (),
+                         source1.getAsInputStream (),
+                         source2.getAsInputStream ());
       fail ("Exception expected.");
     }
     catch (final IllegalStateException e)
@@ -219,48 +228,50 @@ public final class AsicUtilsTest
     final AsicWriterFactory aFactoryXades = AsicWriterFactory.newFactory (ESignatureMethod.XAdES);
 
     // Create first container
-    final ByteArrayOutputStream source1 = new ByteArrayOutputStream ();
+    final NonBlockingByteArrayOutputStream source1 = new NonBlockingByteArrayOutputStream ();
     aFactoryXades.newContainer (source1)
-                 .add (new ByteArrayInputStream (fileContent1.getBytes ()), "content1.txt", CMimeType.TEXT_PLAIN)
+                 .add (new NonBlockingByteArrayInputStream (fileContent1.getBytes (StandardCharsets.ISO_8859_1)),
+                       "content1.txt",
+                       CMimeType.TEXT_PLAIN)
                  .sign (m_aSignatureHelper);
 
     // Create second container
-    final ByteArrayOutputStream source2 = new ByteArrayOutputStream ();
+    final NonBlockingByteArrayOutputStream source2 = new NonBlockingByteArrayOutputStream ();
     aFactoryXades.newContainer (source2)
-                 .add (new ByteArrayInputStream (fileContent2.getBytes ()), "content2.txt", CMimeType.TEXT_PLAIN)
+                 .add (new NonBlockingByteArrayInputStream (fileContent2.getBytes (StandardCharsets.ISO_8859_1)),
+                       "content2.txt",
+                       CMimeType.TEXT_PLAIN)
                  .sign (m_aSignatureHelper);
 
     // Combine containers
-    final ByteArrayOutputStream target = new ByteArrayOutputStream ();
-    AsicUtils.combine (target,
-                       new ByteArrayInputStream (source1.toByteArray ()),
-                       new ByteArrayInputStream (source2.toByteArray ()));
+    final NonBlockingByteArrayOutputStream target = new NonBlockingByteArrayOutputStream ();
+    AsicUtils.combine (target, source1.getAsInputStream (), source2.getAsInputStream ());
 
     // Read container (asic)
-    try (final IAsicReader asicReader = m_aAsicReaderFactory.open (new ByteArrayInputStream (target.toByteArray ())))
+    try (final IAsicReader asicReader = m_aAsicReaderFactory.open (target.getAsInputStream ()))
     {
-      ByteArrayOutputStream fileStream;
+      NonBlockingByteArrayOutputStream fileStream;
       {
         assertEquals (asicReader.getNextFile (), "content1.txt");
 
-        fileStream = new ByteArrayOutputStream ();
+        fileStream = new NonBlockingByteArrayOutputStream ();
         asicReader.writeFile (fileStream);
-        assertEquals (fileStream.toString (), fileContent1);
+        assertEquals (fileStream.getAsString (StandardCharsets.ISO_8859_1), fileContent1);
       }
 
       {
         assertEquals (asicReader.getNextFile (), "content2.txt");
 
-        fileStream = new ByteArrayOutputStream ();
+        fileStream = new NonBlockingByteArrayOutputStream ();
         asicReader.writeFile (fileStream);
-        assertEquals (fileStream.toString (), fileContent2);
+        assertEquals (fileStream.getAsString (StandardCharsets.ISO_8859_1), fileContent2);
       }
 
       assertNull (asicReader.getNextFile ());
     }
 
     // Read container (zip)
-    try (final ZipInputStream zipInputStream = new ZipInputStream (new ByteArrayInputStream (target.toByteArray ())))
+    try (final ZipInputStream zipInputStream = new ZipInputStream (target.getAsInputStream ()))
     {
       assertEquals (zipInputStream.getNextEntry ().getName (), "mimetype");
       assertEquals (zipInputStream.getNextEntry ().getName (), "content1.txt");

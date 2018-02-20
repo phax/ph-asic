@@ -16,10 +16,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -31,6 +30,8 @@ import org.slf4j.LoggerFactory;
 
 import com.helger.commons.io.file.FilenameHelper;
 import com.helger.commons.io.resource.ClassPathResource;
+import com.helger.commons.io.stream.NonBlockingByteArrayInputStream;
+import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.mime.CMimeType;
 import com.helger.xsds.xmldsig.ReferenceType;
 
@@ -39,7 +40,7 @@ import com.helger.xsds.xmldsig.ReferenceType;
  */
 public final class AsicXadesWriterTest
 {
-  private static final Logger log = LoggerFactory.getLogger (AsicXadesWriterTest.class);
+  private static final Logger LOG = LoggerFactory.getLogger (AsicXadesWriterTest.class);
 
   public static final String BII_ENVELOPE_XML = "/asic/bii-envelope.xml";
   public static final String BII_MESSAGE_XML = TestUtil.BII_SAMPLE_MESSAGE_XML;
@@ -67,14 +68,16 @@ public final class AsicXadesWriterTest
   @Test
   public void createSampleEmptyContainer () throws Exception
   {
-    final ByteArrayOutputStream outputStream = new ByteArrayOutputStream ();
-    m_aAsicWriterFactory.newContainer (outputStream).sign (m_aKeystoreFile, "changeit", "changeit");
+    try (final NonBlockingByteArrayOutputStream outputStream = new NonBlockingByteArrayOutputStream ())
+    {
+      m_aAsicWriterFactory.newContainer (outputStream).sign (m_aKeystoreFile, "changeit", "changeit");
 
-    final byte [] buffer = outputStream.toByteArray ();
-    assertEquals ("Byte 28 should be 0", buffer[28], (byte) 0);
-    assertEquals ("'mimetype' file should not be compressed", buffer[8], 0);
-    assertTrue ("First 4 octets should read 0x50 0x4B 0x03 0x04",
-                buffer[0] == 0x50 && buffer[1] == 0x4B && buffer[2] == 0x03 && buffer[3] == 0x04);
+      final byte [] buffer = outputStream.toByteArray ();
+      assertEquals ("Byte 28 should be 0", buffer[28], (byte) 0);
+      assertEquals ("'mimetype' file should not be compressed", buffer[8], 0);
+      assertTrue ("First 4 octets should read 0x50 0x4B 0x03 0x04",
+                  buffer[0] == 0x50 && buffer[1] == 0x4B && buffer[2] == 0x03 && buffer[3] == 0x04);
+    }
   }
 
   @Test
@@ -113,30 +116,28 @@ public final class AsicXadesWriterTest
 
     assertTrue ("ASiC container can not be read", file.canRead ());
 
-    log.info ("Generated file " + file);
+    LOG.info ("Generated file " + file);
 
     try (final ZipFile zipFile = new ZipFile (file))
     {
       final Enumeration <? extends ZipEntry> entries = zipFile.entries ();
 
+      int matchCount = 0;
+      while (entries.hasMoreElements ())
       {
-        int matchCount = 0;
-        while (entries.hasMoreElements ())
+        final ZipEntry entry = entries.nextElement ();
+        final String name = entry.getName ();
+        if (FilenameHelper.getWithoutPath (BII_ENVELOPE_XML).equals (name))
         {
-          final ZipEntry entry = entries.nextElement ();
-          final String name = entry.getName ();
-          if (FilenameHelper.getWithoutPath (BII_ENVELOPE_XML).equals (name))
-          {
-            matchCount++;
-          }
-          if (BII_MESSAGE_XML.equals (name))
-          {
-            matchCount++;
-          }
-          log.info ("Found " + name);
+          matchCount++;
         }
-        assertEquals ("Number of items in archive did not match", matchCount, 2);
+        if (BII_MESSAGE_XML.equals (name))
+        {
+          matchCount++;
+        }
+        LOG.info ("Found " + name);
       }
+      assertEquals ("Number of items in archive did not match", matchCount, 2);
     }
     try
     {
@@ -162,8 +163,9 @@ public final class AsicXadesWriterTest
   @Test
   public void rootfileNotSupported () throws IOException
   {
-    final IAsicWriter asicWriter = m_aAsicWriterFactory.newContainer (new ByteArrayOutputStream ());
-    asicWriter.add (new ByteArrayInputStream ("Content".getBytes ()), "rootfile.txt");
+    final IAsicWriter asicWriter = m_aAsicWriterFactory.newContainer (new NonBlockingByteArrayOutputStream ());
+    asicWriter.add (new NonBlockingByteArrayInputStream ("Content".getBytes (StandardCharsets.ISO_8859_1)),
+                    "rootfile.txt");
 
     try
     {
@@ -172,7 +174,7 @@ public final class AsicXadesWriterTest
     }
     catch (final IllegalStateException e)
     {
-      log.info (e.getMessage ());
+      // expected
     }
   }
 }

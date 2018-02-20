@@ -23,7 +23,6 @@ import javax.annotation.Nonnull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.mime.IMimeType;
 
 /**
@@ -41,41 +40,42 @@ public class AsicOutputStream extends ZipOutputStream
     _putMimeTypeAsFirstEntry (AsicUtils.MIMETYPE_ASICE);
   }
 
-  private void _putMimeTypeAsFirstEntry (@Nonnull @Nonempty final IMimeType aMimeType) throws IOException
+  private void _putMimeTypeAsFirstEntry (@Nonnull final IMimeType aMimeType) throws IOException
   {
     final String sMimeType = aMimeType.getAsString ();
-    final ZipEntry mimetypeEntry = new ZipEntry ("mimetype");
-    mimetypeEntry.setComment ("mimetype=" + sMimeType);
-    mimetypeEntry.setMethod (ZipEntry.STORED);
+    final ZipEntry aZipEntry = new ZipEntry ("mimetype");
+    aZipEntry.setComment ("mimetype=" + sMimeType);
+    aZipEntry.setMethod (ZipEntry.STORED);
 
     final byte [] aContentBytes = sMimeType.getBytes (StandardCharsets.ISO_8859_1);
-    mimetypeEntry.setSize (aContentBytes.length);
+    aZipEntry.setSize (aContentBytes.length);
 
-    final CRC32 crc32 = new CRC32 ();
-    crc32.update (aContentBytes);
-    mimetypeEntry.setCrc (crc32.getValue ());
+    final CRC32 aCrc = new CRC32 ();
+    aCrc.update (aContentBytes);
+    aZipEntry.setCrc (aCrc.getValue ());
 
-    writeZipEntry (mimetypeEntry, aContentBytes);
+    writeZipEntry (aZipEntry, aContentBytes);
   }
 
-  protected void writeZipEntry (final String filename, final byte [] bytes) throws IOException
+  protected final void writeZipEntry (@Nonnull final String sFilename, @Nonnull final byte [] bytes) throws IOException
   {
-    writeZipEntry (new ZipEntry (filename), bytes);
+    writeZipEntry (new ZipEntry (sFilename), bytes);
   }
 
-  protected void writeZipEntry (final ZipEntry zipEntry, final byte [] bytes) throws IOException
+  protected final void writeZipEntry (@Nonnull final ZipEntry aZipEntry,
+                                      @Nonnull final byte [] bytes) throws IOException
   {
     try
     {
       if (LOG.isDebugEnabled ())
-        LOG.debug ("Writing entry '" + zipEntry.getName () + "' to container");
-      putNextEntry (zipEntry);
+        LOG.debug ("Writing entry '" + aZipEntry.getName () + "' to container");
+      putNextEntry (aZipEntry);
       write (bytes);
       closeEntry ();
     }
     catch (final IOException e)
     {
-      throw new IOException ("Unable to create new ZIP entry for " + zipEntry.getName (), e);
+      throw new IOException ("Unable to create new ZIP entry for " + aZipEntry.getName (), e);
     }
   }
 }

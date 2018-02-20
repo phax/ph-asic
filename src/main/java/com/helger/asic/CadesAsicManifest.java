@@ -108,16 +108,16 @@ public class CadesAsicManifest extends AbstractAsicManifest
     xml = xml.replaceAll ("http://www.w3.org/2000/09/xmldsig#sha", "http://www.w3.org/2001/04/xmlenc#sha");
 
     // Read XML
-    final ASiCManifestType manifest = AsicReader.asicManifest ().read (xml);
-    if (manifest == null)
+    final ASiCManifestType aManifest = AsicReader.asicManifest ().read (xml);
+    if (aManifest == null)
       throw new IllegalStateException ("Unable to read content as XML");
 
-    String sigReference = manifest.getSigReference ().getURI ();
+    String sigReference = aManifest.getSigReference ().getURI ();
     if (sigReference == null)
       sigReference = "META-INF/signature.p7s";
 
     // Run through recorded objects
-    for (final DataObjectReferenceType aDOR : manifest.getDataObjectReference ())
+    for (final DataObjectReferenceType aDOR : aManifest.getDataObjectReference ())
     {
       aMV.update (aDOR.getURI (),
                                aDOR.getMimeType (),

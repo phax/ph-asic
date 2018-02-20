@@ -16,7 +16,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -36,6 +35,7 @@ import com.helger.commons.io.file.FilenameHelper;
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.io.stream.NonBlockingBufferedInputStream;
 import com.helger.commons.io.stream.NonBlockingByteArrayInputStream;
+import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.mime.CMimeType;
 
 /**
@@ -197,7 +197,7 @@ public final class AsicCadesWriterTest
   @Test
   public void writingToMetaInf () throws IOException
   {
-    final IAsicWriter asicWriter = m_aWriterFactory.newContainer (new ByteArrayOutputStream ());
+    final IAsicWriter asicWriter = m_aWriterFactory.newContainer (new NonBlockingByteArrayOutputStream ());
 
     try
     {

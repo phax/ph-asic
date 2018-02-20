@@ -87,42 +87,42 @@ public class AsicWriterFactory
    * Creates a new AsicWriter, which will create an ASiC archive in the supplied
    * file.
    *
-   * @param file
+   * @param aFile
    *        the file reference to the archive.
    * @return an instance of AsicWriter
    * @throws IOException
    *         on IO error
    */
   @Nonnull
-  public IAsicWriter newContainer (@Nonnull final File file) throws IOException
+  public IAsicWriter newContainer (@Nonnull final File aFile) throws IOException
   {
-    return newContainer (file.toPath ());
+    return newContainer (aFile.toPath ());
   }
 
   @Nonnull
-  public IAsicWriter newContainer (@Nonnull final Path path) throws IOException
+  public IAsicWriter newContainer (@Nonnull final Path aPath) throws IOException
   {
     // Conformance to ETSI TS 102 918, 6.2.1 1)
-    if (!AsicUtils.PATTERN_EXTENSION_ASICE.matcher (path.toString ()).matches ())
+    if (!AsicUtils.PATTERN_EXTENSION_ASICE.matcher (aPath.toString ()).matches ())
       LOG.warn ("ASiC-E files should use \"asice\" as file extension.");
 
-    return newContainer (Files.newOutputStream (path), true);
+    return newContainer (Files.newOutputStream (aPath), true);
   }
 
   /**
    * Creates a new AsicWriter, which will write the container contents to the
    * supplied output stream.
    *
-   * @param outputStream
+   * @param aOS
    *        stream into which the archive will be written.
    * @return an instance of AsicWriter
    * @throws IOException
    *         on IO error
    */
   @Nonnull
-  public IAsicWriter newContainer (@Nonnull final OutputStream outputStream) throws IOException
+  public IAsicWriter newContainer (@Nonnull final OutputStream aOS) throws IOException
   {
-    return newContainer (outputStream, false);
+    return newContainer (aOS, false);
   }
 
   @Nonnull
