@@ -11,13 +11,12 @@
  */
 package com.helger.asic.extras;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 import java.util.Set;
 import java.util.TreeSet;
@@ -26,6 +25,7 @@ import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.cms.CMSAlgorithm;
 import org.bouncycastle.cms.CMSEnvelopedData;
 import org.bouncycastle.cms.CMSEnvelopedDataGenerator;
+import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.CMSProcessableByteArray;
 import org.bouncycastle.cms.jcajce.JceCMSContentEncryptorBuilder;
 import org.bouncycastle.cms.jcajce.JceKeyTransRecipientInfoGenerator;
@@ -34,6 +34,8 @@ import com.helger.asic.AsicUtils;
 import com.helger.asic.BCHelper;
 import com.helger.asic.IAsicWriter;
 import com.helger.asic.SignatureHelper;
+import com.helger.commons.io.stream.NonBlockingByteArrayInputStream;
+import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.mime.IMimeType;
 
 /**
@@ -123,7 +125,7 @@ public class CmsEncryptedAsicWriter implements IAsicWriter
   {
     try
     {
-      final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream ();
+      final NonBlockingByteArrayOutputStream byteArrayOutputStream = new NonBlockingByteArrayOutputStream ();
       AsicUtils.copyStream (inputStream, byteArrayOutputStream);
 
       final CMSEnvelopedDataGenerator cmsEnvelopedDataGenerator = new CMSEnvelopedDataGenerator ();
@@ -134,9 +136,9 @@ public class CmsEncryptedAsicWriter implements IAsicWriter
 
       m_aEntryNames.add (filename);
 
-      return m_aAsicWriter.add (new ByteArrayInputStream (data.getEncoded ()), filename + ".p7m", mimeType);
+      return m_aAsicWriter.add (new NonBlockingByteArrayInputStream (data.getEncoded ()), filename + ".p7m", mimeType);
     }
-    catch (final Exception e)
+    catch (final CMSException | CertificateEncodingException e)
     {
       throw new IOException (e.getMessage (), e);
     }

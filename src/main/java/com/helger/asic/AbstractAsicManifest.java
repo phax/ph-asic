@@ -22,31 +22,32 @@ import com.helger.commons.mime.IMimeType;
 @NotThreadSafe
 public abstract class AbstractAsicManifest
 {
-  private final EMessageDigestAlgorithm m_aMessageDigestAlgorithm;
+  private final EMessageDigestAlgorithm m_eMDAlgo;
   private MessageDigest m_aMD;
 
-  public AbstractAsicManifest (@Nonnull final EMessageDigestAlgorithm messageDigestAlgorithm)
+  public AbstractAsicManifest (@Nonnull final EMessageDigestAlgorithm eMDAlgo)
   {
-    m_aMessageDigestAlgorithm = messageDigestAlgorithm;
+    m_eMDAlgo = eMDAlgo;
 
     // Create message digest
     try
     {
-      m_aMD = MessageDigest.getInstance (messageDigestAlgorithm.getAlgorithm ());
+      m_aMD = MessageDigest.getInstance (eMDAlgo.getAlgorithm ());
       m_aMD.reset ();
     }
     catch (final NoSuchAlgorithmException e)
     {
-      throw new IllegalStateException ("Algorithm " + messageDigestAlgorithm.getAlgorithm () + " not supported", e);
+      throw new IllegalStateException ("Algorithm " + eMDAlgo.getAlgorithm () + " not supported", e);
     }
   }
 
   @Nonnull
   public final EMessageDigestAlgorithm getMessageDigestAlgorithm ()
   {
-    return m_aMessageDigestAlgorithm;
+    return m_eMDAlgo;
   }
 
+  @Nonnull
   protected final MessageDigest internalGetMessageDigest ()
   {
     return m_aMD;

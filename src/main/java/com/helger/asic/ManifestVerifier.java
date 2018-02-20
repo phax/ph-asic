@@ -16,66 +16,67 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import com.helger.asic.jaxb.asic.AsicFile;
 import com.helger.asic.jaxb.asic.AsicManifest;
 import com.helger.asic.jaxb.asic.Certificate;
-import com.helger.commons.ValueEnforcer;
 
 public class ManifestVerifier
 {
-  private final EMessageDigestAlgorithm m_eMD;
+  private final EMessageDigestAlgorithm m_eReferenceMD;
 
   private final AsicManifest m_aAsicManifest = new AsicManifest ();
   private final Map <String, AsicFile> m_aAsicManifestMap = new HashMap <> ();
 
-  public ManifestVerifier (@Nonnull final EMessageDigestAlgorithm eMD)
+  public ManifestVerifier (@Nullable final EMessageDigestAlgorithm eReferenceMD)
   {
-    ValueEnforcer.notNull (eMD, "MD");
-    m_eMD = eMD;
+    m_eReferenceMD = eReferenceMD;
   }
 
-  public void update (final String filename, final byte [] digest, final String sigReference)
+  public void update (@Nonnull final String sFilename,
+                      @Nonnull final byte [] aDigest,
+                      @Nullable final String sSigReference)
   {
-    update (filename, null, digest, null, sigReference);
+    update (sFilename, null, aDigest, null, sSigReference);
   }
 
-  public void update (final String filename,
-                      final String mimetype,
-                      final byte [] digest,
-                      final String digestAlgorithm,
-                      final String sigReference)
+  public void update (@Nonnull final String sFilename,
+                      @Nullable final String sMimeType,
+                      @Nonnull final byte [] aDigest,
+                      @Nullable final String sDigestAlgorithm,
+                      @Nullable final String sSigReference)
   {
-    if (m_eMD != null && digestAlgorithm != null && !digestAlgorithm.equals (m_eMD.getUri ()))
-      throw new IllegalStateException ("Wrong digest method for file " + filename + ": " + digestAlgorithm);
+    if (m_eReferenceMD != null && sDigestAlgorithm != null && !sDigestAlgorithm.equals (m_eReferenceMD.getUri ()))
+      throw new IllegalStateException ("Wrong digest method for file " + sFilename + ": " + sDigestAlgorithm);
 
-    AsicFile asicFile = m_aAsicManifestMap.get (filename);
-    if (asicFile == null)
+    AsicFile aAsicFile = m_aAsicManifestMap.get (sFilename);
+    if (aAsicFile == null)
     {
-      asicFile = new AsicFile ();
-      asicFile.setName (filename);
-      asicFile.setDigest (digest);
-      asicFile.setVerified (false);
+      aAsicFile = new AsicFile ();
+      aAsicFile.setName (sFilename);
+      aAsicFile.setDigest (aDigest);
+      aAsicFile.setVerified (false);
 
-      m_aAsicManifest.getFile ().add (asicFile);
-      m_aAsicManifestMap.put (filename, asicFile);
+      m_aAsicManifest.getFile ().add (aAsicFile);
+      m_aAsicManifestMap.put (sFilename, aAsicFile);
     }
     else
     {
-      if (!Arrays.equals (asicFile.getDigest (), digest))
-        throw new IllegalStateException ("Mismatching digest for file " + filename);
+      if (!Arrays.equals (aAsicFile.getDigest (), aDigest))
+        throw new IllegalStateException ("Mismatching digest for file " + sFilename);
 
-      asicFile.setVerified (true);
+      aAsicFile.setVerified (true);
     }
 
-    if (mimetype != null)
-      asicFile.setMimetype (mimetype);
-    if (sigReference != null)
-      asicFile.getCertRef ().add (sigReference);
+    if (sMimeType != null)
+      aAsicFile.setMimetype (sMimeType);
+    if (sSigReference != null)
+      aAsicFile.getCertRef ().add (sSigReference);
 
   }
 
-  public void addCertificate (final Certificate certificate)
+  public void addCertificate (@Nonnull final Certificate certificate)
   {
     m_aAsicManifest.addCertificate (certificate);
   }
@@ -85,7 +86,7 @@ public class ManifestVerifier
     m_aAsicManifest.setRootfile (filename);
   }
 
-  public void verifyAllVerified ()
+  public void verifyAllVerified () throws IllegalStateException
   {
     for (final AsicFile asicFile : m_aAsicManifest.getFile ())
       if (!asicFile.isVerified ())

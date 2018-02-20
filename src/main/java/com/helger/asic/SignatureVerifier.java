@@ -44,7 +44,7 @@ public final class SignatureVerifier
   @Nonnull
   public static Certificate validate (final byte [] data, final byte [] signature)
   {
-    Certificate certificate = null;
+    Certificate ret = null;
 
     try
     {
@@ -52,31 +52,31 @@ public final class SignatureVerifier
       final Store <X509CertificateHolder> store = cmsSignedData.getCertificates ();
       final SignerInformationStore signerInformationStore = cmsSignedData.getSignerInfos ();
 
-      for (final SignerInformation signerInformation : signerInformationStore.getSigners ())
+      for (final SignerInformation aSignerInformation : signerInformationStore.getSigners ())
       {
-        final X509CertificateHolder x509Certificate = (X509CertificateHolder) store.getMatches (signerInformation.getSID ())
+        final X509CertificateHolder x509Certificate = (X509CertificateHolder) store.getMatches (aSignerInformation.getSID ())
                                                                                    .iterator ()
                                                                                    .next ();
         if (LOG.isDebugEnabled ())
           LOG.debug (x509Certificate.getSubject ().toString ());
 
-        if (signerInformation.verify (s_aJcaSimpleSignerInfoVerifierBuilder.build (x509Certificate)))
+        if (aSignerInformation.verify (s_aJcaSimpleSignerInfoVerifierBuilder.build (x509Certificate)))
         {
-          certificate = new Certificate ();
-          certificate.setCertificate (x509Certificate.getEncoded ());
-          certificate.setSubject (x509Certificate.getSubject ().toString ());
+          ret = new Certificate ();
+          ret.setCertificate (x509Certificate.getEncoded ());
+          ret.setSubject (x509Certificate.getSubject ().toString ());
         }
       }
     }
     catch (final Exception e)
     {
       LOG.warn ("Error in signature validation", e);
-      certificate = null;
+      ret = null;
     }
 
-    if (certificate == null)
+    if (ret == null)
       throw new IllegalStateException ("Unable to verify signature.");
 
-    return certificate;
+    return ret;
   }
 }

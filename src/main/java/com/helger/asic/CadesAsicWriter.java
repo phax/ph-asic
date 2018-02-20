@@ -69,7 +69,7 @@ public class CadesAsicWriter extends AbstractAsicWriter
 
     // Generates and writes manifest (META-INF/asicmanifest.xml) to the zip
     // archive
-    final byte [] manifestBytes = getAsicManifest ().toBytes ();
+    final byte [] manifestBytes = getAsicManifest ().getAsBytes ();
     m_aAsicOutputStream.writeZipEntry ("META-INF/asicmanifest.xml", manifestBytes);
 
     // Generates and writes signature (META-INF/signature-*.p7s) to the zip

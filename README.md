@@ -4,7 +4,7 @@
 
 # News and Noteworthy
 
-* v1.0.1 - work in progress
+* v1.0.1 - 2018-02-20
   * Less verbose logging
 * v1.0.0 - 2018-02-13
   * Initial version as rip of difi/asic
@@ -33,7 +33,7 @@ This implementation is based on difi's v0.9.2
 <dependency>
 	<groupId>com.helger</groupId>
 	<artifactId>ph-asic</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
+	<version>1.0.1</version>
 </dependency>
 ```
 

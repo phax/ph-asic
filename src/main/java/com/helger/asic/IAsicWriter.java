@@ -28,7 +28,7 @@ public interface IAsicWriter
   /**
    * Adds another data object to the ASiC archive.
    *
-   * @param file
+   * @param aFile
    *        references the file to be added as a data object. The name of the
    *        entry is extracted from the File object.
    * @return reference to this AsicWriter
@@ -36,33 +36,33 @@ public interface IAsicWriter
    *         in case of IO error
    */
   @Nonnull
-  default IAsicWriter add (@Nonnull final File file) throws IOException
+  default IAsicWriter add (@Nonnull final File aFile) throws IOException
   {
-    return add (file.toPath ());
+    return add (aFile.toPath ());
   }
 
   /**
    * Adds another data object to the ASiC container, using the supplied name as
    * the zip entry name
    *
-   * @param file
+   * @param aFile
    *        references the file to be added as a data object.
-   * @param entryName
+   * @param sFilename
    *        the archive entry name to be used.
    * @return reference to this AsicWriter
    * @throws IOException
    *         in case of error
    */
   @Nonnull
-  default IAsicWriter add (@Nonnull final File file, final String entryName) throws IOException
+  default IAsicWriter add (@Nonnull final File aFile, @Nonnull final String sFilename) throws IOException
   {
-    return add (file.toPath (), entryName);
+    return add (aFile.toPath (), sFilename);
   }
 
   /**
    * Adds another data object to the ASiC archive
    *
-   * @param path
+   * @param aPath
    *        references the file to be added.
    * @return reference to this AsicWriter
    * @throws IOException
@@ -70,18 +70,18 @@ public interface IAsicWriter
    * @see #add(File)
    */
   @Nonnull
-  default IAsicWriter add (@Nonnull final Path path) throws IOException
+  default IAsicWriter add (@Nonnull final Path aPath) throws IOException
   {
-    return add (path, path.toFile ().getName ());
+    return add (aPath, aPath.toFile ().getName ());
   }
 
   /**
    * Adds another data object to the ASiC container under the entry name
    * provided.
    *
-   * @param path
+   * @param aPath
    *        reference to this AsicWriter.
-   * @param entryName
+   * @param sFilename
    *        the archive entry name to be used.
    * @return reference to this AsicWriter
    * @throws IOException
@@ -89,11 +89,11 @@ public interface IAsicWriter
    * @see #add(File, String)
    */
   @Nonnull
-  default IAsicWriter add (@Nonnull final Path path, final String entryName) throws IOException
+  default IAsicWriter add (@Nonnull final Path aPath, @Nonnull final String sFilename) throws IOException
   {
-    try (final InputStream inputStream = Files.newInputStream (path))
+    try (final InputStream inputStream = Files.newInputStream (aPath))
     {
-      add (inputStream, entryName);
+      add (inputStream, sFilename);
     }
     return this;
   }
@@ -102,9 +102,9 @@ public interface IAsicWriter
    * Adds the data provided by the stream into the ASiC archive, using the name
    * of the supplied file as the entry name.
    *
-   * @param inputStream
+   * @param aIS
    *        input stream of data.
-   * @param filename
+   * @param sFilename
    *        the name of a file, which must be available in the file system in
    *        order to determine the MIME type.
    * @return reference to this AsicWriter
@@ -112,33 +112,33 @@ public interface IAsicWriter
    *         in case of an IO error
    */
   @Nonnull
-  default IAsicWriter add (@Nonnull @WillNotClose final InputStream inputStream,
-                           final String filename) throws IOException
+  default IAsicWriter add (@Nonnull @WillNotClose final InputStream aIS,
+                           @Nonnull final String sFilename) throws IOException
   {
     // Add file to container
-    return add (inputStream, filename, AsicUtils.detectMime (filename));
+    return add (aIS, sFilename, AsicUtils.detectMime (sFilename));
   }
 
   /**
    * Adds the contents of a file into the ASiC archive using the supplied entry
    * name and MIME type.
    *
-   * @param file
+   * @param aFile
    *        references the file to be added as a data object.
-   * @param entryName
+   * @param sFilename
    *        the archive entry name to be used.
-   * @param mimeType
+   * @param aMimeType
    *        explicitly identifies the MIME type of the entry.
    * @return reference to this AsicWriter
    * @throws IOException
    *         in case of an IO error
    */
   @Nonnull
-  default IAsicWriter add (@Nonnull final File file,
-                           final String entryName,
-                           final IMimeType mimeType) throws IOException
+  default IAsicWriter add (@Nonnull final File aFile,
+                           @Nonnull final String sFilename,
+                           @Nonnull final IMimeType aMimeType) throws IOException
   {
-    return add (file.toPath (), entryName, mimeType);
+    return add (aFile.toPath (), sFilename, aMimeType);
   }
 
   /**
@@ -147,9 +147,9 @@ public interface IAsicWriter
    *
    * @param path
    *        references the file to be added as a data object.
-   * @param entryName
+   * @param sFilename
    *        the archive entry name to be used.
-   * @param mimeType
+   * @param aMimeType
    *        explicitly identifies the MIME type of the entry.
    * @return reference to this AsicWriter
    * @throws IOException
@@ -157,12 +157,12 @@ public interface IAsicWriter
    */
   @Nonnull
   default IAsicWriter add (@Nonnull final Path path,
-                           final String entryName,
-                           final IMimeType mimeType) throws IOException
+                           @Nonnull final String sFilename,
+                           @Nonnull final IMimeType aMimeType) throws IOException
   {
-    try (InputStream inputStream = Files.newInputStream (path))
+    try (final InputStream aIS = Files.newInputStream (path))
     {
-      add (inputStream, entryName, mimeType);
+      add (aIS, sFilename, aMimeType);
     }
     return this;
   }
@@ -171,18 +171,20 @@ public interface IAsicWriter
    * Adds the contents of an input stream into the ASiC archive, under a given
    * entry name and explicitly identifying the MIME type.
    *
-   * @param inputStream
+   * @param aIS
    *        Input stream to add
-   * @param entryName
+   * @param sFilename
    *        the archive entry name to be used.
-   * @param mimeType
+   * @param aMimeType
    *        explicitly identifies the MIME type of the entry.
    * @return reference to this AsicWriter
    * @throws IOException
    *         on IO error
    */
   @Nonnull
-  IAsicWriter add (@Nonnull InputStream inputStream, String entryName, IMimeType mimeType) throws IOException;
+  IAsicWriter add (@Nonnull InputStream aIS,
+                   @Nonnull String sFilename,
+                   @Nonnull IMimeType aMimeType) throws IOException;
 
   /**
    * Specifies which entry (file) represents the "root" document, i.e. which

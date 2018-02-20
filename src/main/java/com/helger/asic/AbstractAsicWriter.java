@@ -18,23 +18,26 @@ import java.security.DigestOutputStream;
 import java.util.zip.ZipEntry;
 
 import javax.annotation.Nonnull;
+import javax.annotation.concurrent.NotThreadSafe;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.commons.mime.IMimeType;
 
+/**
+ * Abstract implementation of {@link IAsicWriter}.
+ */
+@NotThreadSafe
 public abstract class AbstractAsicWriter implements IAsicWriter
 {
   private static final Logger LOG = LoggerFactory.getLogger (AbstractAsicWriter.class);
 
-  protected AsicOutputStream m_aAsicOutputStream;
-  protected AbstractAsicManifest m_aAsicManifest;
-
   protected boolean m_bFinished = false;
   protected OutputStream m_aContainerOS;
-  protected boolean m_bCloseStreamOnSign = false;
-
+  protected AsicOutputStream m_aAsicOutputStream;
+  protected boolean m_bCloseStreamOnSign;
+  protected AbstractAsicManifest m_aAsicManifest;
   protected OasisManifest m_aOasisManifest;
 
   /**
@@ -65,42 +68,52 @@ public abstract class AbstractAsicWriter implements IAsicWriter
     m_aOasisManifest = new OasisManifest (AsicUtils.MIMETYPE_ASICE);
   }
 
-  @Override
-  public IAsicWriter add (final InputStream inputStream,
-                          final String filename,
-                          final IMimeType mimeType) throws IOException
+  public IAsicWriter add (@Nonnull final InputStream aIS,
+                          @Nonnull final String sFilename,
+                          @Nonnull final IMimeType aMimeType) throws IOException, IllegalStateException
   {
     // Check status
     if (m_bFinished)
       throw new IllegalStateException ("Adding content to container after signing container is not supported.");
 
-    if (filename.startsWith ("META-INF/"))
+    if (sFilename.startsWith ("META-INF/"))
       throw new IllegalStateException ("Adding files to META-INF is not allowed.");
 
     // Creates new zip entry
     if (LOG.isDebugEnabled ())
-      LOG.debug ("Writing file '" + filename + "' to container");
-    m_aAsicOutputStream.putNextEntry (new ZipEntry (filename));
+      LOG.debug ("Writing file '" + sFilename + "' to container");
+    m_aAsicOutputStream.putNextEntry (new ZipEntry (sFilename));
 
     // Prepare for calculation of message digest
     final DigestOutputStream zipOutputStreamWithDigest = new DigestOutputStream (m_aAsicOutputStream,
                                                                                  m_aAsicManifest.getNewMessageDigest ());
 
     // Copy inputStream to zip output stream
-    AsicUtils.copyStream (inputStream, zipOutputStreamWithDigest);
+    AsicUtils.copyStream (aIS, zipOutputStreamWithDigest);
 
     // Closes the zip entry
     m_aAsicOutputStream.closeEntry ();
 
     // Adds contents of input stream to manifest which will be signed and
     // written once all data objects have been added
-    m_aAsicManifest.add (filename, mimeType);
+    m_aAsicManifest.add (sFilename, aMimeType);
 
     // Add record of file to OASIS OpenDocument Manifest
-    m_aOasisManifest.add (filename, mimeType);
+    m_aOasisManifest.add (sFilename, aMimeType);
 
     return this;
   }
+
+  /**
+   * Creating the signature and writing it into the archive is delegated to the
+   * actual implementation
+   *
+   * @param signatureHelper
+   *        Signature helper for signing details
+   * @throws IOException
+   *         in case of IO error
+   */
+  protected abstract void performSign (SignatureHelper signatureHelper) throws IOException;
 
   @Override
   public IAsicWriter sign (final SignatureHelper signatureHelper) throws IOException
@@ -144,17 +157,7 @@ public abstract class AbstractAsicWriter implements IAsicWriter
     return this;
   }
 
-  /**
-   * Creating the signature and writing it into the archive is delegated to the
-   * actual implementation
-   *
-   * @param signatureHelper
-   *        Signature helper for signing details
-   * @throws IOException
-   *         in case of IO error
-   */
-  protected abstract void performSign (SignatureHelper signatureHelper) throws IOException;
-
+  @Nonnull
   public AbstractAsicManifest getAsicManifest ()
   {
     return m_aAsicManifest;

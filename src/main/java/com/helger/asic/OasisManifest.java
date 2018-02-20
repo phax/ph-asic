@@ -27,10 +27,10 @@ public class OasisManifest
 {
   private final Manifest m_aManifest;
 
-  public OasisManifest (@Nonnull final IMimeType mimeType)
+  public OasisManifest (@Nonnull final IMimeType aMimeType)
   {
     m_aManifest = new Manifest ();
-    add ("/", mimeType);
+    add ("/", aMimeType);
   }
 
   public OasisManifest (@Nonnull final InputStream inputStream)
@@ -40,10 +40,10 @@ public class OasisManifest
       throw new IllegalStateException ("Failed to read Manifest from IS");
   }
 
-  public void add (@Nonnull final String path, @Nonnull final IMimeType mimeType)
+  public void add (@Nonnull final String path, @Nonnull final IMimeType aMimeType)
   {
     final FileEntry fileEntry = new FileEntry ();
-    fileEntry.setMediaType (mimeType.getAsString ());
+    fileEntry.setMediaType (aMimeType.getAsString ());
     fileEntry.setFullPath (path);
     m_aManifest.getFileEntry ().add (fileEntry);
   }

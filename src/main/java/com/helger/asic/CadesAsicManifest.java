@@ -11,7 +11,9 @@
  */
 package com.helger.asic;
 
-import org.bouncycastle.util.encoders.Base64;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,6 +22,7 @@ import com.helger.asic.jaxb.AsicWriter;
 import com.helger.asic.jaxb.cades.ASiCManifestType;
 import com.helger.asic.jaxb.cades.DataObjectReferenceType;
 import com.helger.asic.jaxb.cades.SigReferenceType;
+import com.helger.commons.base64.Base64;
 import com.helger.commons.mime.IMimeType;
 import com.helger.xsds.xmldsig.DigestMethodType;
 
@@ -30,16 +33,16 @@ public class CadesAsicManifest extends AbstractAsicManifest
   private final ASiCManifestType m_aManifest = new ASiCManifestType ();
   private boolean m_bRootFilenameIsSet = false;
 
-  public CadesAsicManifest (final EMessageDigestAlgorithm messageDigestAlgorithm)
+  public CadesAsicManifest (@Nonnull final EMessageDigestAlgorithm eMDAlgo)
   {
-    super (messageDigestAlgorithm);
+    super (eMDAlgo);
   }
 
   @Override
-  public void add (final String filename, final IMimeType aMimeType)
+  public void add (@Nonnull final String sFilename, @Nonnull final IMimeType aMimeType)
   {
     final DataObjectReferenceType dataObject = new DataObjectReferenceType ();
-    dataObject.setURI (filename);
+    dataObject.setURI (sFilename);
     dataObject.setMimeType (aMimeType.getAsString ());
     dataObject.setDigestValue (internalGetMessageDigest ().digest ());
 
@@ -49,7 +52,7 @@ public class CadesAsicManifest extends AbstractAsicManifest
 
     m_aManifest.getDataObjectReference ().add (dataObject);
     if (LOG.isDebugEnabled ())
-      LOG.debug ("Digest: " + Base64.encode (dataObject.getDigestValue ()));
+      LOG.debug ("Digest: " + Base64.encodeBytes (dataObject.getDigestValue ()));
   }
 
   /**
@@ -76,25 +79,27 @@ public class CadesAsicManifest extends AbstractAsicManifest
     }
   }
 
-  public void setSignature (final String filename, final String mimeType)
+  public void setSignature (final String sFilename, final String sMimeType)
   {
     final SigReferenceType sigReferenceType = new SigReferenceType ();
-    sigReferenceType.setURI (filename);
-    sigReferenceType.setMimeType (mimeType);
+    sigReferenceType.setURI (sFilename);
+    sigReferenceType.setMimeType (sMimeType);
     m_aManifest.setSigReference (sigReferenceType);
   }
 
+  @Nonnull
   public ASiCManifestType getASiCManifest ()
   {
     return m_aManifest;
   }
 
-  public byte [] toBytes ()
+  @Nullable
+  public byte [] getAsBytes ()
   {
     return AsicWriter.asicManifest ().getAsBytes (m_aManifest);
   }
 
-  public static String extractAndVerify (final String sXml, final ManifestVerifier manifestVerifier)
+  public static String extractAndVerify (final String sXml, final ManifestVerifier aMV)
   {
     // Updating namespaces for compatibility with previous releases and other
     // implementations
@@ -112,15 +117,15 @@ public class CadesAsicManifest extends AbstractAsicManifest
       sigReference = "META-INF/signature.p7s";
 
     // Run through recorded objects
-    for (final DataObjectReferenceType reference : manifest.getDataObjectReference ())
+    for (final DataObjectReferenceType aDOR : manifest.getDataObjectReference ())
     {
-      manifestVerifier.update (reference.getURI (),
-                               reference.getMimeType (),
-                               reference.getDigestValue (),
-                               reference.getDigestMethod ().getAlgorithm (),
+      aMV.update (aDOR.getURI (),
+                               aDOR.getMimeType (),
+                               aDOR.getDigestValue (),
+                               aDOR.getDigestMethod ().getAlgorithm (),
                                sigReference);
-      if (reference.isRootfile () == Boolean.TRUE)
-        manifestVerifier.setRootFilename (reference.getURI ());
+      if (aDOR.isRootfile () == Boolean.TRUE)
+        aMV.setRootFilename (aDOR.getURI ());
     }
 
     return sigReference;

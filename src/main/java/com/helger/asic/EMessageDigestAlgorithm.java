@@ -11,6 +11,10 @@
  */
 package com.helger.asic;
 
+import javax.annotation.Nonnull;
+
+import com.helger.commons.annotation.Nonempty;
+
 public enum EMessageDigestAlgorithm
 {
   SHA256 ("SHA-256", "http://www.w3.org/2001/04/xmlenc#sha256"),
@@ -20,17 +24,21 @@ public enum EMessageDigestAlgorithm
   private final String m_sAlgorithm;
   private final String m_sURI;
 
-  private EMessageDigestAlgorithm (final String algorithm, final String uri)
+  private EMessageDigestAlgorithm (@Nonnull @Nonempty final String algorithm, @Nonnull @Nonempty final String uri)
   {
     m_sAlgorithm = algorithm;
     m_sURI = uri;
   }
 
+  @Nonnull
+  @Nonempty
   public String getAlgorithm ()
   {
     return m_sAlgorithm;
   }
 
+  @Nonnull
+  @Nonempty
   public String getUri ()
   {
     return m_sURI;
