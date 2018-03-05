@@ -18,17 +18,22 @@ import java.nio.file.Files;
 import java.security.Key;
 import java.security.KeyPair;
 import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.Provider;
+import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
+import java.security.cert.CertificateEncodingException;
+import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.util.Collections;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.WillClose;
 
 import org.bouncycastle.cert.jcajce.JcaCertStore;
+import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.CMSProcessableByteArray;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.CMSSignedDataGenerator;
@@ -36,12 +41,14 @@ import org.bouncycastle.cms.SignerInfoGenerator;
 import org.bouncycastle.cms.jcajce.JcaSignerInfoGeneratorBuilder;
 import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.DigestCalculatorProvider;
+import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.bouncycastle.operator.jcajce.JcaDigestCalculatorProviderBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.commons.base64.Base64;
+import com.helger.commons.collection.impl.CommonsArrayList;
 import com.helger.commons.io.stream.StreamHelper;
 
 /**
@@ -155,7 +162,7 @@ public class SignatureHelper
       keyStore.load (keyStoreStream, keyStorePassword.toCharArray ());
       return keyStore;
     }
-    catch (final Exception e)
+    catch (final KeyStoreException | NoSuchAlgorithmException | CertificateException | IOException e)
     {
       throw new IllegalStateException ("Load keystore; " + e.getMessage (), e);
     }
@@ -169,6 +176,8 @@ public class SignatureHelper
     {
       final String sKeyAlias = keyAlias != null ? keyAlias : keyStore.aliases ().nextElement ();
       m_aX509Certificate = (X509Certificate) keyStore.getCertificate (sKeyAlias);
+      if (m_aX509Certificate == null)
+        throw new IllegalStateException ("Failed to resolve alias '" + sKeyAlias + "' in keystore!");
 
       m_aCertificateChain = keyStore.getCertificateChain (sKeyAlias);
 
@@ -181,7 +190,7 @@ public class SignatureHelper
       if (m_aProvider != null)
         m_aJcaContentSignerBuilder.setProvider (m_aProvider);
     }
-    catch (final Exception e)
+    catch (final KeyStoreException | UnrecoverableKeyException | NoSuchAlgorithmException e)
     {
       throw new IllegalStateException ("Unable to retrieve private key from keystore: " + e.getMessage (), e);
     }
@@ -205,14 +214,14 @@ public class SignatureHelper
 
       final CMSSignedDataGenerator cmsSignedDataGenerator = new CMSSignedDataGenerator ();
       cmsSignedDataGenerator.addSignerInfoGenerator (signerInfoGenerator);
-      cmsSignedDataGenerator.addCertificates (new JcaCertStore (Collections.singletonList (m_aX509Certificate)));
+      cmsSignedDataGenerator.addCertificates (new JcaCertStore (new CommonsArrayList <> (m_aX509Certificate)));
       final CMSSignedData cmsSignedData = cmsSignedDataGenerator.generate (new CMSProcessableByteArray (data), false);
 
       if (LOG.isDebugEnabled ())
         LOG.debug (Base64.encodeBytes (cmsSignedData.getEncoded ()));
       return cmsSignedData.getEncoded ();
     }
-    catch (final Exception e)
+    catch (final OperatorCreationException | CertificateEncodingException | CMSException | IOException e)
     {
       throw new IllegalStateException ("Unable to sign: " + e.getMessage (), e);
     }
