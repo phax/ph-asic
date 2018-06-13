@@ -27,14 +27,14 @@ public final class BCHelper
 
   static
   {
-    Provider p = Security.getProvider (BouncyCastleProvider.PROVIDER_NAME);
-    if (p != null)
+    Provider aProvider = Security.getProvider (BouncyCastleProvider.PROVIDER_NAME);
+    if (aProvider != null)
     {
-      PROVIDER = p;
+      PROVIDER = aProvider;
     }
     else
     {
-      PROVIDER = p = new BouncyCastleProvider ();
+      PROVIDER = aProvider = new BouncyCastleProvider ();
       Security.addProvider (PROVIDER);
     }
   }

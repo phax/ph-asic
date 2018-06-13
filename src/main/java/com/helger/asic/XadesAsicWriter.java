@@ -39,10 +39,10 @@ public class XadesAsicWriter extends AbstractAsicWriter
   }
 
   @Override
-  protected void performSign (@Nonnull final SignatureHelper aSignatureHelper) throws IOException
+  protected void performSign (@Nonnull final SignatureHelper aSH) throws IOException
   {
     // Generate and write manifest (META-INF/signatures.xml)
-    final byte [] manifestBytes = getAsicManifest ().getAsBytes (aSignatureHelper);
+    final byte [] manifestBytes = getAsicManifest ().getAsBytes (aSH);
     m_aAsicOutputStream.writeZipEntry ("META-INF/signatures.xml", manifestBytes);
   }
 }

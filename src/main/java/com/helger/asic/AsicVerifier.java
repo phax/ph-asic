@@ -21,10 +21,10 @@ import com.helger.commons.io.stream.NullOutputStream;
 
 public class AsicVerifier extends AbstractAsicReader
 {
-  protected AsicVerifier (@Nonnull final EMessageDigestAlgorithm messageDigestAlgorithm,
-                          @Nonnull @WillClose final InputStream inputStream) throws IOException
+  protected AsicVerifier (@Nonnull final EMessageDigestAlgorithm eMDAlgo,
+                          @Nonnull @WillClose final InputStream aIS) throws IOException
   {
-    super (messageDigestAlgorithm, inputStream);
+    super (eMDAlgo, aIS);
 
     try
     {

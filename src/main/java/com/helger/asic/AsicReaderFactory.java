@@ -28,39 +28,39 @@ public class AsicReaderFactory
   }
 
   @Nonnull
-  public static AsicReaderFactory newFactory (final ESignatureMethod signatureMethod)
+  public static AsicReaderFactory newFactory (@Nonnull final ESignatureMethod eSM)
   {
-    return newFactory (signatureMethod.getMessageDigestAlgorithm ());
+    return newFactory (eSM.getMessageDigestAlgorithm ());
   }
 
   @Nonnull
-  static AsicReaderFactory newFactory (final EMessageDigestAlgorithm messageDigestAlgorithm)
+  static AsicReaderFactory newFactory (final EMessageDigestAlgorithm eMD)
   {
-    return new AsicReaderFactory (messageDigestAlgorithm);
+    return new AsicReaderFactory (eMD);
   }
 
-  private final EMessageDigestAlgorithm m_eMD;
+  private final EMessageDigestAlgorithm m_eMDAlgo;
 
-  protected AsicReaderFactory (@Nonnull final EMessageDigestAlgorithm messageDigestAlgorithm)
+  protected AsicReaderFactory (@Nonnull final EMessageDigestAlgorithm eMDAlgo)
   {
-    m_eMD = messageDigestAlgorithm;
-  }
-
-  @Nonnull
-  public IAsicReader open (@Nonnull final File file) throws IOException
-  {
-    return open (file.toPath ());
+    m_eMDAlgo = eMDAlgo;
   }
 
   @Nonnull
-  public IAsicReader open (@Nonnull final Path file) throws IOException
+  public IAsicReader open (@Nonnull final File aFile) throws IOException
   {
-    return open (Files.newInputStream (file));
+    return open (aFile.toPath ());
   }
 
   @Nonnull
-  public IAsicReader open (@Nonnull final InputStream inputStream)
+  public IAsicReader open (@Nonnull final Path aFile) throws IOException
   {
-    return new AsicReaderImpl (m_eMD, inputStream);
+    return open (Files.newInputStream (aFile));
+  }
+
+  @Nonnull
+  public IAsicReader open (@Nonnull final InputStream aIS)
+  {
+    return new AsicReaderImpl (m_eMDAlgo, aIS);
   }
 }

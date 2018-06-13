@@ -6,7 +6,7 @@
  * This Source Code Form is subject to the terms of the
  * Mozilla Public License, v. 2.0.
  * If a copy of the MPL was not distributed
- * with this file, You can obtain one at
+ * with this aFile, You can obtain one at
  * https://mozilla.org/MPL/2.0/
  */
 package com.helger.asic.extras;
@@ -20,6 +20,8 @@ import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 import java.util.Set;
 import java.util.TreeSet;
+
+import javax.annotation.Nonnull;
 
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.cms.CMSAlgorithm;
@@ -54,89 +56,100 @@ public class CmsEncryptedAsicWriter implements IAsicWriter
 
   private final Set <String> m_aEntryNames = new TreeSet <> ();
 
-  public CmsEncryptedAsicWriter (final IAsicWriter asicWriter, final X509Certificate certificate)
+  public CmsEncryptedAsicWriter (final IAsicWriter aAsicWriter, final X509Certificate aCertificate)
   {
-    this (asicWriter, certificate, CMSAlgorithm.AES256_GCM);
+    this (aAsicWriter, aCertificate, CMSAlgorithm.AES256_GCM);
   }
 
-  public CmsEncryptedAsicWriter (final IAsicWriter asicWriter,
-                                 final X509Certificate certificate,
-                                 final ASN1ObjectIdentifier cmsAlgorithm)
+  public CmsEncryptedAsicWriter (final IAsicWriter aAsicWriter,
+                                 final X509Certificate aCertificate,
+                                 final ASN1ObjectIdentifier aCMSAlgorithm)
   {
-    m_aAsicWriter = asicWriter;
-    m_aCertificate = certificate;
-    m_aCmsAlgorithm = cmsAlgorithm;
+    m_aAsicWriter = aAsicWriter;
+    m_aCertificate = aCertificate;
+    m_aCmsAlgorithm = aCMSAlgorithm;
   }
 
-  @Override
-  public IAsicWriter add (final InputStream inputStream,
-                          final String filename,
-                          final IMimeType mimeType) throws IOException
+  @Nonnull
+  public IAsicWriter add (final InputStream aIS, final String sFilename, final IMimeType aMimeType) throws IOException
   {
-    return m_aAsicWriter.add (inputStream, filename, mimeType);
+    return m_aAsicWriter.add (aIS, sFilename, aMimeType);
   }
 
-  public IAsicWriter addEncrypted (final File file) throws IOException
+  @Nonnull
+  public IAsicWriter addEncrypted (final File aFile) throws IOException
   {
-    return addEncrypted (file.toPath ());
+    return addEncrypted (aFile.toPath ());
   }
 
-  public IAsicWriter addEncrypted (final File file, final String entryName) throws IOException
+  @Nonnull
+  public IAsicWriter addEncrypted (final File aFile, final String sEntryName) throws IOException
   {
-    return addEncrypted (file.toPath (), entryName);
+    return addEncrypted (aFile.toPath (), sEntryName);
   }
 
-  public IAsicWriter addEncrypted (final Path path) throws IOException
+  @Nonnull
+  public IAsicWriter addEncrypted (final Path aFile) throws IOException
   {
-    return addEncrypted (path, path.toFile ().getName ());
+    return addEncrypted (aFile, aFile.toFile ().getName ());
   }
 
-  public IAsicWriter addEncrypted (final Path path, final String entryName) throws IOException
+  @Nonnull
+  public IAsicWriter addEncrypted (final Path aFile, final String sEntryName) throws IOException
   {
-    try (InputStream inputStream = Files.newInputStream (path))
+    try (InputStream aIS = Files.newInputStream (aFile))
     {
-      addEncrypted (inputStream, entryName);
+      addEncrypted (aIS, sEntryName);
     }
     return this;
   }
 
-  public IAsicWriter addEncrypted (final InputStream inputStream, final String filename) throws IOException
+  @Nonnull
+  public IAsicWriter addEncrypted (final InputStream aIS, final String sFilename) throws IOException
   {
-    return addEncrypted (inputStream, filename, AsicUtils.detectMime (filename));
+    return addEncrypted (aIS, sFilename, AsicUtils.detectMime (sFilename));
   }
 
-  public IAsicWriter addEncrypted (final File file, final String entryName, final IMimeType mimeType) throws IOException
+  @Nonnull
+  public IAsicWriter addEncrypted (final File aFile,
+                                   final String sEntryName,
+                                   final IMimeType aMimeType) throws IOException
   {
-    return addEncrypted (file.toPath (), entryName, mimeType);
+    return addEncrypted (aFile.toPath (), sEntryName, aMimeType);
   }
 
-  public IAsicWriter addEncrypted (final Path path, final String entryName, final IMimeType mimeType) throws IOException
+  @Nonnull
+  public IAsicWriter addEncrypted (final Path aFile,
+                                   final String sEntryName,
+                                   final IMimeType aMimeType) throws IOException
   {
-    try (InputStream inputStream = Files.newInputStream (path))
+    try (InputStream aIS = Files.newInputStream (aFile))
     {
-      addEncrypted (inputStream, entryName, mimeType);
+      addEncrypted (aIS, sEntryName, aMimeType);
     }
     return this;
   }
 
-  public IAsicWriter addEncrypted (final InputStream inputStream,
-                                   final String filename,
-                                   final IMimeType mimeType) throws IOException
+  @Nonnull
+  public IAsicWriter addEncrypted (final InputStream aIS,
+                                   final String sFilename,
+                                   final IMimeType aMimeType) throws IOException
   {
-    try
+    try (final NonBlockingByteArrayOutputStream aBAOS = new NonBlockingByteArrayOutputStream ())
     {
-      final NonBlockingByteArrayOutputStream byteArrayOutputStream = new NonBlockingByteArrayOutputStream ();
-      AsicUtils.copyStream (inputStream, byteArrayOutputStream);
+      AsicUtils.copyStream (aIS, aBAOS);
 
-      final CMSEnvelopedDataGenerator cmsEnvelopedDataGenerator = new CMSEnvelopedDataGenerator ();
-      cmsEnvelopedDataGenerator.addRecipientInfoGenerator (new JceKeyTransRecipientInfoGenerator (m_aCertificate).setProvider (BCHelper.getProvider ()));
-      final CMSEnvelopedData data = cmsEnvelopedDataGenerator.generate (new CMSProcessableByteArray (byteArrayOutputStream.toByteArray ()),
-                                                                        new JceCMSContentEncryptorBuilder (m_aCmsAlgorithm).setProvider (BCHelper.getProvider ())
-                                                                                                                           .build ());
+      final CMSEnvelopedDataGenerator aCMSEnvelopedDataGenerator = new CMSEnvelopedDataGenerator ();
+      aCMSEnvelopedDataGenerator.addRecipientInfoGenerator (new JceKeyTransRecipientInfoGenerator (m_aCertificate).setProvider (BCHelper.getProvider ()));
+      final CMSEnvelopedData aData = aCMSEnvelopedDataGenerator.generate (new CMSProcessableByteArray (aBAOS.toByteArray ()),
+                                                                          new JceCMSContentEncryptorBuilder (m_aCmsAlgorithm).setProvider (BCHelper.getProvider ())
+                                                                                                                             .build ());
 
-      m_aEntryNames.add (filename);
+      m_aEntryNames.add (sFilename);
 
-      return m_aAsicWriter.add (new NonBlockingByteArrayInputStream (data.getEncoded ()), filename + ".p7m", mimeType);
+      return m_aAsicWriter.add (new NonBlockingByteArrayInputStream (aData.getEncoded ()),
+                                sFilename + ".p7m",
+                                aMimeType);
     }
     catch (final CMSException | CertificateEncodingException e)
     {
@@ -144,7 +157,7 @@ public class CmsEncryptedAsicWriter implements IAsicWriter
     }
   }
 
-  @Override
+  @Nonnull
   public IAsicWriter setRootEntryName (final String sName)
   {
     String name = sName;
@@ -154,26 +167,26 @@ public class CmsEncryptedAsicWriter implements IAsicWriter
     return m_aAsicWriter.setRootEntryName (name);
   }
 
-  @Override
-  public IAsicWriter sign (final File keyStoreFile,
-                           final String keyStorePassword,
-                           final String keyPassword) throws IOException
+  @Nonnull
+  public IAsicWriter sign (final File aKeyStoreFile,
+                           final String sKeyStorePassword,
+                           final String sKeyPassword) throws IOException
   {
-    return m_aAsicWriter.sign (keyStoreFile, keyStorePassword, keyPassword);
+    return m_aAsicWriter.sign (aKeyStoreFile, sKeyStorePassword, sKeyPassword);
   }
 
-  @Override
-  public IAsicWriter sign (final File keyStoreFile,
-                           final String keyStorePassword,
-                           final String keyAlias,
-                           final String keyPassword) throws IOException
+  @Nonnull
+  public IAsicWriter sign (final File aKeyStoreFile,
+                           final String sKeyStorePassword,
+                           final String sKeyAlias,
+                           final String sKeyPassword) throws IOException
   {
-    return m_aAsicWriter.sign (keyStoreFile, keyStorePassword, keyAlias, keyPassword);
+    return m_aAsicWriter.sign (aKeyStoreFile, sKeyStorePassword, sKeyAlias, sKeyPassword);
   }
 
-  @Override
-  public IAsicWriter sign (final SignatureHelper signatureHelper) throws IOException
+  @Nonnull
+  public IAsicWriter sign (final SignatureHelper aSH) throws IOException
   {
-    return m_aAsicWriter.sign (signatureHelper);
+    return m_aAsicWriter.sign (aSH);
   }
 }

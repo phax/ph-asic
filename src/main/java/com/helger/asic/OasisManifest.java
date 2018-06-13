@@ -12,6 +12,7 @@
 package com.helger.asic;
 
 import java.io.InputStream;
+import java.io.Serializable;
 
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
@@ -23,7 +24,7 @@ import com.helger.asic.jaxb.opendocument.manifest.FileEntry;
 import com.helger.asic.jaxb.opendocument.manifest.Manifest;
 import com.helger.commons.mime.IMimeType;
 
-public class OasisManifest
+public class OasisManifest implements Serializable
 {
   private final Manifest m_aManifest;
 
@@ -33,18 +34,18 @@ public class OasisManifest
     add ("/", aMimeType);
   }
 
-  public OasisManifest (@Nonnull final InputStream inputStream)
+  public OasisManifest (@Nonnull final InputStream aIS)
   {
-    m_aManifest = AsicReader.oasisManifest ().read (inputStream);
+    m_aManifest = AsicReader.oasisManifest ().read (aIS);
     if (m_aManifest == null)
       throw new IllegalStateException ("Failed to read Manifest from IS");
   }
 
-  public void add (@Nonnull final String path, @Nonnull final IMimeType aMimeType)
+  public void add (@Nonnull final String sPath, @Nonnull final IMimeType aMimeType)
   {
     final FileEntry fileEntry = new FileEntry ();
     fileEntry.setMediaType (aMimeType.getAsString ());
-    fileEntry.setFullPath (path);
+    fileEntry.setFullPath (sPath);
     m_aManifest.getFileEntry ().add (fileEntry);
   }
 

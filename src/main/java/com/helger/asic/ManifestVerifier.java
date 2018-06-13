@@ -11,9 +11,8 @@
  */
 package com.helger.asic;
 
+import java.io.Serializable;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -21,13 +20,15 @@ import javax.annotation.Nullable;
 import com.helger.asic.jaxb.asic.AsicFile;
 import com.helger.asic.jaxb.asic.AsicManifest;
 import com.helger.asic.jaxb.asic.Certificate;
+import com.helger.commons.collection.impl.CommonsHashMap;
+import com.helger.commons.collection.impl.ICommonsMap;
 
-public class ManifestVerifier
+public class ManifestVerifier implements Serializable
 {
   private final EMessageDigestAlgorithm m_eReferenceMD;
 
   private final AsicManifest m_aAsicManifest = new AsicManifest ();
-  private final Map <String, AsicFile> m_aAsicManifestMap = new HashMap <> ();
+  private final ICommonsMap <String, AsicFile> m_aAsicManifestMap = new CommonsHashMap <> ();
 
   public ManifestVerifier (@Nullable final EMessageDigestAlgorithm eReferenceMD)
   {
@@ -76,21 +77,21 @@ public class ManifestVerifier
 
   }
 
-  public void addCertificate (@Nonnull final Certificate certificate)
+  public void addCertificate (@Nonnull final Certificate aCertificate)
   {
-    m_aAsicManifest.addCertificate (certificate);
+    m_aAsicManifest.addCertificate (aCertificate);
   }
 
-  public void setRootFilename (final String filename)
+  public void setRootFilename (final String sFilename)
   {
-    m_aAsicManifest.setRootfile (filename);
+    m_aAsicManifest.setRootfile (sFilename);
   }
 
   public void verifyAllVerified () throws IllegalStateException
   {
-    for (final AsicFile asicFile : m_aAsicManifest.getFile ())
-      if (!asicFile.isVerified ())
-        throw new IllegalStateException ("File not verified: " + asicFile.getName ());
+    for (final AsicFile aAsicFile : m_aAsicManifest.getFile ())
+      if (!aAsicFile.isVerified ())
+        throw new IllegalStateException ("File not verified: " + aAsicFile.getName ());
   }
 
   @Nonnull

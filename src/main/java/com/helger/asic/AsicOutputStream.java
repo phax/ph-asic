@@ -43,7 +43,7 @@ public class AsicOutputStream extends ZipOutputStream
   private void _putMimeTypeAsFirstEntry (@Nonnull final IMimeType aMimeType) throws IOException
   {
     final String sMimeType = aMimeType.getAsString ();
-    final ZipEntry aZipEntry = new ZipEntry ("mimetype");
+    final ZipEntry aZipEntry = new ZipEntry (AsicInputStream.ZIPENTRY_NAME_MIMETYPE);
     aZipEntry.setComment ("mimetype=" + sMimeType);
     aZipEntry.setMethod (ZipEntry.STORED);
 

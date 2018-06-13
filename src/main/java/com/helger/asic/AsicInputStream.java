@@ -17,6 +17,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import javax.annotation.Nonnull;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,9 +26,10 @@ import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 
 public class AsicInputStream extends ZipInputStream
 {
+  public static final String ZIPENTRY_NAME_MIMETYPE = "mimetype";
   private static final Logger LOG = LoggerFactory.getLogger (AsicInputStream.class);
 
-  public AsicInputStream (final InputStream aIS)
+  public AsicInputStream (@Nonnull final InputStream aIS)
   {
     super (aIS);
   }
@@ -34,9 +37,9 @@ public class AsicInputStream extends ZipInputStream
   @Override
   public ZipEntry getNextEntry () throws IOException
   {
-    ZipEntry zipEntry = super.getNextEntry ();
+    ZipEntry aZipEntry = super.getNextEntry ();
 
-    if (zipEntry != null && zipEntry.getName ().equals ("mimetype"))
+    if (aZipEntry != null && aZipEntry.getName ().equals (ZIPENTRY_NAME_MIMETYPE))
     {
       try (final NonBlockingByteArrayOutputStream aBAOS = new NonBlockingByteArrayOutputStream ();)
       {
@@ -50,9 +53,9 @@ public class AsicInputStream extends ZipInputStream
       }
 
       // Fetch next
-      zipEntry = super.getNextEntry ();
+      aZipEntry = super.getNextEntry ();
     }
 
-    return zipEntry;
+    return aZipEntry;
   }
 }

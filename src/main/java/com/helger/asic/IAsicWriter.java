@@ -62,7 +62,7 @@ public interface IAsicWriter
   /**
    * Adds another data object to the ASiC archive
    *
-   * @param aPath
+   * @param aFile
    *        references the file to be added.
    * @return reference to this AsicWriter
    * @throws IOException
@@ -70,16 +70,16 @@ public interface IAsicWriter
    * @see #add(File)
    */
   @Nonnull
-  default IAsicWriter add (@Nonnull final Path aPath) throws IOException
+  default IAsicWriter add (@Nonnull final Path aFile) throws IOException
   {
-    return add (aPath, aPath.toFile ().getName ());
+    return add (aFile, aFile.toFile ().getName ());
   }
 
   /**
    * Adds another data object to the ASiC container under the entry name
    * provided.
    *
-   * @param aPath
+   * @param aFile
    *        reference to this AsicWriter.
    * @param sFilename
    *        the archive entry name to be used.
@@ -89,9 +89,9 @@ public interface IAsicWriter
    * @see #add(File, String)
    */
   @Nonnull
-  default IAsicWriter add (@Nonnull final Path aPath, @Nonnull final String sFilename) throws IOException
+  default IAsicWriter add (@Nonnull final Path aFile, @Nonnull final String sFilename) throws IOException
   {
-    try (final InputStream inputStream = Files.newInputStream (aPath))
+    try (final InputStream inputStream = Files.newInputStream (aFile))
     {
       add (inputStream, sFilename);
     }
@@ -145,7 +145,7 @@ public interface IAsicWriter
    * Adds the contents of a file into the ASiC archive using the supplied entry
    * name and MIME type.
    *
-   * @param path
+   * @param aFile
    *        references the file to be added as a data object.
    * @param sFilename
    *        the archive entry name to be used.
@@ -156,11 +156,11 @@ public interface IAsicWriter
    *         on IO error
    */
   @Nonnull
-  default IAsicWriter add (@Nonnull final Path path,
+  default IAsicWriter add (@Nonnull final Path aFile,
                            @Nonnull final String sFilename,
                            @Nonnull final IMimeType aMimeType) throws IOException
   {
-    try (final InputStream aIS = Files.newInputStream (path))
+    try (final InputStream aIS = Files.newInputStream (aFile))
     {
       add (aIS, sFilename, aMimeType);
     }
@@ -194,61 +194,62 @@ public interface IAsicWriter
    *        of entry holding the root document.
    * @return reference to this AsicWriter
    */
+  @Nonnull
   IAsicWriter setRootEntryName (String name);
 
   /**
    * Signs and closes the ASiC archive. The private and public key is obtained
    * from the supplied key store.
    *
-   * @param keyStoreFile
+   * @param aKeyStoreFile
    *        the file holding the JKS keystore file.
-   * @param keyStorePassword
+   * @param sKeyStorePassword
    *        password for the keystore
-   * @param keyPassword
+   * @param sKeyPassword
    *        password protecting the private key.
    * @return reference to this AsicWriter
    * @throws IOException
    *         in case of an IO error
    */
   @Nonnull
-  default IAsicWriter sign (final File keyStoreFile,
-                            final String keyStorePassword,
-                            final String keyPassword) throws IOException
+  default IAsicWriter sign (final File aKeyStoreFile,
+                            final String sKeyStorePassword,
+                            final String sKeyPassword) throws IOException
   {
-    return sign (keyStoreFile, keyStorePassword, null, keyPassword);
+    return sign (aKeyStoreFile, sKeyStorePassword, null, sKeyPassword);
   }
 
   /**
    * Signs and closes the ASiC archive using the private and public key stored
    * in the supplied key store under the supplied alias name.
    *
-   * @param keyStoreFile
+   * @param aKeyStoreFile
    *        the file holding the JKS keystore file.
-   * @param keyStorePassword
+   * @param sKeyStorePassword
    *        password for the keystore
-   * @param keyAlias
+   * @param sKeyAlias
    *        the alias of the keystore entry holding the private and the public
    *        key.
-   * @param keyPassword
+   * @param sKeyPassword
    *        password protecting the private key.
    * @return reference to this AsicWriter
    * @throws IOException
    *         in case of an IO error
    */
   @Nonnull
-  default IAsicWriter sign (@Nonnull final File keyStoreFile,
-                            @Nonnull final String keyStorePassword,
-                            @Nullable final String keyAlias,
-                            @Nonnull final String keyPassword) throws IOException
+  default IAsicWriter sign (@Nonnull final File aKeyStoreFile,
+                            @Nonnull final String sKeyStorePassword,
+                            @Nullable final String sKeyAlias,
+                            @Nonnull final String sKeyPassword) throws IOException
   {
-    return sign (new SignatureHelper (keyStoreFile, keyStorePassword, keyAlias, keyPassword));
+    return sign (new SignatureHelper (aKeyStoreFile, sKeyStorePassword, sKeyAlias, sKeyPassword));
   }
 
   /**
    * Allows re-use of the same SignatureHelper object when creating multiple
    * ASiC archive and hence the need to create multiple signatures.
    *
-   * @param signatureHelper
+   * @param aSH
    *        instantiated SignatureHelper
    * @return reference to this AsicWriter
    * @see #sign(File, String, String, String)
@@ -256,5 +257,5 @@ public interface IAsicWriter
    *         in case of an IO error
    */
   @Nonnull
-  IAsicWriter sign (@Nonnull SignatureHelper signatureHelper) throws IOException;
+  IAsicWriter sign (@Nonnull SignatureHelper aSH) throws IOException;
 }

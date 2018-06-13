@@ -24,7 +24,7 @@ import com.helger.commons.ValueEnforcer;
 
 public class AsicVerifierFactory
 {
-  private final EMessageDigestAlgorithm m_eMessageDigestAlgorithm;
+  private final EMessageDigestAlgorithm m_eMDAlgo;
 
   @Nonnull
   public static AsicVerifierFactory newFactory ()
@@ -39,15 +39,15 @@ public class AsicVerifierFactory
   }
 
   @Nonnull
-  public static AsicVerifierFactory newFactory (@Nonnull final EMessageDigestAlgorithm eMDAlgorithm)
+  public static AsicVerifierFactory newFactory (@Nonnull final EMessageDigestAlgorithm eMDAlgo)
   {
-    return new AsicVerifierFactory (eMDAlgorithm);
+    return new AsicVerifierFactory (eMDAlgo);
   }
 
   protected AsicVerifierFactory (@Nonnull final EMessageDigestAlgorithm eMDAlgo)
   {
     ValueEnforcer.notNull (eMDAlgo, "MDAlgo");
-    m_eMessageDigestAlgorithm = eMDAlgo;
+    m_eMDAlgo = eMDAlgo;
   }
 
   @Nonnull
@@ -63,8 +63,8 @@ public class AsicVerifierFactory
   }
 
   @Nonnull
-  public AsicVerifier verify (@Nonnull @WillCloseWhenClosed final InputStream inputStream) throws IOException
+  public AsicVerifier verify (@Nonnull @WillCloseWhenClosed final InputStream aIS) throws IOException
   {
-    return new AsicVerifier (m_eMessageDigestAlgorithm, inputStream);
+    return new AsicVerifier (m_eMDAlgo, aIS);
   }
 }

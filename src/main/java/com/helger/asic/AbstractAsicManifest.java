@@ -60,5 +60,5 @@ public abstract class AbstractAsicManifest
     return m_aMD;
   }
 
-  public abstract void add (String filename, IMimeType mimeType);
+  public abstract void add (String sFilename, IMimeType aMimeType);
 }

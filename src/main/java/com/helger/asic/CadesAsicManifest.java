@@ -41,50 +41,48 @@ public class CadesAsicManifest extends AbstractAsicManifest
   @Override
   public void add (@Nonnull final String sFilename, @Nonnull final IMimeType aMimeType)
   {
-    final DataObjectReferenceType dataObject = new DataObjectReferenceType ();
-    dataObject.setURI (sFilename);
-    dataObject.setMimeType (aMimeType.getAsString ());
-    dataObject.setDigestValue (internalGetMessageDigest ().digest ());
+    final DataObjectReferenceType aDataObjectRef = new DataObjectReferenceType ();
+    aDataObjectRef.setURI (sFilename);
+    aDataObjectRef.setMimeType (aMimeType.getAsString ());
+    aDataObjectRef.setDigestValue (internalGetMessageDigest ().digest ());
 
-    final DigestMethodType digestMethodType = new DigestMethodType ();
-    digestMethodType.setAlgorithm (getMessageDigestAlgorithm ().getUri ());
-    dataObject.setDigestMethod (digestMethodType);
+    final DigestMethodType aDigestMethod = new DigestMethodType ();
+    aDigestMethod.setAlgorithm (getMessageDigestAlgorithm ().getUri ());
+    aDataObjectRef.setDigestMethod (aDigestMethod);
 
-    m_aManifest.getDataObjectReference ().add (dataObject);
+    m_aManifest.addDataObjectReference (aDataObjectRef);
     if (LOG.isDebugEnabled ())
-      LOG.debug ("Digest: " + Base64.encodeBytes (dataObject.getDigestValue ()));
+      LOG.debug ("Digest: " + Base64.encodeBytes (aDataObjectRef.getDigestValue ()));
   }
 
   /**
    * Locates the DataObjectReference for the given file name and sets the
    * attribute Rootfile to Boolean.TRUE
    *
-   * @param entryName
+   * @param sEntryName
    *        name of entry for which the attribute <code>Rootfile</code> should
    *        be set to "true".
    */
-  public void setRootfileForEntry (final String entryName)
+  public void setRootfileForEntry (final String sEntryName)
   {
     if (m_bRootFilenameIsSet)
       throw new IllegalStateException ("Multiple root files are not allowed.");
 
-    for (final DataObjectReferenceType dataObject : m_aManifest.getDataObjectReference ())
-    {
-      if (dataObject.getURI ().equals (entryName))
+    for (final DataObjectReferenceType aEntry : m_aManifest.getDataObjectReference ())
+      if (aEntry.getURI ().equals (sEntryName))
       {
-        dataObject.setRootfile (Boolean.TRUE);
+        aEntry.setRootfile (Boolean.TRUE);
         m_bRootFilenameIsSet = true;
-        return;
+        break;
       }
-    }
   }
 
   public void setSignature (final String sFilename, final String sMimeType)
   {
-    final SigReferenceType sigReferenceType = new SigReferenceType ();
-    sigReferenceType.setURI (sFilename);
-    sigReferenceType.setMimeType (sMimeType);
-    m_aManifest.setSigReference (sigReferenceType);
+    final SigReferenceType aSigReference = new SigReferenceType ();
+    aSigReference.setURI (sFilename);
+    aSigReference.setMimeType (sMimeType);
+    m_aManifest.setSigReference (aSigReference);
   }
 
   @Nonnull
@@ -120,10 +118,10 @@ public class CadesAsicManifest extends AbstractAsicManifest
     for (final DataObjectReferenceType aDOR : aManifest.getDataObjectReference ())
     {
       aMV.update (aDOR.getURI (),
-                               aDOR.getMimeType (),
-                               aDOR.getDigestValue (),
-                               aDOR.getDigestMethod ().getAlgorithm (),
-                               sigReference);
+                  aDOR.getMimeType (),
+                  aDOR.getDigestValue (),
+                  aDOR.getDigestMethod ().getAlgorithm (),
+                  sigReference);
       if (aDOR.isRootfile () == Boolean.TRUE)
         aMV.setRootFilename (aDOR.getURI ());
     }

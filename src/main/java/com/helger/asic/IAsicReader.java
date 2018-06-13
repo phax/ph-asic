@@ -39,27 +39,27 @@ public interface IAsicReader extends Closeable
   /**
    * Writes the contents of the current entry into a file
    *
-   * @param file
+   * @param aFile
    *        into which the contents should be written.
    * @throws IOException
    *         in case of an IO error
    */
-  default void writeFile (@Nonnull final File file) throws IOException
+  default void writeFile (@Nonnull final File aFile) throws IOException
   {
-    writeFile (file.toPath ());
+    writeFile (aFile.toPath ());
   }
 
   /**
    * Writes contents of current archive entry into a file.
    *
-   * @param path
+   * @param aFile
    *        into which the contents of current entry should be written.
    * @throws IOException
    *         in case of an IO error
    */
-  default void writeFile (@Nonnull final Path path) throws IOException
+  default void writeFile (@Nonnull final Path aFile) throws IOException
   {
-    try (final OutputStream outputStream = Files.newOutputStream (path))
+    try (final OutputStream outputStream = Files.newOutputStream (aFile))
     {
       writeFile (outputStream);
     }
@@ -68,12 +68,12 @@ public interface IAsicReader extends Closeable
   /**
    * Writes contents of current archive entry to the supplied output stream.
    *
-   * @param outputStream
+   * @param aOS
    *        into which data from current entry should be written.
    * @throws IOException
    *         in case of an IO error
    */
-  void writeFile (@Nonnull @WillNotClose OutputStream outputStream) throws IOException;
+  void writeFile (@Nonnull @WillNotClose OutputStream aOS) throws IOException;
 
   /**
    * Returns InputStream to read the content.

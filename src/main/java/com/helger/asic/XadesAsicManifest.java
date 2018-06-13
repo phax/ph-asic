@@ -97,7 +97,7 @@ public class XadesAsicManifest extends AbstractAsicManifest
   }
 
   @Override
-  public void add (final String filename, final IMimeType aMimeType)
+  public void add (final String sFilename, @Nonnull final IMimeType aMimeType)
   {
     final String id = "ID_" + m_aSignedInfo.getReference ().size ();
 
@@ -105,7 +105,7 @@ public class XadesAsicManifest extends AbstractAsicManifest
       // \XAdESSignature\Signature\SignedInfo\Reference
       final ReferenceType reference = new ReferenceType ();
       reference.setId (id);
-      reference.setURI (filename);
+      reference.setURI (sFilename);
       reference.setDigestValue (internalGetMessageDigest ().digest ());
 
       // \XAdESSignature\Signature\SignedInfo\Reference\DigestMethod
@@ -133,23 +133,23 @@ public class XadesAsicManifest extends AbstractAsicManifest
     final XAdESSignaturesType xAdESSignaturesType = new XAdESSignaturesType ();
 
     // \XAdESSignature\Signature
-    final SignatureType signatureType = new SignatureType ();
-    signatureType.setId ("Signature");
-    signatureType.setSignedInfo (m_aSignedInfo);
-    xAdESSignaturesType.getSignature ().add (signatureType);
+    final SignatureType aSignature = new SignatureType ();
+    aSignature.setId ("Signature");
+    aSignature.setSignedInfo (m_aSignedInfo);
+    xAdESSignaturesType.addSignature (aSignature);
 
     // \XAdESSignature\Signature\KeyInfo
-    final KeyInfoType keyInfoType = new KeyInfoType ();
-    keyInfoType.getContent ().add (_getX509Data (aSH));
-    signatureType.setKeyInfo (keyInfoType);
+    final KeyInfoType aKeyInfo = new KeyInfoType ();
+    aKeyInfo.addContent (_getX509Data (aSH));
+    aSignature.setKeyInfo (aKeyInfo);
 
     // \XAdESSignature\Signature\Object
-    final ObjectType objectType = new ObjectType ();
-    objectType.getContent ().add (_getQualifyingProperties (aSH));
-    signatureType.getObject ().add (objectType);
+    final ObjectType aObject = new ObjectType ();
+    aObject.addContent (_getQualifyingProperties (aSH));
+    aSignature.addObject (aObject);
 
     // \XAdESSignature\Signature\Object\SignatureValue
-    signatureType.setSignatureValue (getSignature ());
+    aSignature.setSignatureValue (getSignature ());
 
     return xAdESSignaturesType;
   }
@@ -158,19 +158,19 @@ public class XadesAsicManifest extends AbstractAsicManifest
   {
     try
     {
-      final Marshaller marshaller = s_aJaxbContext.createMarshaller ();
-      marshaller.setProperty (Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+      final Marshaller aMarshaller = s_aJaxbContext.createMarshaller ();
+      aMarshaller.setProperty (Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 
-      try (final NonBlockingByteArrayOutputStream baos = new NonBlockingByteArrayOutputStream ())
+      try (final NonBlockingByteArrayOutputStream aBAOS = new NonBlockingByteArrayOutputStream ())
       {
         // TODO
-        marshaller.marshal (OF_CADES.createXAdESSignatures (getCreateXAdESSignatures (aSH)), baos);
-        return baos.toByteArray ();
+        aMarshaller.marshal (OF_CADES.createXAdESSignatures (getCreateXAdESSignatures (aSH)), aBAOS);
+        return aBAOS.toByteArray ();
       }
     }
-    catch (final JAXBException e)
+    catch (final JAXBException ex)
     {
-      throw new IllegalStateException ("Unable to marshall the XAdESSignature into string output", e);
+      throw new IllegalStateException ("Unable to marshall the XAdESSignature into string output", ex);
     }
   }
 
@@ -197,35 +197,35 @@ public class XadesAsicManifest extends AbstractAsicManifest
     return OF_XMLDSIG.createX509Data (x509DataType);
   }
 
-  private JAXBElement <QualifyingPropertiesType> _getQualifyingProperties (final SignatureHelper signatureHelper)
+  private JAXBElement <QualifyingPropertiesType> _getQualifyingProperties (@Nonnull final SignatureHelper aSH)
   {
     // \XAdESSignature\Signature\Object\QualifyingProperties\SignedProperties\SignedSignatureProperties
-    final SignedSignaturePropertiesType signedSignaturePropertiesType = new SignedSignaturePropertiesType ();
+    final SignedSignaturePropertiesType aSignedSignatureProperties = new SignedSignaturePropertiesType ();
 
     // \XAdESSignature\Signature\Object\QualifyingProperties\SignedProperties\SignedSignatureProperties\SigningTime
-    signedSignaturePropertiesType.setSigningTime (PDTXMLConverter.createNewCalendar ());
+    aSignedSignatureProperties.setSigningTime (PDTXMLConverter.createNewCalendar ());
 
     // \XAdESSignature\Signature\Object\QualifyingProperties\SignedProperties\SignedSignatureProperties\SigningCertificate
-    final CertIDListType certIDListType = new CertIDListType ();
-    signedSignaturePropertiesType.setSigningCertificate (certIDListType);
+    final CertIDListType aCertIDList = new CertIDListType ();
+    aSignedSignatureProperties.setSigningCertificate (aCertIDList);
 
     // \XAdESSignature\Signature\Object\QualifyingProperties\SignedProperties\SignedSignatureProperties\SigningCertificate\Cert
-    final CertIDType cert = new CertIDType ();
-    certIDListType.getCert ().add (cert);
+    final CertIDType aCertID = new CertIDType ();
+    aCertIDList.addCert (aCertID);
 
     try
     {
       // \XAdESSignature\Signature\Object\QualifyingProperties\SignedProperties\SignedSignatureProperties\SigningCertificate\Cert\CertDigest
-      final DigestAlgAndValueType certDigest = new DigestAlgAndValueType ();
-      certDigest.setDigestValue (com.helger.security.messagedigest.EMessageDigestAlgorithm.SHA_1.createMessageDigest ()
-                                                                                                .digest (signatureHelper.getX509Certificate ()
-                                                                                                                        .getEncoded ()));
-      cert.setCertDigest (certDigest);
+      final DigestAlgAndValueType aCertDigest = new DigestAlgAndValueType ();
+      aCertDigest.setDigestValue (com.helger.security.messagedigest.EMessageDigestAlgorithm.SHA_1.createMessageDigest ()
+                                                                                                 .digest (aSH.getX509Certificate ()
+                                                                                                             .getEncoded ()));
+      aCertID.setCertDigest (aCertDigest);
 
       // \XAdESSignature\Signature\Object\QualifyingProperties\SignedProperties\SignedSignatureProperties\SigningCertificate\Cert\CertDigest\DigestMethod
-      final DigestMethodType digestMethodType = new DigestMethodType ();
-      digestMethodType.setAlgorithm ("http://www.w3.org/2000/09/xmldsig#sha1");
-      certDigest.setDigestMethod (digestMethodType);
+      final DigestMethodType aDigestMethod = new DigestMethodType ();
+      aDigestMethod.setAlgorithm ("http://www.w3.org/2000/09/xmldsig#sha1");
+      aCertDigest.setDigestMethod (aDigestMethod);
     }
     catch (final CertificateEncodingException e)
     {
@@ -233,48 +233,48 @@ public class XadesAsicManifest extends AbstractAsicManifest
     }
 
     // \XAdESSignature\Signature\Object\QualifyingProperties\SignedProperties\SignedSignatureProperties\SigningCertificate\Cert\IssuerSerial
-    final X509IssuerSerialType issuerSerialType = new X509IssuerSerialType ();
-    issuerSerialType.setX509IssuerName (signatureHelper.getX509Certificate ().getIssuerX500Principal ().getName ());
-    issuerSerialType.setX509SerialNumber (signatureHelper.getX509Certificate ().getSerialNumber ());
-    cert.setIssuerSerial (issuerSerialType);
+    final X509IssuerSerialType aX509IssuerSerial = new X509IssuerSerialType ();
+    aX509IssuerSerial.setX509IssuerName (aSH.getX509Certificate ().getIssuerX500Principal ().getName ());
+    aX509IssuerSerial.setX509SerialNumber (aSH.getX509Certificate ().getSerialNumber ());
+    aCertID.setIssuerSerial (aX509IssuerSerial);
 
     // \XAdESSignature\Signature\Object\QualifyingProperties\SignedProperties
-    final SignedPropertiesType signedPropertiesType = new SignedPropertiesType ();
-    signedPropertiesType.setId ("SignedProperties");
-    signedPropertiesType.setSignedSignatureProperties (signedSignaturePropertiesType);
-    signedPropertiesType.setSignedDataObjectProperties (m_aSignedDataObjectProperties);
+    final SignedPropertiesType aSignedProperties = new SignedPropertiesType ();
+    aSignedProperties.setId ("SignedProperties");
+    aSignedProperties.setSignedSignatureProperties (aSignedSignatureProperties);
+    aSignedProperties.setSignedDataObjectProperties (m_aSignedDataObjectProperties);
 
     // \XAdESSignature\Signature\Object\QualifyingProperties
-    final QualifyingPropertiesType qualifyingPropertiesType = new QualifyingPropertiesType ();
+    final QualifyingPropertiesType aQualifyingProperties = new QualifyingPropertiesType ();
     // qualifyingPropertiesType.setSignedProperties(signedPropertiesType);
-    qualifyingPropertiesType.setTarget ("#Signature");
+    aQualifyingProperties.setTarget ("#Signature");
 
     // Adding digest of SignedProperties into SignedInfo
     {
       // \XAdESSignature\Signature\SignedInfo\Reference
-      final ReferenceType reference = new ReferenceType ();
-      reference.setType ("http://uri.etsi.org/01903#SignedProperties");
-      reference.setURI ("#SignedProperties");
+      final ReferenceType aReference = new ReferenceType ();
+      aReference.setType ("http://uri.etsi.org/01903#SignedProperties");
+      aReference.setURI ("#SignedProperties");
       // TODO Generate digest
 
       // \XAdESSignature\Signature\SignedInfo\Reference\Transforms
-      final TransformsType transformsType = new TransformsType ();
-      reference.setTransforms (transformsType);
+      final TransformsType aTransforms = new TransformsType ();
+      aReference.setTransforms (aTransforms);
 
       // \XAdESSignature\Signature\SignedInfo\Reference\Transforms\Transform
-      final TransformType transformType = new TransformType ();
-      transformType.setAlgorithm ("http://www.w3.org/TR/2001/REC-xml-c14n-20010315");
-      reference.getTransforms ().getTransform ().add (transformType);
+      final TransformType aTransform = new TransformType ();
+      aTransform.setAlgorithm ("http://www.w3.org/TR/2001/REC-xml-c14n-20010315");
+      aReference.getTransforms ().addTransform (aTransform);
 
       // \XAdESSignature\Signature\SignedInfo\Reference\DigestMethod
-      final DigestMethodType digestMethodType = new DigestMethodType ();
-      digestMethodType.setAlgorithm (getMessageDigestAlgorithm ().getUri ());
-      reference.setDigestMethod (digestMethodType);
+      final DigestMethodType aDigestMethod = new DigestMethodType ();
+      aDigestMethod.setAlgorithm (getMessageDigestAlgorithm ().getUri ());
+      aReference.setDigestMethod (aDigestMethod);
 
-      m_aSignedInfo.getReference ().add (reference);
+      m_aSignedInfo.addReference (aReference);
     }
 
-    return OF_XADES.createQualifyingProperties (qualifyingPropertiesType);
+    return OF_XADES.createQualifyingProperties (aQualifyingProperties);
   }
 
   protected SignatureValueType getSignature ()
@@ -307,16 +307,16 @@ public class XadesAsicManifest extends AbstractAsicManifest
   public static void extractAndVerify (@Nonnull final String sXml, final ManifestVerifier aMV)
   {
     // Updating namespace
-    String xml = sXml.replace ("http://uri.etsi.org/02918/v1.1.1#", "http://uri.etsi.org/02918/v1.2.1#");
-    xml = xml.replace ("http://uri.etsi.org/2918/v1.2.1#", "http://uri.etsi.org/02918/v1.2.1#");
-    xml = xml.replaceAll ("http://www.w3.org/2000/09/xmldsig#sha", "http://www.w3.org/2001/04/xmlenc#sha");
+    String sRealXML = sXml.replace ("http://uri.etsi.org/02918/v1.1.1#", "http://uri.etsi.org/02918/v1.2.1#");
+    sRealXML = sRealXML.replace ("http://uri.etsi.org/2918/v1.2.1#", "http://uri.etsi.org/02918/v1.2.1#");
+    sRealXML = sRealXML.replaceAll ("http://www.w3.org/2000/09/xmldsig#sha", "http://www.w3.org/2001/04/xmlenc#sha");
 
-    XAdESSignaturesType manifest;
+    XAdESSignaturesType aXadesSignatures;
 
     try
     {
-      final Unmarshaller unmarshaller = s_aJaxbContext.createUnmarshaller ();
-      manifest = unmarshaller.unmarshal (new StreamSource (new NonBlockingStringReader (xml)),
+      final Unmarshaller aUnmarshaller = s_aJaxbContext.createUnmarshaller ();
+      aXadesSignatures = aUnmarshaller.unmarshal (new StreamSource (new NonBlockingStringReader (sRealXML)),
                                          XAdESSignaturesType.class)
                              .getValue ();
     }
@@ -325,7 +325,7 @@ public class XadesAsicManifest extends AbstractAsicManifest
       throw new IllegalStateException ("Unable to read content as XML", e);
     }
 
-    for (final SignatureType aSignature : manifest.getSignature ())
+    for (final SignatureType aSignature : aXadesSignatures.getSignature ())
     {
       final SignedInfoType aSignedInfo = aSignature.getSignedInfo ();
       for (final ReferenceType aRef : aSignedInfo.getReference ())

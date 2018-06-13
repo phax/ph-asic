@@ -69,18 +69,18 @@ public class AsicWriterFactory
    * Factory method creating a new AsicWriter, which will create an ASiC archive
    * in the supplied directory with the supplied file name
    *
-   * @param outputDir
+   * @param aOutputDir
    *        the directory in which the archive will be created.
-   * @param filename
+   * @param sFilename
    *        the name of the archive.
    * @return an instance of AsicWriter
    * @throws IOException
    *         on IO error
    */
   @Nonnull
-  public IAsicWriter newContainer (@Nonnull final File outputDir, @Nonnull final String filename) throws IOException
+  public IAsicWriter newContainer (@Nonnull final File aOutputDir, @Nonnull final String sFilename) throws IOException
   {
-    return newContainer (new File (outputDir, filename));
+    return newContainer (new File (aOutputDir, sFilename));
   }
 
   /**
@@ -126,15 +126,15 @@ public class AsicWriterFactory
   }
 
   @Nonnull
-  public IAsicWriter newContainer (@Nonnull final OutputStream outputStream,
+  public IAsicWriter newContainer (@Nonnull final OutputStream aOS,
                                    final boolean bCloseStreamOnSign) throws IOException
   {
     switch (m_eSM)
     {
       case CAdES:
-        return new CadesAsicWriter (m_eSM, outputStream, bCloseStreamOnSign);
+        return new CadesAsicWriter (m_eSM, aOS, bCloseStreamOnSign);
       case XAdES:
-        return new XadesAsicWriter (m_eSM, outputStream, bCloseStreamOnSign);
+        return new XadesAsicWriter (m_eSM, aOS, bCloseStreamOnSign);
       default:
         throw new IllegalStateException ("Not implemented: " + m_eSM);
     }

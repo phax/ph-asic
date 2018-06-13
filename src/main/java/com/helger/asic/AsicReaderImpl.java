@@ -16,18 +16,20 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import javax.annotation.Nonnull;
+import javax.annotation.WillCloseWhenClosed;
 
 public class AsicReaderImpl extends AbstractAsicReader implements IAsicReader
 {
-  protected AsicReaderImpl (final EMessageDigestAlgorithm eMDAlgorithm, final InputStream aIS)
+  protected AsicReaderImpl (@Nonnull final EMessageDigestAlgorithm eMDAlgo,
+                            @Nonnull @WillCloseWhenClosed final InputStream aIS)
   {
-    super (eMDAlgorithm, aIS);
+    super (eMDAlgo, aIS);
   }
 
   @Override
-  public void writeFile (@Nonnull final OutputStream outputStream) throws IOException
+  public void writeFile (@Nonnull final OutputStream aOS) throws IOException
   {
-    super.internalWriteFile (outputStream);
+    super.internalWriteFile (aOS);
   }
 
   @Override

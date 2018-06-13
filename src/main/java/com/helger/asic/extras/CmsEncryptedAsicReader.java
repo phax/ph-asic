@@ -56,7 +56,6 @@ public class CmsEncryptedAsicReader implements IAsicReader
     m_aPrivateKey = aPrivateKey;
   }
 
-  @Override
   public String getNextFile () throws IOException
   {
     m_sCurrentFile = m_aAsicReader.getNextFile ();
@@ -67,43 +66,39 @@ public class CmsEncryptedAsicReader implements IAsicReader
                                             : m_sCurrentFile;
   }
 
-  @Override
-  public void writeFile (final File file) throws IOException
+  public void writeFile (final File aFile) throws IOException
   {
-    writeFile (file.toPath ());
+    writeFile (aFile.toPath ());
   }
 
-  @Override
-  public void writeFile (final Path path) throws IOException
+  public void writeFile (final Path aFile) throws IOException
   {
-    try (OutputStream outputStream = Files.newOutputStream (path))
+    try (OutputStream outputStream = Files.newOutputStream (aFile))
     {
       writeFile (outputStream);
     }
   }
 
-  @Override
-  public void writeFile (final OutputStream outputStream) throws IOException
+  public void writeFile (final OutputStream aOS) throws IOException
   {
     if (m_sCurrentFile.endsWith (".p7m"))
     {
-      try
+      try (final NonBlockingByteArrayOutputStream aBAOS = new NonBlockingByteArrayOutputStream ())
       {
-        final NonBlockingByteArrayOutputStream byteArrayOutputStream = new NonBlockingByteArrayOutputStream ();
-        m_aAsicReader.writeFile (byteArrayOutputStream);
+        m_aAsicReader.writeFile (aBAOS);
 
-        final CMSEnvelopedDataParser cmsEnvelopedDataParser = new CMSEnvelopedDataParser (byteArrayOutputStream.getAsInputStream ());
+        final CMSEnvelopedDataParser aCMSEnvelopedDataParser = new CMSEnvelopedDataParser (aBAOS.getAsInputStream ());
         // expect exactly one recipient
-        final Collection <RecipientInformation> recipients = cmsEnvelopedDataParser.getRecipientInfos ()
-                                                                                   .getRecipients ();
-        if (recipients.size () != 1)
-          throw new IllegalArgumentException ("Found not exactly one recipient but " + recipients.size ());
+        final Collection <RecipientInformation> aRecipients = aCMSEnvelopedDataParser.getRecipientInfos ()
+                                                                                     .getRecipients ();
+        if (aRecipients.size () != 1)
+          throw new IllegalArgumentException ("Found not exactly one recipient but " + aRecipients.size ());
 
         // retrieve recipient and decode it
-        final RecipientInformation aRecipientInfo = recipients.iterator ().next ();
+        final RecipientInformation aRecipientInfo = aRecipients.iterator ().next ();
         final byte [] aDecryptedData = aRecipientInfo.getContent (new JceKeyTransEnvelopedRecipient (m_aPrivateKey).setProvider (BCHelper.getProvider ()));
 
-        AsicUtils.copyStream (new NonBlockingByteArrayInputStream (aDecryptedData), outputStream);
+        AsicUtils.copyStream (new NonBlockingByteArrayInputStream (aDecryptedData), aOS);
       }
       catch (final CMSException e)
       {
@@ -112,35 +107,33 @@ public class CmsEncryptedAsicReader implements IAsicReader
     }
     else
     {
-      m_aAsicReader.writeFile (outputStream);
+      m_aAsicReader.writeFile (aOS);
     }
   }
 
-  @Override
+  @Nonnull
   public InputStream inputStream () throws IOException
   {
-    final PipedInputStream pipedInputStream = new PipedInputStream ();
-    final PipedOutputStream pipedOutputStream = new PipedOutputStream (pipedInputStream);
+    final PipedInputStream aPIS = new PipedInputStream ();
+    final PipedOutputStream aPOS = new PipedOutputStream (aPIS);
 
-    writeFile (pipedOutputStream);
-    return pipedInputStream;
+    writeFile (aPOS);
+    return aPIS;
   }
 
-  @Override
   public void close () throws IOException
   {
     m_aAsicReader.close ();
   }
 
-  @Override
   public AsicManifest getAsicManifest ()
   {
-    final AsicManifest asicManifest = m_aAsicReader.getAsicManifest ();
+    final AsicManifest ret = m_aAsicReader.getAsicManifest ();
 
-    final String rootfile = asicManifest.getRootfile ();
-    if (rootfile != null && rootfile.endsWith (".p7m"))
-      asicManifest.setRootfile (rootfile.substring (0, rootfile.length () - 4));
+    final String sRootfile = ret.getRootfile ();
+    if (sRootfile != null && sRootfile.endsWith (".p7m"))
+      ret.setRootfile (sRootfile.substring (0, sRootfile.length () - 4));
 
-    return asicManifest;
+    return ret;
   }
 }

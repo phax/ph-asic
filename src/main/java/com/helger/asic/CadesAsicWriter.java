@@ -52,14 +52,14 @@ public class CadesAsicWriter extends AbstractAsicWriter
   }
 
   @Override
-  public IAsicWriter setRootEntryName (final String name)
+  public IAsicWriter setRootEntryName (final String sName)
   {
-    getAsicManifest ().setRootfileForEntry (name);
+    getAsicManifest ().setRootfileForEntry (sName);
     return this;
   }
 
   @Override
-  protected void performSign (final SignatureHelper signatureHelper) throws IOException
+  protected void performSign (@Nonnull final SignatureHelper aSH) throws IOException
   {
     // Define signature filename containing UUID
     final String signatureFilename = "META-INF/signature-" + UUID.randomUUID ().toString () + ".p7s";
@@ -69,11 +69,11 @@ public class CadesAsicWriter extends AbstractAsicWriter
 
     // Generates and writes manifest (META-INF/asicmanifest.xml) to the zip
     // archive
-    final byte [] manifestBytes = getAsicManifest ().getAsBytes ();
-    m_aAsicOutputStream.writeZipEntry ("META-INF/asicmanifest.xml", manifestBytes);
+    final byte [] aManifestBytes = getAsicManifest ().getAsBytes ();
+    m_aAsicOutputStream.writeZipEntry ("META-INF/asicmanifest.xml", aManifestBytes);
 
     // Generates and writes signature (META-INF/signature-*.p7s) to the zip
     // archive
-    m_aAsicOutputStream.writeZipEntry (signatureFilename, signatureHelper.signData (manifestBytes));
+    m_aAsicOutputStream.writeZipEntry (signatureFilename, aSH.signData (aManifestBytes));
   }
 }

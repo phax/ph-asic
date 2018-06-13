@@ -42,19 +42,19 @@ public final class SignatureVerifier
   {}
 
   @Nonnull
-  public static Certificate validate (final byte [] data, final byte [] signature)
+  public static Certificate validate (final byte [] aData, final byte [] aSignature)
   {
     Certificate ret = null;
 
     try
     {
-      final CMSSignedData cmsSignedData = new CMSSignedData (new CMSProcessableByteArray (data), signature);
-      final Store <X509CertificateHolder> store = cmsSignedData.getCertificates ();
-      final SignerInformationStore signerInformationStore = cmsSignedData.getSignerInfos ();
+      final CMSSignedData aCMSSignedData = new CMSSignedData (new CMSProcessableByteArray (aData), aSignature);
+      final Store <X509CertificateHolder> aStore = aCMSSignedData.getCertificates ();
+      final SignerInformationStore aSignerInformationStore = aCMSSignedData.getSignerInfos ();
 
-      for (final SignerInformation aSignerInformation : signerInformationStore.getSigners ())
+      for (final SignerInformation aSignerInformation : aSignerInformationStore.getSigners ())
       {
-        final X509CertificateHolder x509Certificate = (X509CertificateHolder) store.getMatches (aSignerInformation.getSID ())
+        final X509CertificateHolder x509Certificate = (X509CertificateHolder) aStore.getMatches (aSignerInformation.getSID ())
                                                                                    .iterator ()
                                                                                    .next ();
         if (LOG.isDebugEnabled ())
