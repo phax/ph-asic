@@ -11,6 +11,8 @@
  */
 package com.helger.asic.jaxb;
 
+import java.util.List;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.xml.validation.Schema;
@@ -32,16 +34,15 @@ import com.helger.jaxb.builder.JAXBDocumentType;
  */
 public enum EAsicDocumentType implements IJAXBDocumentType
 {
-  ASIC_MANIFEST (ASiCManifestType.class, "/schemas/ts_102918v010201.xsd"),
-  MANIFEST (Manifest.class, "/schemas/OpenDocument_manifest.xsd");
+  ASIC_MANIFEST (ASiCManifestType.class,
+                 new CommonsArrayList <> ("/schemas/xmldsig-core-schema.xsd", "/schemas/ts_102918v010201.xsd")),
+  MANIFEST (Manifest.class, new CommonsArrayList <> ("/schemas/OpenDocument_manifest.xsd"));
 
   private final JAXBDocumentType m_aDocType;
 
-  private EAsicDocumentType (@Nonnull final Class <?> aClass, @Nonnull final String sXSDPath)
+  private EAsicDocumentType (@Nonnull final Class <?> aClass, @Nonnull final List <String> aXSDPath)
   {
-    m_aDocType = new JAXBDocumentType (aClass,
-                                       new CommonsArrayList <> (sXSDPath),
-                                       x -> StringHelper.trimEnd (x, "Type"));
+    m_aDocType = new JAXBDocumentType (aClass, aXSDPath, x -> StringHelper.trimEnd (x, "Type"));
   }
 
   @Nonnull
