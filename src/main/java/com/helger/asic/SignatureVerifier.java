@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.asic.jaxb.asic.Certificate;
+import com.helger.bc.PBCProvider;
 import com.helger.commons.annotation.PresentForCodeCoverage;
 
 /**
@@ -33,7 +34,7 @@ public final class SignatureVerifier
 {
   private static final Logger LOG = LoggerFactory.getLogger (SignatureHelper.class);
 
-  private static final JcaSimpleSignerInfoVerifierBuilder s_aJcaSimpleSignerInfoVerifierBuilder = new JcaSimpleSignerInfoVerifierBuilder ().setProvider (BCHelper.getProvider ());
+  private static final JcaSimpleSignerInfoVerifierBuilder s_aJcaSimpleSignerInfoVerifierBuilder = new JcaSimpleSignerInfoVerifierBuilder ().setProvider (PBCProvider.getProvider ());
 
   @PresentForCodeCoverage
   private static final SignatureVerifier s_aInstance = new SignatureVerifier ();
@@ -55,8 +56,8 @@ public final class SignatureVerifier
       for (final SignerInformation aSignerInformation : aSignerInformationStore.getSigners ())
       {
         final X509CertificateHolder x509Certificate = (X509CertificateHolder) aStore.getMatches (aSignerInformation.getSID ())
-                                                                                   .iterator ()
-                                                                                   .next ();
+                                                                                    .iterator ()
+                                                                                    .next ();
         if (LOG.isDebugEnabled ())
           LOG.debug (x509Certificate.getSubject ().toString ());
 

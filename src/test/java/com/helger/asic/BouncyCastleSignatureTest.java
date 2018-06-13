@@ -55,6 +55,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.bc.PBCProvider;
 import com.helger.commons.base64.Base64;
 import com.helger.commons.io.stream.NonBlockingByteArrayInputStream;
 
@@ -83,10 +84,10 @@ public final class BouncyCastleSignatureTest
     final JcaCertStore jcaCertStore = new JcaCertStore (certList);
     final CMSSignedDataGenerator cmsSignedDataGenerator = new CMSSignedDataGenerator ();
     final String signatureAlgorithm = "SHA1with" + keyAlgorithm;
-    final ContentSigner sha1Signer = new JcaContentSignerBuilder (signatureAlgorithm).setProvider (BCHelper.getProvider ())
+    final ContentSigner sha1Signer = new JcaContentSignerBuilder (signatureAlgorithm).setProvider (PBCProvider.getProvider ())
                                                                                      .build (m_aKeyPair.getPrivate ());
 
-    final DigestCalculatorProvider digestCalculatorProvider = new JcaDigestCalculatorProviderBuilder ().setProvider (BCHelper.getProvider ())
+    final DigestCalculatorProvider digestCalculatorProvider = new JcaDigestCalculatorProviderBuilder ().setProvider (PBCProvider.getProvider ())
                                                                                                        .build ();
     final SignerInfoGenerator signerInfoGenerator = new JcaSignerInfoGeneratorBuilder (digestCalculatorProvider).build (sha1Signer,
                                                                                                                         m_aX509Certificate);
@@ -104,13 +105,13 @@ public final class BouncyCastleSignatureTest
                                         SignatureException,
                                         InvalidKeyException
   {
-    final KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance ("DSA", BCHelper.getProvider ());
+    final KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance ("DSA", PBCProvider.getProvider ());
     keyPairGenerator.initialize (1024, new SecureRandom ());
     m_aKeyPair = keyPairGenerator.generateKeyPair ();
 
     final X500NameBuilder nameBuilder = _createStdBuilder ();
 
-    final ContentSigner sigGen = new JcaContentSignerBuilder ("SHA1withDSA").setProvider (BCHelper.getProvider ())
+    final ContentSigner sigGen = new JcaContentSignerBuilder ("SHA1withDSA").setProvider (PBCProvider.getProvider ())
                                                                             .build (m_aKeyPair.getPrivate ());
     final JcaX509v3CertificateBuilder certGen = new JcaX509v3CertificateBuilder (nameBuilder.build (),
                                                                                  BigInteger.valueOf (1),
@@ -121,7 +122,7 @@ public final class BouncyCastleSignatureTest
                                                                                  nameBuilder.build (),
                                                                                  m_aKeyPair.getPublic ());
 
-    m_aX509Certificate = new JcaX509CertificateConverter ().setProvider (BCHelper.getProvider ())
+    m_aX509Certificate = new JcaX509CertificateConverter ().setProvider (PBCProvider.getProvider ())
                                                            .getCertificate (certGen.build (sigGen));
 
     m_aX509Certificate.checkValidity (new Date ());
@@ -130,7 +131,7 @@ public final class BouncyCastleSignatureTest
 
     try (final NonBlockingByteArrayInputStream aBAIS = new NonBlockingByteArrayInputStream (m_aX509Certificate.getEncoded ()))
     {
-      final CertificateFactory fact = CertificateFactory.getInstance ("X.509", BCHelper.getProvider ());
+      final CertificateFactory fact = CertificateFactory.getInstance ("X.509", PBCProvider.getProvider ());
       m_aX509Certificate = (X509Certificate) fact.generateCertificate (aBAIS);
     }
 

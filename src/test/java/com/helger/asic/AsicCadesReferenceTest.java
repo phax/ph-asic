@@ -21,7 +21,6 @@ import java.nio.charset.StandardCharsets;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,12 +35,6 @@ public final class AsicCadesReferenceTest
 
   private final AsicVerifierFactory m_aAsicVerifierFactory = AsicVerifierFactory.newFactory (ESignatureMethod.CAdES);
   private final AsicReaderFactory m_aAsicRederFactory = AsicReaderFactory.newFactory (ESignatureMethod.CAdES);
-
-  @BeforeClass
-  public static void beforeClass ()
-  {
-    BCHelper.getProvider ();
-  }
 
   @Test
   public void valid () throws Exception

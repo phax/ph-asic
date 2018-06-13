@@ -48,6 +48,7 @@ import org.bouncycastle.operator.jcajce.JcaDigestCalculatorProviderBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.bc.PBCProvider;
 import com.helger.commons.base64.Base64;
 import com.helger.commons.collection.impl.CommonsArrayList;
 import com.helger.commons.io.stream.StreamHelper;
@@ -111,7 +112,7 @@ public class SignatureHelper
                           @Nullable final String sKeyAlias,
                           @Nonnull final String sKeyPassword) throws IOException
   {
-    this (BCHelper.getProvider ());
+    this (PBCProvider.getProvider ());
     try (final InputStream aIS = Files.newInputStream (aKeyStoreFile.toPath ()))
     {
       final KeyStore aKS = loadKeyStore (EKeyStoreType.JKS, aIS, sKeyStorePassword);
@@ -136,7 +137,7 @@ public class SignatureHelper
                           @Nullable final String sKeyAlias,
                           @Nonnull final String sKeyPassword)
   {
-    this (BCHelper.getProvider ());
+    this (PBCProvider.getProvider ());
     try
     {
       loadCertificate (loadKeyStore (EKeyStoreType.JKS, aIS, sKeyStorePassword), sKeyAlias, sKeyPassword);

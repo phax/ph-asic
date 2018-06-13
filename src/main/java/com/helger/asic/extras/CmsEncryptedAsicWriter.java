@@ -33,9 +33,9 @@ import org.bouncycastle.cms.jcajce.JceCMSContentEncryptorBuilder;
 import org.bouncycastle.cms.jcajce.JceKeyTransRecipientInfoGenerator;
 
 import com.helger.asic.AsicUtils;
-import com.helger.asic.BCHelper;
 import com.helger.asic.IAsicWriter;
 import com.helger.asic.SignatureHelper;
+import com.helger.bc.PBCProvider;
 import com.helger.commons.io.stream.NonBlockingByteArrayInputStream;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.mime.IMimeType;
@@ -45,11 +45,6 @@ import com.helger.commons.mime.IMimeType;
  */
 public class CmsEncryptedAsicWriter implements IAsicWriter
 {
-  static
-  {
-    BCHelper.getProvider ();
-  }
-
   private final IAsicWriter m_aAsicWriter;
   private final X509Certificate m_aCertificate;
   private final ASN1ObjectIdentifier m_aCmsAlgorithm;
@@ -140,9 +135,9 @@ public class CmsEncryptedAsicWriter implements IAsicWriter
       AsicUtils.copyStream (aIS, aBAOS);
 
       final CMSEnvelopedDataGenerator aCMSEnvelopedDataGenerator = new CMSEnvelopedDataGenerator ();
-      aCMSEnvelopedDataGenerator.addRecipientInfoGenerator (new JceKeyTransRecipientInfoGenerator (m_aCertificate).setProvider (BCHelper.getProvider ()));
+      aCMSEnvelopedDataGenerator.addRecipientInfoGenerator (new JceKeyTransRecipientInfoGenerator (m_aCertificate).setProvider (PBCProvider.getProvider ()));
       final CMSEnvelopedData aData = aCMSEnvelopedDataGenerator.generate (new CMSProcessableByteArray (aBAOS.toByteArray ()),
-                                                                          new JceCMSContentEncryptorBuilder (m_aCmsAlgorithm).setProvider (BCHelper.getProvider ())
+                                                                          new JceCMSContentEncryptorBuilder (m_aCmsAlgorithm).setProvider (PBCProvider.getProvider ())
                                                                                                                              .build ());
 
       m_aEntryNames.add (sFilename);

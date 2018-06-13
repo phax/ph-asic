@@ -30,9 +30,9 @@ import org.bouncycastle.cms.RecipientInformation;
 import org.bouncycastle.cms.jcajce.JceKeyTransEnvelopedRecipient;
 
 import com.helger.asic.AsicUtils;
-import com.helger.asic.BCHelper;
 import com.helger.asic.IAsicReader;
 import com.helger.asic.jaxb.asic.AsicManifest;
+import com.helger.bc.PBCProvider;
 import com.helger.commons.io.stream.NonBlockingByteArrayInputStream;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 
@@ -41,11 +41,6 @@ import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
  */
 public class CmsEncryptedAsicReader implements IAsicReader
 {
-  static
-  {
-    BCHelper.getProvider ();
-  }
-
   private final IAsicReader m_aAsicReader;
   private final PrivateKey m_aPrivateKey;
   private String m_sCurrentFile;
@@ -96,7 +91,7 @@ public class CmsEncryptedAsicReader implements IAsicReader
 
         // retrieve recipient and decode it
         final RecipientInformation aRecipientInfo = aRecipients.iterator ().next ();
-        final byte [] aDecryptedData = aRecipientInfo.getContent (new JceKeyTransEnvelopedRecipient (m_aPrivateKey).setProvider (BCHelper.getProvider ()));
+        final byte [] aDecryptedData = aRecipientInfo.getContent (new JceKeyTransEnvelopedRecipient (m_aPrivateKey).setProvider (PBCProvider.getProvider ()));
 
         AsicUtils.copyStream (new NonBlockingByteArrayInputStream (aDecryptedData), aOS);
       }
