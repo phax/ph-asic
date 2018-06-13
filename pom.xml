@@ -178,6 +178,9 @@
           </execution>
         </executions>
         <configuration>
+          <extension>true</extension>
+          <strict>false</strict>
+          <catalog>src/main/jaxb/catalog.txt</catalog>
           <args>
             <arg>-no-header</arg>
             <arg>-Xph-default-locale</arg>
