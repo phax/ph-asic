@@ -4,13 +4,15 @@
 
 # News and Noteworthy
 
+* v1.1.0 - 2018-06-20
+    * Updated to ph-commons 9.1.2
 * v1.0.2 - 2018-06-13
-  * Fixed dependency to external XMLSchema.dtd
+    * Fixed dependency to external XMLSchema.dtd
 * v1.0.1 - 2018-02-20
-  * Less verbose logging
-  * Improved speed
+    * Less verbose logging
+    * Improved speed
 * v1.0.0 - 2018-02-13
-  * Initial version as rip of difi/asic
+    * Initial version as rip of difi/asic
 
 # Associated Signature Container (ASiC)
 
@@ -36,7 +38,7 @@ This implementation is based on difi's v0.9.2
 <dependency>
 	<groupId>com.helger</groupId>
 	<artifactId>ph-asic</artifactId>
-	<version>1.0.2</version>
+	<version>1.1.0</version>
 </dependency>
 ```
 
