@@ -12,20 +12,14 @@
 package com.helger.asic;
 
 import java.io.IOException;
-import java.security.Key;
 import java.security.KeyPair;
 import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
 import java.security.Provider;
-import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 import org.bouncycastle.cert.jcajce.JcaCertStore;
 import org.bouncycastle.cms.CMSException;
@@ -49,6 +43,7 @@ import com.helger.commons.collection.impl.CommonsArrayList;
 import com.helger.commons.text.util.TextHelper;
 import com.helger.security.keystore.IKeyStoreType;
 import com.helger.security.keystore.KeyStoreHelper;
+import com.helger.security.keystore.LoadedKey;
 import com.helger.security.keystore.LoadedKeyStore;
 
 /**
@@ -62,9 +57,9 @@ public class SignatureHelper
 {
   private static final Logger LOG = LoggerFactory.getLogger (SignatureHelper.class);
 
-  private X509Certificate m_aX509Certificate;
-  private Certificate [] m_aCertificateChain;
-  private KeyPair m_aKeyPair;
+  private final X509Certificate m_aX509Certificate;
+  private final Certificate [] m_aCertificateChain;
+  private final KeyPair m_aKeyPair;
 
   /**
    * Loads the keystore and obtains the private key, the public key and the
@@ -93,35 +88,21 @@ public class SignatureHelper
     ValueEnforcer.notNull (sKeyAlias, "KeyAlias");
     ValueEnforcer.notNull (sKeyPassword, "KeyPassword");
 
+    // Load key store
     final LoadedKeyStore aLKS = KeyStoreHelper.loadKeyStore (aKeyStoreType, sKeyStorePath, sKeyStorePassword);
     if (aLKS.isFailure ())
       throw new IllegalStateException (aLKS.getErrorText (TextHelper.EN));
 
-    loadCertificate (aLKS.getKeyStore (), sKeyAlias, sKeyPassword);
-  }
-
-  private void loadCertificate (@Nonnull final KeyStore aKeyStore,
-                                @Nullable final String sKeyAlias,
-                                @Nonnull final String sKeyPassword)
-  {
-    try
-    {
-      final String sRealKeyAlias = sKeyAlias != null ? sKeyAlias : aKeyStore.aliases ().nextElement ();
-      m_aX509Certificate = (X509Certificate) aKeyStore.getCertificate (sRealKeyAlias);
-      if (m_aX509Certificate == null)
-        throw new IllegalStateException ("Failed to resolve alias '" + sRealKeyAlias + "' in keystore!");
-
-      m_aCertificateChain = aKeyStore.getCertificateChain (sRealKeyAlias);
-
-      final Key aKey = aKeyStore.getKey (sRealKeyAlias, sKeyPassword.toCharArray ());
-      final PrivateKey aPrivateKey = (PrivateKey) aKey;
-
-      m_aKeyPair = new KeyPair (m_aX509Certificate.getPublicKey (), aPrivateKey);
-    }
-    catch (final KeyStoreException | UnrecoverableKeyException | NoSuchAlgorithmException e)
-    {
-      throw new IllegalStateException ("Unable to retrieve private key from keystore: " + e.getMessage (), e);
-    }
+    // Load key
+    final LoadedKey <KeyStore.PrivateKeyEntry> aLK = KeyStoreHelper.loadPrivateKey (aLKS.getKeyStore (),
+                                                                                    sKeyStorePath,
+                                                                                    sKeyAlias,
+                                                                                    sKeyPassword.toCharArray ());
+    if (aLK.isFailure ())
+      throw new IllegalStateException (aLK.getErrorText (TextHelper.EN));
+    m_aCertificateChain = aLK.getKeyEntry ().getCertificateChain ();
+    m_aX509Certificate = (X509Certificate) aLK.getKeyEntry ().getCertificate ();
+    m_aKeyPair = new KeyPair (m_aX509Certificate.getPublicKey (), aLK.getKeyEntry ().getPrivateKey ());
   }
 
   /**
@@ -161,16 +142,19 @@ public class SignatureHelper
     }
   }
 
+  @Nonnull
   X509Certificate getX509Certificate ()
   {
     return m_aX509Certificate;
   }
 
+  @Nonnull
   Certificate [] getCertificateChain ()
   {
     return m_aCertificateChain;
   }
 
+  @Nonnull
   KeyPair getKeyPair ()
   {
     return m_aKeyPair;

@@ -26,7 +26,7 @@ import com.helger.security.keystore.KeyStoreHelper;
  */
 public final class TestUtil
 {
-  public static final String KEY_STORE_RESOURCE_NAME = "asic/keystore.jks";
+  public static final String KEY_STORE_RESOURCE_NAME = "/asic/keystore.jks";
   public static final String BII_SAMPLE_MESSAGE_XML = "/asic/bii-trns081.xml";
 
   private TestUtil ()

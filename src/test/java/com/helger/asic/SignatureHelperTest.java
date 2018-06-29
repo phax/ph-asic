@@ -15,11 +15,15 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.helger.security.keystore.EKeyStoreType;
 
 public final class SignatureHelperTest
 {
+  private static final Logger s_aLogger = LoggerFactory.getLogger (SignatureHelperTest.class);
+
   @Test
   public void loadNoProblems ()
   {
@@ -39,28 +43,9 @@ public final class SignatureHelperTest
                            TestUtil.privateKeyPassword ());
       fail ("Exception expected.");
     }
-    catch (final IllegalStateException e)
+    catch (final IllegalStateException ex)
     {
-      // Ignore
-    }
-  }
-
-  @SuppressWarnings ("unused")
-  @Test
-  public void wrongKeyPassword ()
-  {
-    try
-    {
-      new SignatureHelper (EKeyStoreType.JKS,
-                           TestUtil.keyStorePathJKS (),
-                           TestUtil.keyStorePassword (),
-                           TestUtil.keyPairAlias (),
-                           TestUtil.privateKeyPassword () + "?");
-      fail ("Exception expected.");
-    }
-    catch (final IllegalStateException e)
-    {
-      // Ignore
+      s_aLogger.info ("Expected WrongKeyStorePassword: " + ex.getMessage ());
     }
   }
 
@@ -77,9 +62,28 @@ public final class SignatureHelperTest
                            TestUtil.privateKeyPassword ());
       fail ("Exception expected.");
     }
-    catch (final IllegalStateException e)
+    catch (final IllegalStateException ex)
     {
-      // Ignore
+      s_aLogger.info ("Expected WrongKeyAlias: " + ex.getMessage ());
+    }
+  }
+
+  @SuppressWarnings ("unused")
+  @Test
+  public void wrongKeyPassword ()
+  {
+    try
+    {
+      new SignatureHelper (EKeyStoreType.JKS,
+                           TestUtil.keyStorePathJKS (),
+                           TestUtil.keyStorePassword (),
+                           TestUtil.keyPairAlias (),
+                           TestUtil.privateKeyPassword () + "?");
+      fail ("Exception expected.");
+    }
+    catch (final IllegalStateException ex)
+    {
+      s_aLogger.info ("Expected WrongKeyPassword: " + ex.getMessage ());
     }
   }
 }

@@ -63,7 +63,8 @@ public final class BouncyCastleSignatureTest
   public void createSignature () throws Exception
   {
     final CMSProcessableByteArray msg = new CMSProcessableByteArray ("Hello world".getBytes (StandardCharsets.ISO_8859_1));
-    // generateKeyPairAndCertificate();
+    if (false)
+      generateKeyPairAndCertificate ();
     // Reads private key and certificate from our own
     // keystore
     final SignatureHelper aSH = TestUtil.createSH ();
