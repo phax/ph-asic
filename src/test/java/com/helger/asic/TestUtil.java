@@ -13,6 +13,8 @@ package com.helger.asic;
 
 import java.io.File;
 
+import javax.annotation.Nonnull;
+
 import com.helger.commons.io.resource.ClassPathResource;
 
 /**
@@ -23,6 +25,9 @@ public final class TestUtil
   public static final String KEY_STORE_RESOURCE_NAME = "/asic/keystore.jks";
   public static final String BII_SAMPLE_MESSAGE_XML = "/asic/bii-trns081.xml";
 
+  private TestUtil ()
+  {}
+
   /**
    * Provides simple access to the KeyStore file provided as part of the
    * distribution.
@@ -32,23 +37,27 @@ public final class TestUtil
    *
    * @return File
    */
+  @Nonnull
   public static File keyStoreFile ()
   {
     return ClassPathResource.getAsFile (KEY_STORE_RESOURCE_NAME);
   }
 
+  @Nonnull
   public static String keyStorePassword ()
   {
     return "changeit";
   }
 
-  public static String privateKeyPassword ()
-  {
-    return "changeit";
-  }
-
+  @Nonnull
   public static String keyPairAlias ()
   {
     return "selfsigned";
+  }
+
+  @Nonnull
+  public static String privateKeyPassword ()
+  {
+    return "changeit";
   }
 }

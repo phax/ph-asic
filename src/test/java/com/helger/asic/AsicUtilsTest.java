@@ -26,7 +26,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.commons.io.file.FileHelper;
 import com.helger.commons.io.stream.NonBlockingByteArrayInputStream;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.mime.CMimeType;
@@ -37,7 +36,7 @@ public final class AsicUtilsTest
 
   private final AsicReaderFactory m_aAsicReaderFactory = AsicReaderFactory.newFactory ();
   private final AsicWriterFactory m_aAsicWriterFactory = AsicWriterFactory.newFactory ();
-  private final SignatureHelper m_aSignatureHelper = new SignatureHelper (FileHelper.getInputStream (TestUtil.keyStoreFile ()),
+  private final SignatureHelper m_aSignatureHelper = new SignatureHelper (TestUtil.keyStoreFile (),
                                                                           TestUtil.keyStorePassword (),
                                                                           TestUtil.keyPairAlias (),
                                                                           TestUtil.privateKeyPassword ());
@@ -153,7 +152,7 @@ public final class AsicUtilsTest
     try (final NonBlockingByteArrayOutputStream source2simpler = new NonBlockingByteArrayOutputStream ())
     {
       try (final AsicInputStream source2input = new AsicInputStream (source2.getAsInputStream ());
-           final AsicOutputStream source2output = new AsicOutputStream (source2simpler))
+          final AsicOutputStream source2output = new AsicOutputStream (source2simpler))
       {
         ZipEntry zipEntry;
         while ((zipEntry = source2input.getNextEntry ()) != null)

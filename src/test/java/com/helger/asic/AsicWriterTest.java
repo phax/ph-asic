@@ -158,6 +158,7 @@ public class AsicWriterTest
     {
       asicWriter.sign (new SignatureHelper (m_aKeystoreFile,
                                             TestUtil.keyStorePassword (),
+                                            TestUtil.keyPairAlias (),
                                             TestUtil.privateKeyPassword ()));
       fail ("Exception expected");
     }

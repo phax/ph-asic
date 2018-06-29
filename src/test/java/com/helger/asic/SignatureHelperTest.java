@@ -23,7 +23,7 @@ public final class SignatureHelperTest
   @Test
   public void loadNoProblems ()
   {
-    new SignatureHelper (ClassPathResource.getInputStream ("/asic/keystore.jks"), "changeit", null, "changeit");
+    new SignatureHelper (ClassPathResource.getAsFile ("/asic/keystore.jks"), "changeit", null, "changeit");
   }
 
   @SuppressWarnings ("unused")
@@ -32,7 +32,7 @@ public final class SignatureHelperTest
   {
     try
     {
-      new SignatureHelper (ClassPathResource.getInputStream ("/asic/keystore.jks"), "changed?", null, "changeit");
+      new SignatureHelper (ClassPathResource.getAsFile ("/asic/keystore.jks"), "changed?", null, "changeit");
       fail ("Exception expected.");
     }
     catch (final IllegalStateException e)
@@ -47,7 +47,7 @@ public final class SignatureHelperTest
   {
     try
     {
-      new SignatureHelper (ClassPathResource.getInputStream ("/asic/keystore.jks"), "changeit", null, "changed?");
+      new SignatureHelper (ClassPathResource.getAsFile ("/asic/keystore.jks"), "changeit", null, "changed?");
       fail ("Exception expected.");
     }
     catch (final IllegalStateException e)
@@ -62,7 +62,7 @@ public final class SignatureHelperTest
   {
     try
     {
-      new SignatureHelper (ClassPathResource.getInputStream ("/asic/keystore.jks"), "changeit", "asic", "changeit");
+      new SignatureHelper (ClassPathResource.getAsFile ("/asic/keystore.jks"), "changeit", "asic", "changeit");
       fail ("Exception expected.");
     }
     catch (final IllegalStateException e)

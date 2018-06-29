@@ -14,7 +14,6 @@ package com.helger.asic;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
 import java.security.Key;
 import java.security.KeyPair;
 import java.security.KeyStore;
@@ -30,7 +29,6 @@ import java.security.cert.X509Certificate;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.annotation.WillClose;
 import javax.annotation.WillNotClose;
 
 import org.bouncycastle.cert.jcajce.JcaCertStore;
@@ -49,8 +47,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.bc.PBCProvider;
+import com.helger.commons.ValueEnforcer;
 import com.helger.commons.base64.Base64;
 import com.helger.commons.collection.impl.CommonsArrayList;
+import com.helger.commons.io.file.FileHelper;
 import com.helger.commons.io.stream.StreamHelper;
 import com.helger.security.keystore.EKeyStoreType;
 
@@ -65,32 +65,9 @@ public class SignatureHelper
 {
   private static final Logger LOG = LoggerFactory.getLogger (SignatureHelper.class);
 
-  private final Provider m_aProvider;
-  private final JcaDigestCalculatorProviderBuilder m_aJcaDigestCalculatorProviderBuilder;
   private X509Certificate m_aX509Certificate;
   private Certificate [] m_aCertificateChain;
   private KeyPair m_aKeyPair;
-  private JcaContentSignerBuilder m_aJcaContentSignerBuilder;
-
-  /**
-   * Loads the keystore and obtains the private key, the public key and the
-   * associated certificate
-   *
-   * @param aKeyStoreFile
-   *        file holding the JKS keystore.
-   * @param sKeyStorePassword
-   *        password of the key store itself
-   * @param sKeyPassword
-   *        password protecting the private key
-   * @throws IOException
-   *         on IO error
-   */
-  public SignatureHelper (@Nonnull final File aKeyStoreFile,
-                          @Nonnull final String sKeyStorePassword,
-                          @Nonnull final String sKeyPassword) throws IOException
-  {
-    this (aKeyStoreFile, sKeyStorePassword, null, sKeyPassword);
-  }
 
   /**
    * Loads the keystore and obtains the private key, the public key and the
@@ -104,57 +81,27 @@ public class SignatureHelper
    *        the alias referencing the private and public key pair.
    * @param sKeyPassword
    *        password protecting the private key
-   * @throws IOException
-   *         on IO error
    */
   public SignatureHelper (@Nonnull final File aKeyStoreFile,
                           @Nonnull final String sKeyStorePassword,
-                          @Nullable final String sKeyAlias,
-                          @Nonnull final String sKeyPassword) throws IOException
-  {
-    this (PBCProvider.getProvider ());
-    try (final InputStream aIS = Files.newInputStream (aKeyStoreFile.toPath ()))
-    {
-      final KeyStore aKS = loadKeyStore (EKeyStoreType.JKS, aIS, sKeyStorePassword);
-      loadCertificate (aKS, sKeyAlias, sKeyPassword);
-    }
-  }
-
-  /**
-   * Loading keystore and fetching key
-   *
-   * @param aIS
-   *        Stream for keystore
-   * @param sKeyStorePassword
-   *        Password to open keystore
-   * @param sKeyAlias
-   *        Key alias, uses first key if set to null
-   * @param sKeyPassword
-   *        Key password
-   */
-  public SignatureHelper (@Nonnull @WillClose final InputStream aIS,
-                          @Nonnull final String sKeyStorePassword,
-                          @Nullable final String sKeyAlias,
+                          @Nonnull final String sKeyAlias,
                           @Nonnull final String sKeyPassword)
   {
-    this (PBCProvider.getProvider ());
-    try
-    {
-      loadCertificate (loadKeyStore (EKeyStoreType.JKS, aIS, sKeyStorePassword), sKeyAlias, sKeyPassword);
-    }
-    finally
-    {
-      StreamHelper.close (aIS);
-    }
-  }
+    ValueEnforcer.notNull (aKeyStoreFile, "KeyStoreFile");
+    ValueEnforcer.notNull (sKeyStorePassword, "KeyStorePassword");
+    ValueEnforcer.notNull (sKeyPassword, "KeyPassword");
 
-  protected SignatureHelper (@Nullable final Provider aProvider)
-  {
-    m_aProvider = aProvider;
-
-    m_aJcaDigestCalculatorProviderBuilder = new JcaDigestCalculatorProviderBuilder ();
-    if (aProvider != null)
-      m_aJcaDigestCalculatorProviderBuilder.setProvider (aProvider);
+    final InputStream aIS = FileHelper.getBufferedInputStream (aKeyStoreFile);
+    if (aIS != null)
+      try
+      {
+        final KeyStore aKS = loadKeyStore (EKeyStoreType.JKS, aIS, sKeyStorePassword);
+        loadCertificate (aKS, sKeyAlias, sKeyPassword);
+      }
+      finally
+      {
+        StreamHelper.close (aIS);
+      }
   }
 
   protected KeyStore loadKeyStore (@Nonnull final EKeyStoreType eKSType,
@@ -190,10 +137,6 @@ public class SignatureHelper
       final PrivateKey aPrivateKey = (PrivateKey) aKey;
 
       m_aKeyPair = new KeyPair (m_aX509Certificate.getPublicKey (), aPrivateKey);
-
-      m_aJcaContentSignerBuilder = new JcaContentSignerBuilder ("SHA1with" + aPrivateKey.getAlgorithm ());
-      if (m_aProvider != null)
-        m_aJcaContentSignerBuilder.setProvider (m_aProvider);
     }
     catch (final KeyStoreException | UnrecoverableKeyException | NoSuchAlgorithmException e)
     {
@@ -212,8 +155,13 @@ public class SignatureHelper
   {
     try
     {
-      final DigestCalculatorProvider aDigestCalculatorProvider = m_aJcaDigestCalculatorProviderBuilder.build ();
-      final ContentSigner aContentSigner = m_aJcaContentSignerBuilder.build (m_aKeyPair.getPrivate ());
+      final Provider p = PBCProvider.getProvider ();
+      final DigestCalculatorProvider aDigestCalculatorProvider = new JcaDigestCalculatorProviderBuilder ().setProvider (p)
+                                                                                                          .build ();
+      final JcaContentSignerBuilder aJcaContentSignerBuilder = new JcaContentSignerBuilder ("SHA1with" +
+                                                                                            m_aKeyPair.getPrivate ()
+                                                                                                      .getAlgorithm ()).setProvider (p);
+      final ContentSigner aContentSigner = aJcaContentSignerBuilder.build (m_aKeyPair.getPrivate ());
       final SignerInfoGenerator aSignerInfoGenerator = new JcaSignerInfoGeneratorBuilder (aDigestCalculatorProvider).build (aContentSigner,
                                                                                                                             m_aX509Certificate);
 

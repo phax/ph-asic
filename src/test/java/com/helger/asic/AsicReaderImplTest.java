@@ -24,7 +24,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.commons.io.file.FileHelper;
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.io.stream.NonBlockingByteArrayInputStream;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
@@ -36,7 +35,7 @@ public class AsicReaderImplTest
 
   private final AsicReaderFactory asicReaderFactory = AsicReaderFactory.newFactory ();
   private final AsicWriterFactory asicWriterFactory = AsicWriterFactory.newFactory ();
-  private final SignatureHelper signatureHelper = new SignatureHelper (FileHelper.getInputStream (TestUtil.keyStoreFile ()),
+  private final SignatureHelper signatureHelper = new SignatureHelper (TestUtil.keyStoreFile (),
                                                                        TestUtil.keyStorePassword (),
                                                                        TestUtil.keyPairAlias (),
                                                                        TestUtil.privateKeyPassword ());
@@ -186,7 +185,8 @@ public class AsicReaderImplTest
   @Test
   public void exceptionOnInvalidMime () throws IOException
   {
-    try (final IAsicReader asicReader = asicReaderFactory.open (ClassPathResource.getInputStream ("/asic/asic-general-test-invalid-mime.asice")))
+    try (
+        final IAsicReader asicReader = asicReaderFactory.open (ClassPathResource.getInputStream ("/asic/asic-general-test-invalid-mime.asice")))
     {
       asicReader.getNextFile ();
       fail ("Didn't throw exception on wrong mimetype.");
