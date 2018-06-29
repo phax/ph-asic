@@ -18,7 +18,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.WillNotClose;
 
 import com.helger.commons.mime.IMimeType;
@@ -198,61 +197,12 @@ public interface IAsicWriter
   IAsicWriter setRootEntryName (String name);
 
   /**
-   * Signs and closes the ASiC archive. The private and public key is obtained
-   * from the supplied key store.
-   *
-   * @param aKeyStoreFile
-   *        the file holding the JKS keystore file.
-   * @param sKeyStorePassword
-   *        password for the keystore
-   * @param sKeyPassword
-   *        password protecting the private key.
-   * @return reference to this AsicWriter
-   * @throws IOException
-   *         in case of an IO error
-   */
-  @Nonnull
-  default IAsicWriter sign (final File aKeyStoreFile,
-                            final String sKeyStorePassword,
-                            final String sKeyPassword) throws IOException
-  {
-    return sign (aKeyStoreFile, sKeyStorePassword, null, sKeyPassword);
-  }
-
-  /**
-   * Signs and closes the ASiC archive using the private and public key stored
-   * in the supplied key store under the supplied alias name.
-   *
-   * @param aKeyStoreFile
-   *        the file holding the JKS keystore file.
-   * @param sKeyStorePassword
-   *        password for the keystore
-   * @param sKeyAlias
-   *        the alias of the keystore entry holding the private and the public
-   *        key.
-   * @param sKeyPassword
-   *        password protecting the private key.
-   * @return reference to this AsicWriter
-   * @throws IOException
-   *         in case of an IO error
-   */
-  @Nonnull
-  default IAsicWriter sign (@Nonnull final File aKeyStoreFile,
-                            @Nonnull final String sKeyStorePassword,
-                            @Nullable final String sKeyAlias,
-                            @Nonnull final String sKeyPassword) throws IOException
-  {
-    return sign (new SignatureHelper (aKeyStoreFile, sKeyStorePassword, sKeyAlias, sKeyPassword));
-  }
-
-  /**
    * Allows re-use of the same SignatureHelper object when creating multiple
    * ASiC archive and hence the need to create multiple signatures.
    *
    * @param aSH
    *        instantiated SignatureHelper
    * @return reference to this AsicWriter
-   * @see #sign(File, String, String, String)
    * @throws IOException
    *         in case of an IO error
    */

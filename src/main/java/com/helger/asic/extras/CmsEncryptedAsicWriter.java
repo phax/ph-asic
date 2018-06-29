@@ -163,24 +163,7 @@ public class CmsEncryptedAsicWriter implements IAsicWriter
   }
 
   @Nonnull
-  public IAsicWriter sign (final File aKeyStoreFile,
-                           final String sKeyStorePassword,
-                           final String sKeyPassword) throws IOException
-  {
-    return m_aAsicWriter.sign (aKeyStoreFile, sKeyStorePassword, sKeyPassword);
-  }
-
-  @Nonnull
-  public IAsicWriter sign (final File aKeyStoreFile,
-                           final String sKeyStorePassword,
-                           final String sKeyAlias,
-                           final String sKeyPassword) throws IOException
-  {
-    return m_aAsicWriter.sign (aKeyStoreFile, sKeyStorePassword, sKeyAlias, sKeyPassword);
-  }
-
-  @Nonnull
-  public IAsicWriter sign (final SignatureHelper aSH) throws IOException
+  public IAsicWriter sign (@Nonnull final SignatureHelper aSH) throws IOException
   {
     return m_aAsicWriter.sign (aSH);
   }

@@ -46,7 +46,6 @@ public final class AsicXadesWriterTest
   public static final String BII_MESSAGE_XML = TestUtil.BII_SAMPLE_MESSAGE_XML;
   private File m_aEnvelopeFile;
   private File m_aMessageFile;
-  private File m_aKeystoreFile;
 
   private AsicWriterFactory m_aAsicWriterFactory;
 
@@ -59,9 +58,6 @@ public final class AsicXadesWriterTest
     m_aMessageFile = new ClassPathResource (BII_MESSAGE_XML).getAsFile ();
     assertNotNull (m_aMessageFile);
 
-    m_aKeystoreFile = TestUtil.keyStoreFile ();
-    assertTrue ("Expected to find your private key and certificate in " + m_aKeystoreFile, m_aKeystoreFile.canRead ());
-
     m_aAsicWriterFactory = AsicWriterFactory.newFactory (ESignatureMethod.XAdES);
   }
 
@@ -70,7 +66,7 @@ public final class AsicXadesWriterTest
   {
     try (final NonBlockingByteArrayOutputStream outputStream = new NonBlockingByteArrayOutputStream ())
     {
-      m_aAsicWriterFactory.newContainer (outputStream).sign (m_aKeystoreFile, "changeit", "changeit");
+      m_aAsicWriterFactory.newContainer (outputStream).sign (TestUtil.createSH ());
 
       final byte [] buffer = outputStream.toByteArray ();
       assertEquals ("Byte 28 should be 0", buffer[28], (byte) 0);
@@ -83,7 +79,7 @@ public final class AsicXadesWriterTest
   @Test
   public void createSampleContainer () throws Exception
   {
-    final SignatureHelper signatureHelper = new SignatureHelper (m_aKeystoreFile, "changeit", "selfsigned", "changeit");
+    final SignatureHelper signatureHelper = TestUtil.createSH ();
 
     final IAsicWriter asicWriter = m_aAsicWriterFactory.newContainer (new File (System.getProperty ("java.io.tmpdir")),
                                                                       "asic-sample-xades.zip")
@@ -151,7 +147,7 @@ public final class AsicXadesWriterTest
 
     try
     {
-      asicWriter.sign (m_aKeystoreFile, "changeit", "changeit");
+      asicWriter.sign (TestUtil.createSH ());
       fail ("Exception expected");
     }
     catch (final IllegalStateException e)

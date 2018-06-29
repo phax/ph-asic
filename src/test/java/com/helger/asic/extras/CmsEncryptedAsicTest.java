@@ -35,7 +35,6 @@ import com.helger.asic.AsicReaderFactory;
 import com.helger.asic.AsicWriterFactory;
 import com.helger.asic.IAsicReader;
 import com.helger.asic.IAsicWriter;
-import com.helger.asic.SignatureHelper;
 import com.helger.asic.TestUtil;
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
@@ -69,10 +68,7 @@ public final class CmsEncryptedAsicTest
       writer.addEncrypted (ClassPathResource.getAsFile ("/asic/image.bmp"), "encrypted2.bmp", CMimeType.IMAGE_BMP);
       writer.addEncrypted (ClassPathResource.getAsFile ("/asic/image.bmp"), "encrypted3.xml");
       writer.setRootEntryName ("encrypted.bmp");
-      writer.sign (new SignatureHelper (TestUtil.keyStoreFile (),
-                                        TestUtil.keyStorePassword (),
-                                        TestUtil.keyPairAlias (),
-                                        TestUtil.privateKeyPassword ()));
+      writer.sign (TestUtil.createSH ());
       // NonBlockingByteArrayOutputStream now contains a signed ASiC archive
       // containing one
       // encrypted file
@@ -178,12 +174,7 @@ public final class CmsEncryptedAsicTest
       writer.setRootEntryName ("sample.xml");
 
       // Signs the archive
-      final SignatureHelper signatureHelper = new SignatureHelper (TestUtil.keyStoreFile (),
-                                                                   TestUtil.keyStorePassword (),
-                                                                   TestUtil.keyPairAlias (),
-                                                                   TestUtil.privateKeyPassword ());
-      writer.sign (signatureHelper);
-
+      writer.sign (TestUtil.createSH ());
     }
 
     s_aLogger.info ("Wrote sample ASiC to " + sample);

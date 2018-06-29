@@ -50,7 +50,6 @@ public final class AsicCadesWriterTest
   public static final String BII_MESSAGE_XML = TestUtil.BII_SAMPLE_MESSAGE_XML;
   private File m_aEnvelopeFile;
   private File m_aMessageFile;
-  private File m_aKeystoreFile;
 
   private AsicWriterFactory m_aWriterFactory;
   private AsicVerifierFactory m_aVerifierFactory;
@@ -58,14 +57,11 @@ public final class AsicCadesWriterTest
   @Before
   public void setUp ()
   {
-    m_aEnvelopeFile = new ClassPathResource (BII_ENVELOPE_XML).getAsFile ();
+    m_aEnvelopeFile = ClassPathResource.getAsFile (BII_ENVELOPE_XML);
     assertNotNull (m_aEnvelopeFile);
 
-    m_aMessageFile = new ClassPathResource (BII_MESSAGE_XML).getAsFile ();
+    m_aMessageFile = ClassPathResource.getAsFile (BII_MESSAGE_XML);
     assertNotNull (m_aMessageFile);
-
-    m_aKeystoreFile = TestUtil.keyStoreFile ();
-    assertTrue ("Expected to find your private key and certificate in " + m_aKeystoreFile, m_aKeystoreFile.canRead ());
 
     m_aWriterFactory = AsicWriterFactory.newFactory ();
     m_aVerifierFactory = AsicVerifierFactory.newFactory ();
@@ -77,12 +73,7 @@ public final class AsicCadesWriterTest
     final File aDestFile = new File (System.getProperty ("java.io.tmpdir"), "asic-empty-sample-cades.zip");
 
     // A container MUST contain any entry
-    m_aWriterFactory.newContainer (aDestFile)
-                    .add (m_aMessageFile)
-                    .sign (m_aKeystoreFile,
-                           TestUtil.keyStorePassword (),
-                           TestUtil.keyPairAlias (),
-                           TestUtil.privateKeyPassword ());
+    m_aWriterFactory.newContainer (aDestFile).add (m_aMessageFile).sign (TestUtil.createSH ());
 
     assertTrue (aDestFile + " can not be read", aDestFile.exists () && aDestFile.isFile () && aDestFile.canRead ());
     try (final FileInputStream fileInputStream = new FileInputStream (aDestFile);
@@ -119,10 +110,7 @@ public final class AsicCadesWriterTest
                                                    // type
                                                    .add (m_aMessageFile, BII_MESSAGE_XML, CMimeType.APPLICATION_XML)
                                                    .setRootEntryName (m_aEnvelopeFile.toURI ().toString ())
-                                                   .sign (m_aKeystoreFile,
-                                                          TestUtil.keyStorePassword (),
-                                                          TestUtil.keyPairAlias (),
-                                                          TestUtil.privateKeyPassword ());
+                                                   .sign (TestUtil.createSH ());
 
     // Verifies that both files have been added.
     {
@@ -180,10 +168,7 @@ public final class AsicCadesWriterTest
 
     try
     {
-      asicWriter.sign (new SignatureHelper (m_aKeystoreFile,
-                                            TestUtil.keyStorePassword (),
-                                            TestUtil.keyPairAlias (),
-                                            TestUtil.privateKeyPassword ()));
+      asicWriter.sign (TestUtil.createSH ());
       fail ("Exception expected");
     }
     catch (final IllegalStateException e)

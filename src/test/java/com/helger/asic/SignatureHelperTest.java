@@ -11,19 +11,19 @@
  */
 package com.helger.asic;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
-import com.helger.commons.io.resource.ClassPathResource;
+import com.helger.security.keystore.EKeyStoreType;
 
 public final class SignatureHelperTest
 {
-  @SuppressWarnings ("unused")
   @Test
   public void loadNoProblems ()
   {
-    new SignatureHelper (ClassPathResource.getAsFile ("/asic/keystore.jks"), "changeit", null, "changeit");
+    assertNotNull (TestUtil.createSH ());
   }
 
   @SuppressWarnings ("unused")
@@ -32,7 +32,11 @@ public final class SignatureHelperTest
   {
     try
     {
-      new SignatureHelper (ClassPathResource.getAsFile ("/asic/keystore.jks"), "changed?", null, "changeit");
+      new SignatureHelper (EKeyStoreType.JKS,
+                           TestUtil.keyStorePathJKS (),
+                           TestUtil.keyStorePassword () + "?",
+                           TestUtil.keyPairAlias (),
+                           TestUtil.privateKeyPassword ());
       fail ("Exception expected.");
     }
     catch (final IllegalStateException e)
@@ -47,7 +51,11 @@ public final class SignatureHelperTest
   {
     try
     {
-      new SignatureHelper (ClassPathResource.getAsFile ("/asic/keystore.jks"), "changeit", null, "changed?");
+      new SignatureHelper (EKeyStoreType.JKS,
+                           TestUtil.keyStorePathJKS (),
+                           TestUtil.keyStorePassword (),
+                           TestUtil.keyPairAlias (),
+                           TestUtil.privateKeyPassword () + "?");
       fail ("Exception expected.");
     }
     catch (final IllegalStateException e)
@@ -62,7 +70,11 @@ public final class SignatureHelperTest
   {
     try
     {
-      new SignatureHelper (ClassPathResource.getAsFile ("/asic/keystore.jks"), "changeit", "asic", "changeit");
+      new SignatureHelper (EKeyStoreType.JKS,
+                           TestUtil.keyStorePathJKS (),
+                           TestUtil.keyStorePassword (),
+                           TestUtil.keyPairAlias () + "?",
+                           TestUtil.privateKeyPassword ());
       fail ("Exception expected.");
     }
     catch (final IllegalStateException e)

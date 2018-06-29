@@ -11,9 +11,7 @@
  */
 package com.helger.asic;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.security.Key;
 import java.security.KeyPair;
 import java.security.KeyStore;
@@ -24,12 +22,10 @@ import java.security.Provider;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateEncodingException;
-import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.annotation.WillNotClose;
 
 import org.bouncycastle.cert.jcajce.JcaCertStore;
 import org.bouncycastle.cms.CMSException;
@@ -50,9 +46,10 @@ import com.helger.bc.PBCProvider;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.base64.Base64;
 import com.helger.commons.collection.impl.CommonsArrayList;
-import com.helger.commons.io.file.FileHelper;
-import com.helger.commons.io.stream.StreamHelper;
-import com.helger.security.keystore.EKeyStoreType;
+import com.helger.commons.text.util.TextHelper;
+import com.helger.security.keystore.IKeyStoreType;
+import com.helger.security.keystore.KeyStoreHelper;
+import com.helger.security.keystore.LoadedKeyStore;
 
 /**
  * Helper class to assist when creating a signature.
@@ -73,8 +70,10 @@ public class SignatureHelper
    * Loads the keystore and obtains the private key, the public key and the
    * associated certificate referenced by the alias.
    *
-   * @param aKeyStoreFile
-   *        file holding the JKS keystore.
+   * @param aKeyStoreType
+   *        Key store type.
+   * @param sKeyStorePath
+   *        Path to keystore.
    * @param sKeyStorePassword
    *        password of the key store itself
    * @param sKeyAlias
@@ -82,47 +81,28 @@ public class SignatureHelper
    * @param sKeyPassword
    *        password protecting the private key
    */
-  public SignatureHelper (@Nonnull final File aKeyStoreFile,
+  public SignatureHelper (@Nonnull final IKeyStoreType aKeyStoreType,
+                          @Nonnull final String sKeyStorePath,
                           @Nonnull final String sKeyStorePassword,
                           @Nonnull final String sKeyAlias,
                           @Nonnull final String sKeyPassword)
   {
-    ValueEnforcer.notNull (aKeyStoreFile, "KeyStoreFile");
+    ValueEnforcer.notNull (aKeyStoreType, "KeyStoreType");
+    ValueEnforcer.notNull (sKeyStorePath, "KeyStorePath");
     ValueEnforcer.notNull (sKeyStorePassword, "KeyStorePassword");
+    ValueEnforcer.notNull (sKeyAlias, "KeyAlias");
     ValueEnforcer.notNull (sKeyPassword, "KeyPassword");
 
-    final InputStream aIS = FileHelper.getBufferedInputStream (aKeyStoreFile);
-    if (aIS != null)
-      try
-      {
-        final KeyStore aKS = loadKeyStore (EKeyStoreType.JKS, aIS, sKeyStorePassword);
-        loadCertificate (aKS, sKeyAlias, sKeyPassword);
-      }
-      finally
-      {
-        StreamHelper.close (aIS);
-      }
+    final LoadedKeyStore aLKS = KeyStoreHelper.loadKeyStore (aKeyStoreType, sKeyStorePath, sKeyStorePassword);
+    if (aLKS.isFailure ())
+      throw new IllegalStateException (aLKS.getErrorText (TextHelper.EN));
+
+    loadCertificate (aLKS.getKeyStore (), sKeyAlias, sKeyPassword);
   }
 
-  protected KeyStore loadKeyStore (@Nonnull final EKeyStoreType eKSType,
-                                   @Nonnull @WillNotClose final InputStream aIS,
-                                   @Nonnull final String sKeyStorePassword)
-  {
-    try
-    {
-      final KeyStore keyStore = eKSType.getKeyStore ();
-      keyStore.load (aIS, sKeyStorePassword.toCharArray ());
-      return keyStore;
-    }
-    catch (final KeyStoreException | NoSuchAlgorithmException | CertificateException | IOException e)
-    {
-      throw new IllegalStateException ("Load keystore; " + e.getMessage (), e);
-    }
-  }
-
-  protected void loadCertificate (@Nonnull final KeyStore aKeyStore,
-                                  @Nullable final String sKeyAlias,
-                                  @Nonnull final String sKeyPassword)
+  private void loadCertificate (@Nonnull final KeyStore aKeyStore,
+                                @Nullable final String sKeyAlias,
+                                @Nonnull final String sKeyPassword)
   {
     try
     {
@@ -189,5 +169,10 @@ public class SignatureHelper
   Certificate [] getCertificateChain ()
   {
     return m_aCertificateChain;
+  }
+
+  KeyPair getKeyPair ()
+  {
+    return m_aKeyPair;
   }
 }

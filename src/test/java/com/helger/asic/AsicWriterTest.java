@@ -44,7 +44,6 @@ public class AsicWriterTest
 
   private static final String BII_ENVELOPE_XML = "/asic/bii-envelope.xml";
   private static final String BII_MESSAGE_XML = TestUtil.BII_SAMPLE_MESSAGE_XML;
-  private File m_aKeystoreFile;
 
   private AsicVerifierFactory m_aAsicVerifierFactory;
   private File m_aEnvelopeFile;
@@ -55,8 +54,6 @@ public class AsicWriterTest
   {
     m_aEnvelopeFile = ClassPathResource.getAsFile (BII_ENVELOPE_XML);
     m_aMessageFile = ClassPathResource.getAsFile (BII_MESSAGE_XML);
-    m_aKeystoreFile = TestUtil.keyStoreFile ();
-    assertTrue ("Expected to find your private key and certificate in " + m_aKeystoreFile, m_aKeystoreFile.canRead ());
 
     // Assumes default signature method
     m_aAsicVerifierFactory = AsicVerifierFactory.newFactory ();
@@ -95,7 +92,7 @@ public class AsicWriterTest
     /*
      * Signing the contents of the archive, closes it for further changes.
      */
-    asicWriter.sign (m_aKeystoreFile, TestUtil.keyStorePassword (), TestUtil.privateKeyPassword ());
+    asicWriter.sign (TestUtil.createSH ());
 
     // PART 2 - verify the contents of the archive.
 
@@ -156,10 +153,7 @@ public class AsicWriterTest
 
     try
     {
-      asicWriter.sign (new SignatureHelper (m_aKeystoreFile,
-                                            TestUtil.keyStorePassword (),
-                                            TestUtil.keyPairAlias (),
-                                            TestUtil.privateKeyPassword ()));
+      asicWriter.sign (TestUtil.createSH ());
       fail ("Exception expected");
     }
     catch (final IllegalStateException e)
@@ -198,7 +192,7 @@ public class AsicWriterTest
                      .add (brochurePdfFile)
                      // Signing the contents of the archive, closes it for
                      // further changes.
-                     .sign (m_aKeystoreFile, TestUtil.keyStorePassword (), TestUtil.privateKeyPassword ());
+                     .sign (TestUtil.createSH ());
 
     log.debug ("Wrote ASiC-e container to " + archiveOutputFile);
     // Opens the generated archive and reads each entry

@@ -35,10 +35,7 @@ public class AsicReaderImplTest
 
   private final AsicReaderFactory asicReaderFactory = AsicReaderFactory.newFactory ();
   private final AsicWriterFactory asicWriterFactory = AsicWriterFactory.newFactory ();
-  private final SignatureHelper signatureHelper = new SignatureHelper (TestUtil.keyStoreFile (),
-                                                                       TestUtil.keyStorePassword (),
-                                                                       TestUtil.keyPairAlias (),
-                                                                       TestUtil.privateKeyPassword ());
+  private static final SignatureHelper signatureHelper = TestUtil.createSH ();
 
   private static final String fileContent1 = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam arcu eros, fermentum vel molestie ut, sagittis vel velit.";
   private static final String fileContent2 = "Fusce eu risus ipsum. Sed mattis laoreet justo. Fusce nisi magna, posuere ac placerat tincidunt, dignissim non lacus.";
