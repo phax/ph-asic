@@ -112,7 +112,7 @@ public class SignatureHelper
    *        Content to be signed
    * @return Signature
    */
-  byte [] signData (@Nonnull final byte [] aData)
+  protected final byte [] signData (@Nonnull final byte [] aData)
   {
     try
     {
@@ -143,19 +143,19 @@ public class SignatureHelper
   }
 
   @Nonnull
-  X509Certificate getX509Certificate ()
+  protected final X509Certificate getX509Certificate ()
   {
     return m_aX509Certificate;
   }
 
   @Nonnull
-  Certificate [] getCertificateChain ()
+  protected final Certificate [] getCertificateChain ()
   {
     return m_aCertificateChain;
   }
 
   @Nonnull
-  KeyPair getKeyPair ()
+  protected final KeyPair getKeyPair ()
   {
     return m_aKeyPair;
   }

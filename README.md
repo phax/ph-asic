@@ -4,8 +4,8 @@
 
 # News and Noteworthy
 
-* v1.2.0 - work in progress
-    * Changed SignatureHelper API to be more precise
+* v1.2.0 - 2018-07-10
+    * Changed SignatureHelper API to be more precise and to load keystores from different sources
 * v1.1.0 - 2018-06-20
     * Updated to ph-commons 9.1.2
 * v1.0.2 - 2018-06-13
@@ -40,7 +40,7 @@ This implementation is based on difi's v0.9.2
 <dependency>
 	<groupId>com.helger</groupId>
 	<artifactId>ph-asic</artifactId>
-	<version>1.1.0</version>
+	<version>1.2.0</version>
 </dependency>
 ```
 
