@@ -23,9 +23,9 @@ An ASiC file is simply a ZIP archive created according to some rules set forth i
 The benefits of using containers for message transfer are:
 * all files are kept together as a single collection.
 * very efficient with regards to space.
-* due to the compressed format, communication bandwith is utilized better
+* due to the compressed format, communication bandwidth is utilized better
 * message integrity is provided, using message digests and signatures.
-* confidentiality is provied by encryption using AES-256 in GCM mode
+* confidentiality is provided by encryption using AES-256 in GCM mode
 
 This component provides an easy-to-use factory for creating ASiC-E containers.
 
