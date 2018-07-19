@@ -22,7 +22,7 @@ import com.helger.security.keystore.EKeyStoreType;
 
 public final class SignatureHelperTest
 {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (SignatureHelperTest.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (SignatureHelperTest.class);
 
   @Test
   public void loadNoProblems ()
@@ -45,7 +45,7 @@ public final class SignatureHelperTest
     }
     catch (final IllegalStateException ex)
     {
-      s_aLogger.info ("Expected WrongKeyStorePassword: " + ex.getMessage ());
+      LOGGER.info ("Expected WrongKeyStorePassword: " + ex.getMessage ());
     }
   }
 
@@ -64,7 +64,7 @@ public final class SignatureHelperTest
     }
     catch (final IllegalStateException ex)
     {
-      s_aLogger.info ("Expected WrongKeyAlias: " + ex.getMessage ());
+      LOGGER.info ("Expected WrongKeyAlias: " + ex.getMessage ());
     }
   }
 
@@ -83,7 +83,7 @@ public final class SignatureHelperTest
     }
     catch (final IllegalStateException ex)
     {
-      s_aLogger.info ("Expected WrongKeyPassword: " + ex.getMessage ());
+      LOGGER.info ("Expected WrongKeyPassword: " + ex.getMessage ());
     }
   }
 }

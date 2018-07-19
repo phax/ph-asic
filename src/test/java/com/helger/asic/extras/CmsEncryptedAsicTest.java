@@ -42,7 +42,7 @@ import com.helger.commons.mime.CMimeType;
 
 public final class CmsEncryptedAsicTest
 {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (CmsEncryptedAsicTest.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (CmsEncryptedAsicTest.class);
 
   @Test
   public void simple () throws Exception
@@ -127,7 +127,7 @@ public final class CmsEncryptedAsicTest
       {
         fileOutputStream.write (byteArrayOutputStream.toByteArray ());
       }
-      s_aLogger.info ("Wrote sample ASiC to " + aSampleFile);
+      LOGGER.info ("Wrote sample ASiC to " + aSampleFile);
     }
   }
 
@@ -177,7 +177,7 @@ public final class CmsEncryptedAsicTest
       writer.sign (TestUtil.createSH ());
     }
 
-    s_aLogger.info ("Wrote sample ASiC to " + sample);
+    LOGGER.info ("Wrote sample ASiC to " + sample);
   }
 
 }
