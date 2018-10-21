@@ -23,9 +23,11 @@ import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.collection.impl.CommonsArrayList;
 import com.helger.commons.collection.impl.ICommonsList;
+import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.string.StringHelper;
 import com.helger.jaxb.builder.IJAXBDocumentType;
 import com.helger.jaxb.builder.JAXBDocumentType;
+import com.helger.xsds.xmldsig.CXMLDSig;
 
 /**
  * Enumeration with all available ASIC document types.
@@ -35,14 +37,17 @@ import com.helger.jaxb.builder.JAXBDocumentType;
 public enum EAsicDocumentType implements IJAXBDocumentType
 {
   ASIC_MANIFEST (ASiCManifestType.class,
-                 new CommonsArrayList <> ("/schemas/xmldsig-core-schema.xsd", "/schemas/ts_102918v010201.xsd")),
-  MANIFEST (Manifest.class, new CommonsArrayList <> ("/schemas/OpenDocument_manifest.xsd"));
+                 new CommonsArrayList <> (CXMLDSig.getXSDResource (),
+                                          new ClassPathResource ("/schemas/ts_102918v010201.xsd"))),
+  MANIFEST (Manifest.class, new CommonsArrayList <> (new ClassPathResource ("/schemas/OpenDocument_manifest.xsd")));
 
   private final JAXBDocumentType m_aDocType;
 
-  private EAsicDocumentType (@Nonnull final Class <?> aClass, @Nonnull final List <String> aXSDPath)
+  private EAsicDocumentType (@Nonnull final Class <?> aClass, @Nonnull final List <ClassPathResource> aXSDPath)
   {
-    m_aDocType = new JAXBDocumentType (aClass, aXSDPath, x -> StringHelper.trimEnd (x, "Type"));
+    m_aDocType = new JAXBDocumentType (aClass,
+                                       new CommonsArrayList <> (aXSDPath, ClassPathResource::getPath),
+                                       x -> StringHelper.trimEnd (x, "Type"));
   }
 
   @Nonnull
