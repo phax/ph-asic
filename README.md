@@ -4,7 +4,7 @@
 
 # News and Noteworthy
 
-* v1.2.1 - work in progress
+* v1.3.0 - work in progress
     * Requires at least ph-commons 9.2.0
 * v1.2.0 - 2018-07-10
     * Changed SignatureHelper API to be more precise and to load keystores from different sources
