@@ -11,7 +11,8 @@ gvGbj6116OiDLTy8No8hJneN0ZL8u7w5VYGnU2sgXaO6lzV4zSMWICSgINLa+uQZOZT24m99ca3ihw7D
 8YCDmvP/RRSb0BhGVYbJn1oIaQ7rrKtQOANG/JZ118uVJPn0u0Xv7ryeEmAYGUBVbaPVtHEffXol4PyACzgp7FprRMmz7e1kS76rMUN2/b7jY="
     
 install:
-  - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V -U -P jdeps
+#  - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V -U -P jdeps
+  - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V -U
   
 cache:
   directories:
