@@ -14,7 +14,6 @@ package com.helger.asic.jaxb;
 import java.util.List;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.xml.validation.Schema;
 
 import com.helger.asic.jaxb.cades.ASiCManifestType;
@@ -38,16 +37,21 @@ public enum EAsicDocumentType implements IJAXBDocumentType
 {
   ASIC_MANIFEST (ASiCManifestType.class,
                  new CommonsArrayList <> (CXMLDSig.getXSDResource (),
-                                          new ClassPathResource ("/schemas/ts_102918v010201.xsd"))),
-  MANIFEST (Manifest.class, new CommonsArrayList <> (new ClassPathResource ("/schemas/OpenDocument_manifest.xsd")));
+                                          new ClassPathResource ("/schemas/ts_102918v010201.xsd", _getCL ()))),
+  MANIFEST (Manifest.class,
+            new CommonsArrayList <> (new ClassPathResource ("/schemas/OpenDocument_manifest.xsd", _getCL ())));
+
+  @Nonnull
+  private static final ClassLoader _getCL ()
+  {
+    return EAsicDocumentType.class.getClassLoader ();
+  }
 
   private final JAXBDocumentType m_aDocType;
 
   private EAsicDocumentType (@Nonnull final Class <?> aClass, @Nonnull final List <ClassPathResource> aXSDPath)
   {
-    m_aDocType = new JAXBDocumentType (aClass,
-                                       new CommonsArrayList <> (aXSDPath, ClassPathResource::getPath),
-                                       x -> StringHelper.trimEnd (x, "Type"));
+    m_aDocType = new JAXBDocumentType (aClass, aXSDPath, x -> StringHelper.trimEnd (x, "Type"));
   }
 
   @Nonnull
@@ -59,9 +63,9 @@ public enum EAsicDocumentType implements IJAXBDocumentType
   @Nonnull
   @Nonempty
   @ReturnsMutableCopy
-  public ICommonsList <String> getAllXSDPaths ()
+  public ICommonsList <ClassPathResource> getAllXSDResources ()
   {
-    return m_aDocType.getAllXSDPaths ();
+    return m_aDocType.getAllXSDResources ();
   }
 
   @Nonnull
@@ -78,8 +82,8 @@ public enum EAsicDocumentType implements IJAXBDocumentType
   }
 
   @Nonnull
-  public Schema getSchema (@Nullable final ClassLoader aClassLoader)
+  public Schema getSchema ()
   {
-    return m_aDocType.getSchema (aClassLoader);
+    return m_aDocType.getSchema ();
   }
 }
