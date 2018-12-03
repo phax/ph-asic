@@ -16,13 +16,16 @@ import java.util.Arrays;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.NotThreadSafe;
 
 import com.helger.asic.jaxb.asic.AsicFile;
 import com.helger.asic.jaxb.asic.AsicManifest;
 import com.helger.asic.jaxb.asic.Certificate;
+import com.helger.commons.ValueEnforcer;
 import com.helger.commons.collection.impl.CommonsHashMap;
 import com.helger.commons.collection.impl.ICommonsMap;
 
+@NotThreadSafe
 public class ManifestVerifier implements Serializable
 {
   private final EMessageDigestAlgorithm m_eReferenceMD;
@@ -33,6 +36,12 @@ public class ManifestVerifier implements Serializable
   public ManifestVerifier (@Nullable final EMessageDigestAlgorithm eReferenceMD)
   {
     m_eReferenceMD = eReferenceMD;
+  }
+
+  @Nullable
+  public final EMessageDigestAlgorithm getReferenceMD ()
+  {
+    return m_eReferenceMD;
   }
 
   public void update (@Nonnull final String sFilename,
@@ -48,8 +57,10 @@ public class ManifestVerifier implements Serializable
                       @Nullable final String sDigestAlgorithm,
                       @Nullable final String sSigReference)
   {
-    if (m_eReferenceMD != null && sDigestAlgorithm != null && !sDigestAlgorithm.equals (m_eReferenceMD.getUri ()))
-      throw new IllegalStateException ("Wrong digest method for file " + sFilename + ": " + sDigestAlgorithm);
+    ValueEnforcer.isTrue (m_eReferenceMD == null ||
+                          sDigestAlgorithm == null ||
+                          sDigestAlgorithm.equals (m_eReferenceMD.getUri ()),
+                          () -> "Wrong digest method for file " + sFilename + ": '" + sDigestAlgorithm + "'");
 
     AsicFile aAsicFile = m_aAsicManifestMap.get (sFilename);
     if (aAsicFile == null)
@@ -74,20 +85,20 @@ public class ManifestVerifier implements Serializable
       aAsicFile.setMimetype (sMimeType);
     if (sSigReference != null)
       aAsicFile.getCertRef ().add (sSigReference);
-
   }
 
   public void addCertificate (@Nonnull final Certificate aCertificate)
   {
+    ValueEnforcer.notNull (aCertificate, "Certificate");
     m_aAsicManifest.addCertificate (aCertificate);
   }
 
-  public void setRootFilename (final String sFilename)
+  public void setRootFilename (@Nullable final String sFilename)
   {
     m_aAsicManifest.setRootfile (sFilename);
   }
 
-  public void verifyAllVerified () throws IllegalStateException
+  public void verifyAllVerified ()
   {
     for (final AsicFile aAsicFile : m_aAsicManifest.getFile ())
       if (!aAsicFile.isVerified ())
@@ -95,7 +106,7 @@ public class ManifestVerifier implements Serializable
   }
 
   @Nonnull
-  public AsicManifest getAsicManifest ()
+  public final AsicManifest getAsicManifest ()
   {
     return m_aAsicManifest;
   }

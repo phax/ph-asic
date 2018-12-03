@@ -43,7 +43,7 @@ public final class SignatureVerifier
   {}
 
   @Nonnull
-  public static Certificate validate (final byte [] aData, final byte [] aSignature)
+  public static Certificate validate (@Nonnull final byte [] aData, @Nonnull final byte [] aSignature)
   {
     Certificate ret = null;
 
@@ -52,14 +52,14 @@ public final class SignatureVerifier
       final CMSSignedData aCMSSignedData = new CMSSignedData (new CMSProcessableByteArray (aData), aSignature);
       final Store <X509CertificateHolder> aStore = aCMSSignedData.getCertificates ();
       final SignerInformationStore aSignerInformationStore = aCMSSignedData.getSignerInfos ();
-
       for (final SignerInformation aSignerInformation : aSignerInformationStore.getSigners ())
       {
         final X509CertificateHolder x509Certificate = (X509CertificateHolder) aStore.getMatches (aSignerInformation.getSID ())
                                                                                     .iterator ()
                                                                                     .next ();
         if (LOG.isDebugEnabled ())
-          LOG.debug (x509Certificate.getSubject ().toString ());
+          LOG.debug (x509Certificate == null ? "null for " + aSignerInformation.getSID ()
+                                             : x509Certificate.getSubject ().toString ());
 
         if (aSignerInformation.verify (s_aJcaSimpleSignerInfoVerifierBuilder.build (x509Certificate)))
         {
@@ -69,9 +69,9 @@ public final class SignatureVerifier
         }
       }
     }
-    catch (final Exception e)
+    catch (final Exception ex)
     {
-      LOG.warn ("Error in signature validation", e);
+      LOG.warn ("Error in signature validation", ex);
       ret = null;
     }
 

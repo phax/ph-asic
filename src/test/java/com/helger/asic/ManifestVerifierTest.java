@@ -36,9 +36,9 @@ public class ManifestVerifierTest
       manifestVerifier.update ("sha384", null, null, EMessageDigestAlgorithm.SHA384.getUri (), null);
       fail ("Exception expected");
     }
-    catch (final IllegalStateException e)
+    catch (final IllegalArgumentException ex)
     {
-      log.info (e.getMessage ());
+      log.info (ex.getMessage ());
     }
 
     try
@@ -47,9 +47,9 @@ public class ManifestVerifierTest
       manifestVerifier.update ("sha512", null, null, EMessageDigestAlgorithm.SHA512.getUri (), null);
       fail ("Exception expected");
     }
-    catch (final IllegalStateException e)
+    catch (final IllegalArgumentException ex)
     {
-      log.info (e.getMessage ());
+      log.info (ex.getMessage ());
     }
   }
 
@@ -75,9 +75,9 @@ public class ManifestVerifierTest
       manifestVerifier.update ("file", null, new byte [] { 'c', 'a', 'f', 'f' }, null, null);
       fail ("Exception expected.");
     }
-    catch (final IllegalStateException e)
+    catch (final IllegalStateException ex)
     {
-      log.info (e.getMessage ());
+      log.info (ex.getMessage ());
     }
 
     try
@@ -85,9 +85,9 @@ public class ManifestVerifierTest
       manifestVerifier.verifyAllVerified ();
       fail ("Exception expected.");
     }
-    catch (final IllegalStateException e)
+    catch (final IllegalStateException ex)
     {
-      log.info (e.getMessage ());
+      log.info (ex.getMessage ());
     }
   }
 }

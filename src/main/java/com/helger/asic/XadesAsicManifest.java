@@ -317,21 +317,26 @@ public class XadesAsicManifest extends AbstractAsicManifest
     {
       final Unmarshaller aUnmarshaller = s_aJaxbContext.createUnmarshaller ();
       aXadesSignatures = aUnmarshaller.unmarshal (new StreamSource (new NonBlockingStringReader (sRealXML)),
-                                         XAdESSignaturesType.class)
-                             .getValue ();
+                                                  XAdESSignaturesType.class)
+                                      .getValue ();
     }
-    catch (final Exception e)
+    catch (final Exception ex)
     {
-      throw new IllegalStateException ("Unable to read content as XML", e);
+      throw new IllegalStateException ("Unable to read content as XML", ex);
     }
 
     for (final SignatureType aSignature : aXadesSignatures.getSignature ())
     {
+      // SignedInfo is mandatory
       final SignedInfoType aSignedInfo = aSignature.getSignedInfo ();
       for (final ReferenceType aRef : aSignedInfo.getReference ())
       {
-        if (!aRef.getURI ().startsWith ("#"))
+        // URI is optional
+        if (aRef.getURI () != null && !aRef.getURI ().startsWith ("#"))
+        {
+          // DigestMethod is mandatory
           aMV.update (aRef.getURI (), null, aRef.getDigestValue (), aRef.getDigestMethod ().getAlgorithm (), null);
+        }
       }
     }
   }
