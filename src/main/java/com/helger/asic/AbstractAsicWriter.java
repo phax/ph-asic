@@ -70,6 +70,7 @@ public abstract class AbstractAsicWriter implements IAsicWriter
     m_aOasisManifest = new OasisManifest (AsicUtils.MIMETYPE_ASICE);
   }
 
+  @Nonnull
   public IAsicWriter add (@Nonnull final InputStream aIS,
                           @Nonnull final String sFilename,
                           @Nonnull final IMimeType aMimeType) throws IOException, IllegalStateException
@@ -87,11 +88,11 @@ public abstract class AbstractAsicWriter implements IAsicWriter
     m_aAsicOutputStream.putNextEntry (new ZipEntry (sFilename));
 
     // Prepare for calculation of message digest
-    final DigestOutputStream zipOutputStreamWithDigest = new DigestOutputStream (m_aAsicOutputStream,
-                                                                                 m_aAsicManifest.getNewMessageDigest ());
+    final DigestOutputStream aDigestOS = new DigestOutputStream (m_aAsicOutputStream,
+                                                                 m_aAsicManifest.getNewMessageDigest ());
 
     // Copy inputStream to zip output stream
-    AsicUtils.copyStream (aIS, zipOutputStreamWithDigest);
+    AsicUtils.copyStream (aIS, aDigestOS);
 
     // Closes the zip entry
     m_aAsicOutputStream.closeEntry ();
@@ -117,6 +118,7 @@ public abstract class AbstractAsicWriter implements IAsicWriter
    */
   protected abstract void performSign (@Nonnull SignatureHelper aSH) throws IOException;
 
+  @Nonnull
   public IAsicWriter sign (@Nonnull final SignatureHelper aSH) throws IOException
   {
     // You may only sign once

@@ -48,6 +48,8 @@ public final class AsicUtils
                                                                          Pattern.CASE_INSENSITIVE);
   public static final Pattern PATTERN_XADES_SIGNATURES = Pattern.compile ("META-INF/signatures(.*)\\.xml",
                                                                           Pattern.CASE_INSENSITIVE);
+  public static final Pattern PATTERN_OASIS_MANIFEST = Pattern.compile ("META-INF/manifest\\.xml",
+                                                                        Pattern.CASE_INSENSITIVE);
 
   public static final Pattern PATTERN_EXTENSION_ASICE = Pattern.compile (".+\\.(asice|sce)", Pattern.CASE_INSENSITIVE);
 
@@ -124,7 +126,7 @@ public final class AsicUtils
                 copyStream (aAIS, aAOS);
               }
               else
-                if (aZipEntry.getName ().equals ("META-INF/manifest.xml"))
+                if (PATTERN_OASIS_MANIFEST.matcher (aZipEntry.getName ()).matches ())
                 {
                   // Fetch content
                   final NonBlockingByteArrayOutputStream aBAOS = new NonBlockingByteArrayOutputStream ();

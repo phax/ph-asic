@@ -20,7 +20,6 @@ import java.security.DigestInputStream;
 import java.security.DigestOutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Locale;
 import java.util.zip.ZipEntry;
 
 import javax.annotation.Nonnull;
@@ -114,8 +113,6 @@ public abstract class AbstractAsicReader implements Closeable
   private void _handleMetadataEntry () throws IOException
   {
     final String sPathAndFilename = m_aCurrentZipEntry.getName ();
-    // Extracts everything after "META-INF/"
-    final String sFilename = sPathAndFilename.substring (PREFIX_META_INF.length ()).toLowerCase (Locale.US);
 
     // Read content in file
     try (final NonBlockingByteArrayOutputStream aBAOS = new NonBlockingByteArrayOutputStream ())
@@ -144,7 +141,7 @@ public abstract class AbstractAsicReader implements Closeable
             XadesAsicManifest.extractAndVerify (sContent, m_aManifestVerifier);
           }
           else
-            if (sFilename.equals ("manifest.xml"))
+            if (AsicUtils.PATTERN_OASIS_MANIFEST.matcher (sPathAndFilename).matches ())
             {
               // Read manifest.
               m_aManifest = AsicReader.oasisManifest ().read (aBAOS.getAsInputStream ());
