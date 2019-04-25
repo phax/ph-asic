@@ -113,17 +113,16 @@ public abstract class AbstractAsicReader implements Closeable
    */
   private void _handleMetadataEntry () throws IOException
   {
+    final String sPathAndFilename = m_aCurrentZipEntry.getName ();
     // Extracts everything after "META-INF/"
-    final String sFilename = m_aCurrentZipEntry.getName ()
-                                               .substring (PREFIX_META_INF.length ())
-                                               .toLowerCase (Locale.US);
+    final String sFilename = sPathAndFilename.substring (PREFIX_META_INF.length ()).toLowerCase (Locale.US);
 
     // Read content in file
     try (final NonBlockingByteArrayOutputStream aBAOS = new NonBlockingByteArrayOutputStream ())
     {
       AsicUtils.copyStream (m_aZipInputStream, aBAOS);
 
-      if (AsicUtils.PATTERN_CADES_MANIFEST.matcher (m_aCurrentZipEntry.getName ()).matches ())
+      if (AsicUtils.PATTERN_CADES_MANIFEST.matcher (sPathAndFilename).matches ())
       {
         // Handling manifest in ASiC CAdES.
         final byte [] aContent = aBAOS.toByteArray ();
@@ -132,13 +131,13 @@ public abstract class AbstractAsicReader implements Closeable
         _handleCadesSigning (sSigReference, aContent, false);
       }
       else
-        if (AsicUtils.PATTERN_CADES_SIGNATURE.matcher (m_aCurrentZipEntry.getName ()).matches ())
+        if (AsicUtils.PATTERN_CADES_SIGNATURE.matcher (sPathAndFilename).matches ())
         {
           // Handling signature in ASiC CAdES.
-          _handleCadesSigning (m_aCurrentZipEntry.getName (), aBAOS.toByteArray (), true);
+          _handleCadesSigning (sPathAndFilename, aBAOS.toByteArray (), true);
         }
         else
-          if (AsicUtils.PATTERN_XADES_SIGNATURES.matcher (m_aCurrentZipEntry.getName ()).matches ())
+          if (AsicUtils.PATTERN_XADES_SIGNATURES.matcher (sPathAndFilename).matches ())
           {
             // Handling manifest in ASiC XAdES.
             final String sContent = aBAOS.getAsString (StandardCharsets.ISO_8859_1);
@@ -152,9 +151,7 @@ public abstract class AbstractAsicReader implements Closeable
             }
             else
             {
-              throw new IllegalStateException ("Contains unknown metadata file: '" +
-                                               m_aCurrentZipEntry.getName () +
-                                               "'");
+              throw new IllegalStateException ("ASiC contains unknown metadata file '" + sPathAndFilename + "'");
             }
     }
   }
