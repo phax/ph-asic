@@ -20,10 +20,16 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.WillNotClose;
 
 import com.helger.asic.jaxb.asic.AsicManifest;
 
+/**
+ * Reader for ASiC arachives.
+ * 
+ * @author Philip Helger
+ */
 public interface IAsicReader extends Closeable
 {
   /**
@@ -59,9 +65,9 @@ public interface IAsicReader extends Closeable
    */
   default void writeFile (@Nonnull final Path aFile) throws IOException
   {
-    try (final OutputStream outputStream = Files.newOutputStream (aFile))
+    try (final OutputStream aOS = Files.newOutputStream (aFile))
     {
-      writeFile (outputStream);
+      writeFile (aOS);
     }
   }
 
@@ -84,5 +90,13 @@ public interface IAsicReader extends Closeable
    */
   InputStream inputStream () throws IOException;
 
+  /**
+   * Get the read Manifest. The return value of this method is only present,
+   * after the manifest ZIP entry was read, so the safest way to access this
+   * method is after iterating the ASiC entries.
+   *
+   * @return The ASIC manifest. May be <code>null</code>.
+   */
+  @Nullable
   AsicManifest getAsicManifest ();
 }

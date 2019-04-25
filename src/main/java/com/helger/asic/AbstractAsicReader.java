@@ -48,6 +48,7 @@ import com.helger.commons.io.stream.StreamHelper;
  */
 public abstract class AbstractAsicReader implements Closeable
 {
+  private static final String PREFIX_META_INF = "META-INF/";
   private static final Logger LOG = LoggerFactory.getLogger (AbstractAsicReader.class);
 
   private MessageDigest m_aMD;
@@ -113,7 +114,9 @@ public abstract class AbstractAsicReader implements Closeable
   private void _handleMetadataEntry () throws IOException
   {
     // Extracts everything after "META-INF/"
-    final String sFilename = m_aCurrentZipEntry.getName ().substring (9).toLowerCase (Locale.US);
+    final String sFilename = m_aCurrentZipEntry.getName ()
+                                               .substring (PREFIX_META_INF.length ())
+                                               .toLowerCase (Locale.US);
 
     // Read content in file
     try (final NonBlockingByteArrayOutputStream aBAOS = new NonBlockingByteArrayOutputStream ())
@@ -178,7 +181,7 @@ public abstract class AbstractAsicReader implements Closeable
         LOG.debug ("Found file: " + m_aCurrentZipEntry.getName ());
 
       // Files used for validation are not exposed
-      if (m_aCurrentZipEntry.getName ().startsWith ("META-INF/"))
+      if (m_aCurrentZipEntry.getName ().startsWith (PREFIX_META_INF))
       {
         _handleMetadataEntry ();
       }
