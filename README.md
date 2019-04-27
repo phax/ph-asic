@@ -46,6 +46,10 @@ This implementation is based on difi's v0.9.2
 </dependency>
 ```
 
+## Gradle considerations
+
+This project relies on JDK version based Maven profile activation.
+See https://github.com/phax/ph-jaxb-pom#gradle-usage for help on this specific issue. 
 
 ## What does it look like?
 
