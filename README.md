@@ -4,7 +4,7 @@
 
 # News and Noteworthy
 
-* v1.3.1 - 2019-05-97
+* v1.3.1 - 2019-05-07
     * Updated to Java 12
 * v1.3.0 - 2018-11-22
     * Updated to ph-commons 9.2.0
