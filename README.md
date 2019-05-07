@@ -4,6 +4,8 @@
 
 # News and Noteworthy
 
+* v1.3.1 - 2019-05-97
+    * Updated to Java 12
 * v1.3.0 - 2018-11-22
     * Updated to ph-commons 9.2.0
 * v1.2.0 - 2018-07-10
@@ -42,7 +44,7 @@ This implementation is based on difi's v0.9.2
 <dependency>
 	<groupId>com.helger</groupId>
 	<artifactId>ph-asic</artifactId>
-	<version>1.3.0</version>
+	<version>1.3.1</version>
 </dependency>
 ```
 
@@ -140,15 +142,15 @@ paste the SHA-256 values computed in the previous step. The file should look som
 ```xml
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <ASiCManifest xmlns="http://uri.etsi.org/02918/v1.2.1#" xmlns:ns2="http://www.w3.org/2000/09/xmldsig#">
-    <SigReference URI="META-INF/signature.p7s" MimeType="application/x-pkcs7-signature"/>
-    <DataObjectReference URI="bii-trns081.xml" MimeType="application/xml">
-        <ns2:DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"/>
-        <ns2:DigestValue>morANIlh3TGxMUsJWKfICly7YXoduG7LCohAKc2Sip8=</ns2:DigestValue>
-    </DataObjectReference>
-    <DataObjectReference URI="bii-envelope.xml" MimeType="application/xml">
-        <ns2:DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"/>
-        <ns2:DigestValue>IZ9yiwKHsTWMcyFebi7csqOOIHohy2gPd02VSfbyUCI=</ns2:DigestValue>
-    </DataObjectReference>
+  <SigReference URI="META-INF/signature.p7s" MimeType="application/x-pkcs7-signature"/>
+  <DataObjectReference URI="bii-trns081.xml" MimeType="application/xml">
+    <ns2:DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"/>
+    <ns2:DigestValue>morANIlh3TGxMUsJWKfICly7YXoduG7LCohAKc2Sip8=</ns2:DigestValue>
+  </DataObjectReference>
+  <DataObjectReference URI="bii-envelope.xml" MimeType="application/xml">
+    <ns2:DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"/>
+    <ns2:DigestValue>IZ9yiwKHsTWMcyFebi7csqOOIHohy2gPd02VSfbyUCI=</ns2:DigestValue>
+  </DataObjectReference>
 </ASiCManifest>
 ```
 1. Create the signature, which should be placed into `signature.p7s`. The file `comodo.pem` should
