@@ -11,6 +11,8 @@
  */
 package com.helger.asic;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateEncodingException;
 
@@ -216,22 +218,25 @@ public class XadesAsicManifest extends AbstractAsicManifest
     {
       // \XAdESSignature\Signature\Object\QualifyingProperties\SignedProperties\SignedSignatureProperties\SigningCertificate\Cert\CertDigest
       final DigestAlgAndValueType aCertDigest = new DigestAlgAndValueType ();
-      aCertDigest.setDigestValue (com.helger.security.messagedigest.EMessageDigestAlgorithm.SHA_1.createMessageDigest ()
-                                                                                                 .digest (aSH.getX509Certificate ()
-                                                                                                             .getEncoded ()));
+      final MessageDigest aMD = MessageDigest.getInstance (getMessageDigestAlgorithm ().getMessageDigestAlgorithm ());
+      aCertDigest.setDigestValue (aMD.digest (aSH.getX509Certificate ().getEncoded ()));
       aCertID.setCertDigest (aCertDigest);
 
       // \XAdESSignature\Signature\Object\QualifyingProperties\SignedProperties\SignedSignatureProperties\SigningCertificate\Cert\CertDigest\DigestMethod
       final DigestMethodType aDigestMethod = new DigestMethodType ();
-      if (true)
-        aDigestMethod.setAlgorithm (getMessageDigestAlgorithm ().getUri ());
-      else
-        aDigestMethod.setAlgorithm ("http://www.w3.org/2000/09/xmldsig#sha1");
+      aDigestMethod.setAlgorithm (getMessageDigestAlgorithm ().getUri ());
       aCertDigest.setDigestMethod (aDigestMethod);
     }
     catch (final CertificateEncodingException e)
     {
       throw new IllegalStateException ("Unable to encode certificate.", e);
+    }
+    catch (final NoSuchAlgorithmException ex)
+    {
+      throw new IllegalStateException ("Message Digest Algorithm '" +
+                                       getMessageDigestAlgorithm ().getMessageDigestAlgorithm () +
+                                       "' is not supported",
+                                       ex);
     }
 
     // \XAdESSignature\Signature\Object\QualifyingProperties\SignedProperties\SignedSignatureProperties\SigningCertificate\Cert\IssuerSerial
