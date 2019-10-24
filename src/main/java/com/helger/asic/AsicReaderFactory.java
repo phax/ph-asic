@@ -28,12 +28,6 @@ public class AsicReaderFactory
   }
 
   @Nonnull
-  public static AsicReaderFactory newFactory (@Nonnull final ESignatureMethod eSM)
-  {
-    return newFactory (eSM.getMessageDigestAlgorithm ());
-  }
-
-  @Nonnull
   static AsicReaderFactory newFactory (final EMessageDigestAlgorithm eMD)
   {
     return new AsicReaderFactory (eMD);

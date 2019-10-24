@@ -101,12 +101,12 @@ public class CadesAsicManifest extends AbstractAsicManifest
   {
     // Updating namespaces for compatibility with previous releases and other
     // implementations
-    String xml = sXml.replace ("http://uri.etsi.org/02918/v1.1.1#", "http://uri.etsi.org/02918/v1.2.1#");
-    xml = xml.replace ("http://uri.etsi.org/2918/v1.2.1#", "http://uri.etsi.org/02918/v1.2.1#");
-    xml = xml.replaceAll ("http://www.w3.org/2000/09/xmldsig#sha", "http://www.w3.org/2001/04/xmlenc#sha");
+    String sRealXML = sXml.replace ("http://uri.etsi.org/02918/v1.1.1#", "http://uri.etsi.org/02918/v1.2.1#");
+    sRealXML = sRealXML.replace ("http://uri.etsi.org/2918/v1.2.1#", "http://uri.etsi.org/02918/v1.2.1#");
+    sRealXML = sRealXML.replace ("http://www.w3.org/2000/09/xmldsig#sha", "http://www.w3.org/2001/04/xmlenc#sha");
 
     // Read XML
-    final ASiCManifestType aManifest = AsicReader.asicManifest ().read (xml);
+    final ASiCManifestType aManifest = AsicReader.asicManifest ().read (sRealXML);
     if (aManifest == null)
       throw new IllegalStateException ("Unable to read content as XML");
 

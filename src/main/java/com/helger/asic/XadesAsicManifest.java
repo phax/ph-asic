@@ -20,14 +20,13 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.transform.stream.StreamSource;
 
 import com.helger.asic.jaxb.cades.XAdESSignaturesType;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
-import com.helger.commons.io.stream.NonBlockingStringReader;
 import com.helger.commons.mime.IMimeType;
 import com.helger.datetime.util.PDTXMLConverter;
 import com.helger.jaxb.JAXBContextCache;
+import com.helger.xml.transform.TransformSourceFactory;
 import com.helger.xsds.xades132.CertIDListType;
 import com.helger.xsds.xades132.CertIDType;
 import com.helger.xsds.xades132.DataObjectFormatType;
@@ -224,7 +223,10 @@ public class XadesAsicManifest extends AbstractAsicManifest
 
       // \XAdESSignature\Signature\Object\QualifyingProperties\SignedProperties\SignedSignatureProperties\SigningCertificate\Cert\CertDigest\DigestMethod
       final DigestMethodType aDigestMethod = new DigestMethodType ();
-      aDigestMethod.setAlgorithm ("http://www.w3.org/2000/09/xmldsig#sha1");
+      if (true)
+        aDigestMethod.setAlgorithm (getMessageDigestAlgorithm ().getUri ());
+      else
+        aDigestMethod.setAlgorithm ("http://www.w3.org/2000/09/xmldsig#sha1");
       aCertDigest.setDigestMethod (aDigestMethod);
     }
     catch (final CertificateEncodingException e)
@@ -282,24 +284,31 @@ public class XadesAsicManifest extends AbstractAsicManifest
     // TODO Generate signature
     // http://stackoverflow.com/questions/30596933/xades-bes-detached-signedproperties-reference-wrong-digestvalue-java
 
-    /*
-     * DigestMethod dm = fac.newDigestMethod(DigestMethod.SHA1, null);
-     * CanonicalizationMethod cn =
-     * fac.newCanonicalizationMethod(CanonicalizationMethod.
-     * INCLUSIVE_WITH_COMMENTS,(C14NMethodParameterSpec) null); List<Reference>
-     * refs = new ArrayList<Reference>(); Reference ref1 =
-     * fac.newReference(pathName,
-     * dm,null,null,signedRefID,messageDigest2.digest(datax)); refs.add(ref1);
-     * Canonicalizer cn14 =
-     * Canonicalizer.getInstance(Canonicalizer.ALGO_ID_C14N11_OMIT_COMMENTS);
-     * byte[] canon; canon = cn14.canonicalizeSubtree(SPElement); Reference ref2
-     * = fac.newReference("#"+signedPropID,dm, null , sigProp ,
-     * signedPropRefID,messageDigest2.digest(canon)); refs.add(ref2);
-     * SignatureMethod sm = fac.newSignatureMethod(SignatureMethod.RSA_SHA1,
-     * null); SignedInfo si = fac.newSignedInfo(cn, sm, refs); XMLSignature
-     * signature = fac.newXMLSignature(si, ki,objects,signatureID,null);
-     * signature.sign(dsc);
-     */
+    // final DigestMethod dm = fac.newDigestMethod (DigestMethod.SHA1, null);
+    // final CanonicalizationMethod cn = fac.newCanonicalizationMethod
+    // (CanonicalizationMethod.INCLUSIVE_WITH_COMMENTS,
+    // (C14NMethodParameterSpec) null);
+    // final List <Reference> refs = new ArrayList <> ();
+    // final Reference ref1 = fac.newReference (pathName, dm, null, null,
+    // signedRefID, messageDigest2.digest (datax));
+    // refs.add (ref1);
+    // final Canonicalizer cn14 = Canonicalizer.getInstance
+    // (Canonicalizer.ALGO_ID_C14N11_OMIT_COMMENTS);
+    // byte [] canon;
+    // canon = cn14.canonicalizeSubtree (SPElement);
+    // final Reference ref2 = fac.newReference ("#" + signedPropID,
+    // dm,
+    // null,
+    // sigProp,
+    // signedPropRefID,
+    // messageDigest2.digest (canon));
+    // refs.add (ref2);
+    // final SignatureMethod sm = fac.newSignatureMethod
+    // (SignatureMethod.RSA_SHA1, null);
+    // final SignedInfo si = fac.newSignedInfo (cn, sm, refs);
+    // final XMLSignature signature = fac.newXMLSignature (si, ki, objects,
+    // signatureID, null);
+    // signature.sign (dsc);
 
     return new SignatureValueType ();
   }
@@ -309,15 +318,14 @@ public class XadesAsicManifest extends AbstractAsicManifest
     // Updating namespace
     String sRealXML = sXml.replace ("http://uri.etsi.org/02918/v1.1.1#", "http://uri.etsi.org/02918/v1.2.1#");
     sRealXML = sRealXML.replace ("http://uri.etsi.org/2918/v1.2.1#", "http://uri.etsi.org/02918/v1.2.1#");
-    sRealXML = sRealXML.replaceAll ("http://www.w3.org/2000/09/xmldsig#sha", "http://www.w3.org/2001/04/xmlenc#sha");
+    sRealXML = sRealXML.replace ("http://www.w3.org/2000/09/xmldsig#sha", "http://www.w3.org/2001/04/xmlenc#sha");
 
     XAdESSignaturesType aXadesSignatures;
 
     try
     {
       final Unmarshaller aUnmarshaller = s_aJaxbContext.createUnmarshaller ();
-      aXadesSignatures = aUnmarshaller.unmarshal (new StreamSource (new NonBlockingStringReader (sRealXML)),
-                                                  XAdESSignaturesType.class)
+      aXadesSignatures = aUnmarshaller.unmarshal (TransformSourceFactory.create (sRealXML), XAdESSignaturesType.class)
                                       .getValue ();
     }
     catch (final Exception ex)

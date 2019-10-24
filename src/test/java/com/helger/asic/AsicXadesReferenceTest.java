@@ -24,14 +24,15 @@ import com.helger.commons.io.resource.ClassPathResource;
 
 public final class AsicXadesReferenceTest
 {
-  private final AsicVerifierFactory m_aAsicVerifierFactory = AsicVerifierFactory.newFactory (ESignatureMethod.XAdES);
+  private final AsicVerifierFactory m_aAsicVerifierFactory = AsicVerifierFactory.newFactory (EMessageDigestAlgorithm.DEFAULT);
 
   // Fetched from
   // http://begrep.difi.no/SikkerDigitalPost/1.2.0/eksempler/post.asice.zip
   @Test
   public void validSdp () throws IOException
   {
-    try (final AsicVerifier asicVerifier = m_aAsicVerifierFactory.verify (ClassPathResource.getInputStream ("/asic/asic-xades-external-sdp.asice")))
+    try (
+        final AsicVerifier asicVerifier = m_aAsicVerifierFactory.verify (ClassPathResource.getInputStream ("/asic/asic-xades-external-sdp.asice")))
     {
       assertEquals (asicVerifier.getAsicManifest ().getFile ().size (), 6);
     }
@@ -42,7 +43,8 @@ public final class AsicXadesReferenceTest
   @Test
   public void validDigidoc4j () throws IOException
   {
-    try (final AsicVerifier asicVerifier = m_aAsicVerifierFactory.verify (ClassPathResource.getInputStream ("/asic/asic-xades-external-digidoc4j.asice")))
+    try (
+        final AsicVerifier asicVerifier = m_aAsicVerifierFactory.verify (ClassPathResource.getInputStream ("/asic/asic-xades-external-digidoc4j.asice")))
     {
       assertEquals (asicVerifier.getAsicManifest ().getFile ().size (), 2);
       assertNotNull (asicVerifier.getOasisManifest ());
@@ -54,7 +56,8 @@ public final class AsicXadesReferenceTest
   @Test
   public void validDss () throws IOException
   {
-    try (final AsicVerifier asicVerifier = m_aAsicVerifierFactory.verify (ClassPathResource.getInputStream ("/asic/asic-xades-external-dss.asice")))
+    try (
+        final AsicVerifier asicVerifier = m_aAsicVerifierFactory.verify (ClassPathResource.getInputStream ("/asic/asic-xades-external-dss.asice")))
     {
       assertEquals (asicVerifier.getAsicManifest ().getFile ().size (), 1);
       assertNotNull (asicVerifier.getOasisManifest ());

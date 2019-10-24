@@ -31,38 +31,28 @@ public class AsicWriterFactory
 {
   private static final Logger LOG = LoggerFactory.getLogger (AsicWriterFactory.class);
 
-  /**
-   * Creates an AsicWriterFactory, which utilises the default signature method,
-   * which is currently CAdES.
-   *
-   * @return instantiated AsicWriterFactory
-   */
-  @Nonnull
-  public static AsicWriterFactory newFactory ()
-  {
-    return newFactory (ESignatureMethod.CAdES);
-  }
-
-  /**
-   * Creates an AsicWriterFactory using the supplied signature method.
-   *
-   * @param signatureMethod
-   *        the signature method to be used.
-   * @return instantiated AsicWriterFactory
-   * @see ESignatureMethod
-   */
-  @Nonnull
-  public static AsicWriterFactory newFactory (@Nonnull final ESignatureMethod signatureMethod)
-  {
-    return new AsicWriterFactory (signatureMethod);
-  }
-
   private final ESignatureMethod m_eSM;
+  private EMessageDigestAlgorithm m_eMDAlgo;
 
   protected AsicWriterFactory (@Nonnull final ESignatureMethod eSM)
   {
     ValueEnforcer.notNull (eSM, "SM");
     m_eSM = eSM;
+    m_eMDAlgo = EMessageDigestAlgorithm.DEFAULT;
+  }
+
+  @Nonnull
+  public final EMessageDigestAlgorithm getMDAlgo ()
+  {
+    return m_eMDAlgo;
+  }
+
+  @Nonnull
+  public final AsicWriterFactory setMDAlgo (@Nonnull final EMessageDigestAlgorithm eMDAlgo)
+  {
+    ValueEnforcer.notNull (eMDAlgo, "MDAlgo");
+    m_eMDAlgo = eMDAlgo;
+    return this;
   }
 
   /**
@@ -126,17 +116,30 @@ public class AsicWriterFactory
   }
 
   @Nonnull
-  public IAsicWriter newContainer (@Nonnull final OutputStream aOS,
-                                   final boolean bCloseStreamOnSign) throws IOException
+  public IAsicWriter newContainer (@Nonnull final OutputStream aOS, final boolean bCloseStreamOnSign) throws IOException
   {
     switch (m_eSM)
     {
       case CAdES:
-        return new CadesAsicWriter (m_eSM, aOS, bCloseStreamOnSign);
+        return new CadesAsicWriter (aOS, bCloseStreamOnSign, m_eMDAlgo);
       case XAdES:
-        return new XadesAsicWriter (m_eSM, aOS, bCloseStreamOnSign);
+        return new XadesAsicWriter (aOS, bCloseStreamOnSign, m_eMDAlgo);
       default:
         throw new IllegalStateException ("Not implemented: " + m_eSM);
     }
+  }
+
+  /**
+   * Creates an AsicWriterFactory using the supplied signature method.
+   *
+   * @param signatureMethod
+   *        the signature method to be used.
+   * @return instantiated AsicWriterFactory
+   * @see ESignatureMethod
+   */
+  @Nonnull
+  public static AsicWriterFactory newFactory (@Nonnull final ESignatureMethod signatureMethod)
+  {
+    return new AsicWriterFactory (signatureMethod);
   }
 }

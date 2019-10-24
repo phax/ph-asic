@@ -74,12 +74,12 @@ public abstract class AbstractAsicReader implements Closeable
 
     try
     {
-      m_aMD = MessageDigest.getInstance (eMDAlgo.getAlgorithm ());
+      m_aMD = MessageDigest.getInstance (eMDAlgo.getMessageDigestAlgorithm ());
       m_aMD.reset ();
     }
     catch (final NoSuchAlgorithmException ex)
     {
-      throw new IllegalStateException ("Message Digest Algorithm '" + eMDAlgo.getAlgorithm () + "' is not supported",
+      throw new IllegalStateException ("Message Digest Algorithm '" + eMDAlgo.getMessageDigestAlgorithm () + "' is not supported",
                                        ex);
     }
 

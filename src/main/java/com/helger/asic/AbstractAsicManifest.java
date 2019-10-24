@@ -32,12 +32,12 @@ public abstract class AbstractAsicManifest
     // Create message digest
     try
     {
-      m_aMD = MessageDigest.getInstance (eMDAlgo.getAlgorithm ());
+      m_aMD = MessageDigest.getInstance (eMDAlgo.getMessageDigestAlgorithm ());
       m_aMD.reset ();
     }
-    catch (final NoSuchAlgorithmException e)
+    catch (final NoSuchAlgorithmException ex)
     {
-      throw new IllegalStateException ("Algorithm " + eMDAlgo.getAlgorithm () + " not supported", e);
+      throw new IllegalStateException ("Algorithm " + eMDAlgo.getMessageDigestAlgorithm () + " not supported", ex);
     }
   }
 

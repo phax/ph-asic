@@ -63,36 +63,39 @@ public final class AsicCadesWriterTest
     m_aMessageFile = ClassPathResource.getAsFile (BII_MESSAGE_XML);
     assertNotNull (m_aMessageFile);
 
-    m_aWriterFactory = AsicWriterFactory.newFactory ();
+    m_aWriterFactory = AsicWriterFactory.newFactory (ESignatureMethod.CAdES);
     m_aVerifierFactory = AsicVerifierFactory.newFactory ();
   }
 
   @Test
   public void createSampleEmptyContainer () throws Exception
   {
-    final File aDestFile = new File (System.getProperty ("java.io.tmpdir"), "asic-empty-sample-cades.zip");
-
-    // A container MUST contain any entry
-    m_aWriterFactory.newContainer (aDestFile).add (m_aMessageFile).sign (TestUtil.createSH ());
-
-    assertTrue (aDestFile + " can not be read", aDestFile.exists () && aDestFile.isFile () && aDestFile.canRead ());
-    try (final FileInputStream fileInputStream = new FileInputStream (aDestFile);
-        final NonBlockingBufferedInputStream is = new NonBlockingBufferedInputStream (fileInputStream))
+    for (final EMessageDigestAlgorithm e : EMessageDigestAlgorithm.values ())
     {
-      final byte [] buffer = new byte [BYTES_TO_CHECK];
-      final int read = is.read (buffer, 0, BYTES_TO_CHECK);
-      assertEquals (read, BYTES_TO_CHECK);
+      final File aDestFile = new File (System.getProperty ("java.io.tmpdir"), "asic-empty-sample-cades.zip");
 
-      assertEquals ("Byte 28 should be 0", buffer[28], (byte) 0);
+      // A container MUST contain any entry
+      m_aWriterFactory.setMDAlgo (e).newContainer (aDestFile).add (m_aMessageFile).sign (TestUtil.createSH ());
 
-      assertEquals ("'mimetype' file should not be compressed", buffer[8], 0);
+      assertTrue (aDestFile + " can not be read", aDestFile.exists () && aDestFile.isFile () && aDestFile.canRead ());
+      try (final FileInputStream fileInputStream = new FileInputStream (aDestFile);
+          final NonBlockingBufferedInputStream is = new NonBlockingBufferedInputStream (fileInputStream))
+      {
+        final byte [] buffer = new byte [BYTES_TO_CHECK];
+        final int read = is.read (buffer, 0, BYTES_TO_CHECK);
+        assertEquals (read, BYTES_TO_CHECK);
 
-      assertTrue ("First 4 octets should read 0x50 0x4B 0x03 0x04",
-                  buffer[0] == 0x50 && buffer[1] == 0x4B && buffer[2] == 0x03 && buffer[3] == 0x04);
-    }
-    finally
-    {
-      aDestFile.delete ();
+        assertEquals ("Byte 28 should be 0", buffer[28], (byte) 0);
+
+        assertEquals ("'mimetype' file should not be compressed", buffer[8], 0);
+
+        assertTrue ("First 4 octets should read 0x50 0x4B 0x03 0x04",
+                    buffer[0] == 0x50 && buffer[1] == 0x4B && buffer[2] == 0x03 && buffer[3] == 0x04);
+      }
+      finally
+      {
+        aDestFile.delete ();
+      }
     }
   }
 

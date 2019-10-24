@@ -18,11 +18,11 @@ import javax.annotation.Nonnull;
 
 public class XadesAsicWriter extends AbstractAsicWriter
 {
-  public XadesAsicWriter (@Nonnull final ESignatureMethod eSM,
-                          @Nonnull final OutputStream aOS,
-                          final boolean bCloseStreamOnSign) throws IOException
+  public XadesAsicWriter (@Nonnull final OutputStream aOS,
+                          final boolean bCloseStreamOnSign,
+                          @Nonnull final EMessageDigestAlgorithm eMDAlgo) throws IOException
   {
-    super (aOS, bCloseStreamOnSign, new XadesAsicManifest (eSM.getMessageDigestAlgorithm ()));
+    super (aOS, bCloseStreamOnSign, new XadesAsicManifest (eMDAlgo));
   }
 
   @Override

@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 
 import com.helger.asic.AsicReaderFactory;
 import com.helger.asic.AsicWriterFactory;
+import com.helger.asic.ESignatureMethod;
 import com.helger.asic.IAsicReader;
 import com.helger.asic.IAsicWriter;
 import com.helger.asic.TestUtil;
@@ -58,7 +59,8 @@ public final class CmsEncryptedAsicTest
     {
 
       // Create a new ASiC archive
-      final IAsicWriter asicWriter = AsicWriterFactory.newFactory ().newContainer (byteArrayOutputStream);
+      final IAsicWriter asicWriter = AsicWriterFactory.newFactory (ESignatureMethod.CAdES)
+                                                      .newContainer (byteArrayOutputStream);
       // Encapsulate ASiC archive to enable writing encrypted content
       final CmsEncryptedAsicWriter writer = new CmsEncryptedAsicWriter (asicWriter,
                                                                         certificate,
@@ -155,7 +157,8 @@ public final class CmsEncryptedAsicTest
     try (final FileOutputStream fileOutputStream = new FileOutputStream (sample))
     {
       // Create a new ASiC archive
-      final IAsicWriter asicWriter = AsicWriterFactory.newFactory ().newContainer (fileOutputStream);
+      final IAsicWriter asicWriter = AsicWriterFactory.newFactory (ESignatureMethod.CAdES)
+                                                      .newContainer (fileOutputStream);
       // Encapsulate ASiC archive to enable writing encrypted content
       final CmsEncryptedAsicWriter writer = new CmsEncryptedAsicWriter (asicWriter, certificate);
 

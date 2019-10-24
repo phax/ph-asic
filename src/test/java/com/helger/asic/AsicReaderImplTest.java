@@ -25,20 +25,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.commons.io.resource.ClassPathResource;
-import com.helger.commons.io.stream.NonBlockingByteArrayInputStream;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
+import com.helger.commons.io.stream.StringInputStream;
 import com.helger.commons.mime.CMimeType;
 
 public class AsicReaderImplTest
 {
   private static final Logger log = LoggerFactory.getLogger (AsicReaderImplTest.class);
 
-  private final AsicReaderFactory asicReaderFactory = AsicReaderFactory.newFactory ();
-  private final AsicWriterFactory asicWriterFactory = AsicWriterFactory.newFactory ();
-  private static final SignatureHelper signatureHelper = TestUtil.createSH ();
+  private final AsicReaderFactory m_aAsicReaderFactory = AsicReaderFactory.newFactory ();
+  private final AsicWriterFactory m_aAsicWriterFactory = AsicWriterFactory.newFactory (ESignatureMethod.CAdES);
+  private static final SignatureHelper m_aSignatureHelper = TestUtil.createSH ();
 
-  private static final String fileContent1 = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam arcu eros, fermentum vel molestie ut, sagittis vel velit.";
-  private static final String fileContent2 = "Fusce eu risus ipsum. Sed mattis laoreet justo. Fusce nisi magna, posuere ac placerat tincidunt, dignissim non lacus.";
+  private static final String FILE_CONTENT_1 = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam arcu eros, fermentum vel molestie ut, sagittis vel velit.";
+  private static final String FILE_CONTENT_2 = "Fusce eu risus ipsum. Sed mattis laoreet justo. Fusce nisi magna, posuere ac placerat tincidunt, dignissim non lacus.";
 
   @Test
   public void writeAndReadSimpleContainer () throws IOException
@@ -46,17 +46,17 @@ public class AsicReaderImplTest
     // Step 1 - creates the ASiC archive
     final NonBlockingByteArrayOutputStream containerOutput = new NonBlockingByteArrayOutputStream ();
 
-    asicWriterFactory.newContainer (containerOutput)
-                     .add (new NonBlockingByteArrayInputStream (fileContent1.getBytes (StandardCharsets.ISO_8859_1)),
-                           "content1.txt",
-                           CMimeType.TEXT_PLAIN)
-                     .add (new NonBlockingByteArrayInputStream (fileContent2.getBytes (StandardCharsets.ISO_8859_1)),
-                           "content2.txt",
-                           CMimeType.TEXT_PLAIN)
-                     .sign (signatureHelper);
+    m_aAsicWriterFactory.newContainer (containerOutput)
+                        .add (new StringInputStream (FILE_CONTENT_1, StandardCharsets.ISO_8859_1),
+                              "content1.txt",
+                              CMimeType.TEXT_PLAIN)
+                        .add (new StringInputStream (FILE_CONTENT_2, StandardCharsets.ISO_8859_1),
+                              "content2.txt",
+                              CMimeType.TEXT_PLAIN)
+                        .sign (m_aSignatureHelper);
 
     // Step 2 - reads the contents of the ASiC archive
-    try (final IAsicReader asicReader = asicReaderFactory.open (containerOutput.getAsInputStream ()))
+    try (final IAsicReader asicReader = m_aAsicReaderFactory.open (containerOutput.getAsInputStream ()))
     {
       NonBlockingByteArrayOutputStream fileStream;
       {
@@ -64,7 +64,7 @@ public class AsicReaderImplTest
 
         fileStream = new NonBlockingByteArrayOutputStream ();
         asicReader.writeFile (fileStream);
-        assertEquals (fileContent1, fileStream.getAsString (StandardCharsets.ISO_8859_1));
+        assertEquals (FILE_CONTENT_1, fileStream.getAsString (StandardCharsets.ISO_8859_1));
       }
 
       {
@@ -72,7 +72,7 @@ public class AsicReaderImplTest
 
         fileStream = new NonBlockingByteArrayOutputStream ();
         asicReader.writeFile (fileStream);
-        assertEquals (fileContent2, fileStream.getAsString (StandardCharsets.ISO_8859_1));
+        assertEquals (FILE_CONTENT_2, fileStream.getAsString (StandardCharsets.ISO_8859_1));
       }
 
       assertNull (asicReader.getNextFile ());
@@ -110,16 +110,16 @@ public class AsicReaderImplTest
 
     final File file = new File (tmpDir, "asic-reader-sample.ip");
 
-    asicWriterFactory.newContainer (file)
-                     .add (new NonBlockingByteArrayInputStream (fileContent1.getBytes (StandardCharsets.ISO_8859_1)),
-                           "content1.txt",
-                           CMimeType.TEXT_PLAIN)
-                     .add (new NonBlockingByteArrayInputStream (fileContent2.getBytes (StandardCharsets.ISO_8859_1)),
-                           "content2.txt",
-                           CMimeType.TEXT_PLAIN)
-                     .sign (signatureHelper);
+    m_aAsicWriterFactory.newContainer (file)
+                        .add (new StringInputStream (FILE_CONTENT_1, StandardCharsets.ISO_8859_1),
+                              "content1.txt",
+                              CMimeType.TEXT_PLAIN)
+                        .add (new StringInputStream (FILE_CONTENT_2, StandardCharsets.ISO_8859_1),
+                              "content2.txt",
+                              CMimeType.TEXT_PLAIN)
+                        .sign (m_aSignatureHelper);
 
-    try (final IAsicReader asicReader = asicReaderFactory.open (file))
+    try (final IAsicReader asicReader = m_aAsicReaderFactory.open (file))
     {
       File contentFile;
       String filename;
@@ -133,7 +133,7 @@ public class AsicReaderImplTest
 
         fileStream = new NonBlockingByteArrayOutputStream ();
         AsicUtils.copyStream (Files.newInputStream (contentFile.toPath ()), fileStream);
-        assertEquals (fileContent1, fileStream.getAsString (StandardCharsets.ISO_8859_1));
+        assertEquals (FILE_CONTENT_1, fileStream.getAsString (StandardCharsets.ISO_8859_1));
 
         Files.delete (contentFile.toPath ());
       }
@@ -147,7 +147,7 @@ public class AsicReaderImplTest
 
         fileStream = new NonBlockingByteArrayOutputStream ();
         AsicUtils.copyStream (Files.newInputStream (contentFile.toPath ()), fileStream);
-        assertEquals (fileContent2, fileStream.getAsString (StandardCharsets.ISO_8859_1));
+        assertEquals (FILE_CONTENT_2, fileStream.getAsString (StandardCharsets.ISO_8859_1));
 
         Files.delete (contentFile.toPath ());
       }
@@ -183,7 +183,7 @@ public class AsicReaderImplTest
   public void exceptionOnInvalidMime () throws IOException
   {
     try (
-        final IAsicReader asicReader = asicReaderFactory.open (ClassPathResource.getInputStream ("/asic/asic-general-test-invalid-mime.asice")))
+        final IAsicReader asicReader = m_aAsicReaderFactory.open (ClassPathResource.getInputStream ("/asic/asic-general-test-invalid-mime.asice")))
     {
       asicReader.getNextFile ();
       fail ("Didn't throw exception on wrong mimetype.");

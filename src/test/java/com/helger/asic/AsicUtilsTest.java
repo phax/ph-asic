@@ -35,11 +35,11 @@ public final class AsicUtilsTest
   private static final Logger log = LoggerFactory.getLogger (AsicUtilsTest.class);
 
   private final AsicReaderFactory m_aAsicReaderFactory = AsicReaderFactory.newFactory ();
-  private final AsicWriterFactory m_aAsicWriterFactory = AsicWriterFactory.newFactory ();
+  private final AsicWriterFactory m_aAsicWriterFactory = AsicWriterFactory.newFactory (ESignatureMethod.CAdES);
   private final SignatureHelper m_aSignatureHelper = TestUtil.createSH ();
 
-  private static final String fileContent1 = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam arcu eros, fermentum vel molestie ut, sagittis vel velit.";
-  private static final String fileContent2 = "Fusce eu risus ipsum. Sed mattis laoreet justo. Fusce nisi magna, posuere ac placerat tincidunt, dignissim non lacus.";
+  private static final String FILE_CONTENT_1 = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam arcu eros, fermentum vel molestie ut, sagittis vel velit.";
+  private static final String FILE_CONTENT_2 = "Fusce eu risus ipsum. Sed mattis laoreet justo. Fusce nisi magna, posuere ac placerat tincidunt, dignissim non lacus.";
 
   @Test
   public void validatePatterns ()
@@ -71,7 +71,7 @@ public final class AsicUtilsTest
     // Create first container
     final NonBlockingByteArrayOutputStream source1 = new NonBlockingByteArrayOutputStream ();
     m_aAsicWriterFactory.newContainer (source1)
-                        .add (new NonBlockingByteArrayInputStream (fileContent1.getBytes (StandardCharsets.ISO_8859_1)),
+                        .add (new NonBlockingByteArrayInputStream (FILE_CONTENT_1.getBytes (StandardCharsets.ISO_8859_1)),
                               "content1.txt",
                               CMimeType.TEXT_PLAIN)
                         .sign (m_aSignatureHelper);
@@ -79,7 +79,7 @@ public final class AsicUtilsTest
     // Create second container
     final NonBlockingByteArrayOutputStream source2 = new NonBlockingByteArrayOutputStream ();
     m_aAsicWriterFactory.newContainer (source2)
-                        .add (new NonBlockingByteArrayInputStream (fileContent2.getBytes (StandardCharsets.ISO_8859_1)),
+                        .add (new NonBlockingByteArrayInputStream (FILE_CONTENT_2.getBytes (StandardCharsets.ISO_8859_1)),
                               "content2.txt",
                               CMimeType.TEXT_PLAIN)
                         .sign (m_aSignatureHelper);
@@ -97,7 +97,7 @@ public final class AsicUtilsTest
 
         fileStream = new NonBlockingByteArrayOutputStream ();
         asicReader.writeFile (fileStream);
-        assertEquals (fileStream.getAsString (StandardCharsets.ISO_8859_1), fileContent1);
+        assertEquals (fileStream.getAsString (StandardCharsets.ISO_8859_1), FILE_CONTENT_1);
       }
 
       {
@@ -105,7 +105,7 @@ public final class AsicUtilsTest
 
         fileStream = new NonBlockingByteArrayOutputStream ();
         asicReader.writeFile (fileStream);
-        assertEquals (fileStream.getAsString (StandardCharsets.ISO_8859_1), fileContent2);
+        assertEquals (fileStream.getAsString (StandardCharsets.ISO_8859_1), FILE_CONTENT_2);
       }
 
       assertNull (asicReader.getNextFile ());
@@ -132,7 +132,7 @@ public final class AsicUtilsTest
     // Create first container
     final NonBlockingByteArrayOutputStream source1 = new NonBlockingByteArrayOutputStream ();
     m_aAsicWriterFactory.newContainer (source1)
-                        .add (new NonBlockingByteArrayInputStream (fileContent1.getBytes (StandardCharsets.ISO_8859_1)),
+                        .add (new NonBlockingByteArrayInputStream (FILE_CONTENT_1.getBytes (StandardCharsets.ISO_8859_1)),
                               "content1.txt",
                               CMimeType.TEXT_PLAIN)
                         .sign (m_aSignatureHelper);
@@ -140,7 +140,7 @@ public final class AsicUtilsTest
     // Create second container
     final NonBlockingByteArrayOutputStream source2 = new NonBlockingByteArrayOutputStream ();
     m_aAsicWriterFactory.newContainer (source2)
-                        .add (new NonBlockingByteArrayInputStream (fileContent2.getBytes (StandardCharsets.ISO_8859_1)),
+                        .add (new NonBlockingByteArrayInputStream (FILE_CONTENT_2.getBytes (StandardCharsets.ISO_8859_1)),
                               "content2.txt",
                               CMimeType.TEXT_PLAIN)
                         .sign (m_aSignatureHelper);
@@ -189,7 +189,7 @@ public final class AsicUtilsTest
     // Create first container
     final NonBlockingByteArrayOutputStream source1 = new NonBlockingByteArrayOutputStream ();
     m_aAsicWriterFactory.newContainer (source1)
-                        .add (new NonBlockingByteArrayInputStream (fileContent1.getBytes (StandardCharsets.ISO_8859_1)),
+                        .add (new NonBlockingByteArrayInputStream (FILE_CONTENT_1.getBytes (StandardCharsets.ISO_8859_1)),
                               "content1.txt",
                               CMimeType.TEXT_PLAIN)
                         .setRootEntryName ("content1.txt")
@@ -198,7 +198,7 @@ public final class AsicUtilsTest
     // Create second container
     final NonBlockingByteArrayOutputStream source2 = new NonBlockingByteArrayOutputStream ();
     m_aAsicWriterFactory.newContainer (source2)
-                        .add (new NonBlockingByteArrayInputStream (fileContent2.getBytes (StandardCharsets.ISO_8859_1)),
+                        .add (new NonBlockingByteArrayInputStream (FILE_CONTENT_2.getBytes (StandardCharsets.ISO_8859_1)),
                               "content2.txt",
                               CMimeType.TEXT_PLAIN)
                         .setRootEntryName ("content2.txt")
@@ -226,7 +226,7 @@ public final class AsicUtilsTest
     // Create first container
     final NonBlockingByteArrayOutputStream source1 = new NonBlockingByteArrayOutputStream ();
     aFactoryXades.newContainer (source1)
-                 .add (new NonBlockingByteArrayInputStream (fileContent1.getBytes (StandardCharsets.ISO_8859_1)),
+                 .add (new NonBlockingByteArrayInputStream (FILE_CONTENT_1.getBytes (StandardCharsets.ISO_8859_1)),
                        "content1.txt",
                        CMimeType.TEXT_PLAIN)
                  .sign (m_aSignatureHelper);
@@ -234,7 +234,7 @@ public final class AsicUtilsTest
     // Create second container
     final NonBlockingByteArrayOutputStream source2 = new NonBlockingByteArrayOutputStream ();
     aFactoryXades.newContainer (source2)
-                 .add (new NonBlockingByteArrayInputStream (fileContent2.getBytes (StandardCharsets.ISO_8859_1)),
+                 .add (new NonBlockingByteArrayInputStream (FILE_CONTENT_2.getBytes (StandardCharsets.ISO_8859_1)),
                        "content2.txt",
                        CMimeType.TEXT_PLAIN)
                  .sign (m_aSignatureHelper);
@@ -252,7 +252,7 @@ public final class AsicUtilsTest
 
         fileStream = new NonBlockingByteArrayOutputStream ();
         asicReader.writeFile (fileStream);
-        assertEquals (fileStream.getAsString (StandardCharsets.ISO_8859_1), fileContent1);
+        assertEquals (fileStream.getAsString (StandardCharsets.ISO_8859_1), FILE_CONTENT_1);
       }
 
       {
@@ -260,7 +260,7 @@ public final class AsicUtilsTest
 
         fileStream = new NonBlockingByteArrayOutputStream ();
         asicReader.writeFile (fileStream);
-        assertEquals (fileStream.getAsString (StandardCharsets.ISO_8859_1), fileContent2);
+        assertEquals (fileStream.getAsString (StandardCharsets.ISO_8859_1), FILE_CONTENT_2);
       }
 
       assertNull (asicReader.getNextFile ());

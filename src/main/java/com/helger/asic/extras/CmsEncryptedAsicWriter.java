@@ -92,7 +92,7 @@ public class CmsEncryptedAsicWriter implements IAsicWriter
   @Nonnull
   public IAsicWriter addEncrypted (final Path aFile, final String sEntryName) throws IOException
   {
-    try (InputStream aIS = Files.newInputStream (aFile))
+    try (final InputStream aIS = Files.newInputStream (aFile))
     {
       addEncrypted (aIS, sEntryName);
     }

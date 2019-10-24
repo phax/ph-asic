@@ -66,7 +66,9 @@ public final class AsicXadesWriterTest
   {
     try (final NonBlockingByteArrayOutputStream outputStream = new NonBlockingByteArrayOutputStream ())
     {
-      m_aAsicWriterFactory.newContainer (outputStream).sign (TestUtil.createSH ());
+      m_aAsicWriterFactory.setMDAlgo (EMessageDigestAlgorithm.SHA384)
+                          .newContainer (outputStream)
+                          .sign (TestUtil.createSH ());
 
       final byte [] buffer = outputStream.toByteArray ();
       assertEquals ("Byte 28 should be 0", buffer[28], (byte) 0);

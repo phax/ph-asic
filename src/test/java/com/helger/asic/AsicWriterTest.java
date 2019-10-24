@@ -69,7 +69,7 @@ public class AsicWriterTest
     final File archiveOutputFile = new File (System.getProperty ("java.io.tmpdir"), "asic-sample-default.zip");
 
     // Creates an AsicWriterFactory with default signature method
-    final AsicWriterFactory asicWriterFactory = AsicWriterFactory.newFactory ();
+    final AsicWriterFactory asicWriterFactory = AsicWriterFactory.newFactory (ESignatureMethod.CAdES);
 
     /*
      * Creates the actual container with all the data objects (files) and signs
@@ -177,7 +177,7 @@ public class AsicWriterTest
     final File archiveOutputFile = new File (System.getProperty ("java.io.tmpdir"), "asic-sample-default.zip");
 
     // Creates an AsicWriterFactory with default signature method
-    final AsicWriterFactory asicWriterFactory = AsicWriterFactory.newFactory ();
+    final AsicWriterFactory asicWriterFactory = AsicWriterFactory.newFactory (ESignatureMethod.CAdES);
 
     // Creates the actual container with all the data objects (files) and signs
     // it.
@@ -230,7 +230,7 @@ public class AsicWriterTest
   {
     try
     {
-      final AsicWriterFactory asicWriterFactory = AsicWriterFactory.newFactory ();
+      final AsicWriterFactory asicWriterFactory = AsicWriterFactory.newFactory (ESignatureMethod.CAdES);
       try (final NonBlockingByteArrayOutputStream aBAOS = new NonBlockingByteArrayOutputStream ())
       {
         asicWriterFactory.newContainer (aBAOS).add (m_aEnvelopeFile, "envelope.aaz");

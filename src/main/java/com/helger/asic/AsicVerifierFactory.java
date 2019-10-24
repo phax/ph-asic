@@ -29,13 +29,7 @@ public class AsicVerifierFactory
   @Nonnull
   public static AsicVerifierFactory newFactory ()
   {
-    return newFactory (EMessageDigestAlgorithm.SHA256);
-  }
-
-  @Nonnull
-  public static AsicVerifierFactory newFactory (@Nonnull final ESignatureMethod eSM)
-  {
-    return newFactory (eSM.getMessageDigestAlgorithm ());
+    return newFactory (EMessageDigestAlgorithm.DEFAULT);
   }
 
   @Nonnull

@@ -28,20 +28,20 @@ public class CadesAsicWriter extends AbstractAsicWriter
   /**
    * Prepares creation of a new container.
    *
-   * @param eSM
-   *        signature method
    * @param aOS
    *        Stream used to write container.
    * @param bCloseStreamOnSign
    *        close stream when this is signed
+   * @param eMDAlgo
+   *        Message Digest Algorithm
    * @throws IOException
    *         on IO error
    */
-  public CadesAsicWriter (@Nonnull final ESignatureMethod eSM,
-                          @Nonnull final OutputStream aOS,
-                          final boolean bCloseStreamOnSign) throws IOException
+  public CadesAsicWriter (@Nonnull final OutputStream aOS,
+                          final boolean bCloseStreamOnSign,
+                          @Nonnull final EMessageDigestAlgorithm eMDAlgo) throws IOException
   {
-    super (aOS, bCloseStreamOnSign, new CadesAsicManifest (eSM.getMessageDigestAlgorithm ()));
+    super (aOS, bCloseStreamOnSign, new CadesAsicManifest (eMDAlgo));
   }
 
   @Override
@@ -62,10 +62,10 @@ public class CadesAsicWriter extends AbstractAsicWriter
   protected void performSign (@Nonnull final SignatureHelper aSH) throws IOException
   {
     // Define signature filename containing UUID
-    final String signatureFilename = "META-INF/signature-" + UUID.randomUUID ().toString () + ".p7s";
+    final String sSignatureFilename = "META-INF/signature-" + UUID.randomUUID ().toString () + ".p7s";
 
     // Adding signature file to asic manifest before actual signing
-    getAsicManifest ().setSignature (signatureFilename, "application/x-pkcs7-signature");
+    getAsicManifest ().setSignature (sSignatureFilename, "application/x-pkcs7-signature");
 
     // Generates and writes manifest (META-INF/asicmanifest.xml) to the zip
     // archive
@@ -74,6 +74,7 @@ public class CadesAsicWriter extends AbstractAsicWriter
 
     // Generates and writes signature (META-INF/signature-*.p7s) to the zip
     // archive
-    m_aAsicOutputStream.writeZipEntry (signatureFilename, aSH.signData (aManifestBytes));
+    final byte [] aSignatureBytes = aSH.signData (aManifestBytes, getAsicManifest ().getMessageDigestAlgorithm ());
+    m_aAsicOutputStream.writeZipEntry (sSignatureFilename, aSignatureBytes);
   }
 }

@@ -106,20 +106,23 @@ public class SignatureHelper
   }
 
   /**
-   * Sign content
+   * Sign content using CMS.
    *
    * @param aData
-   *        Content to be signed
+   *        Content to be signed. May not be <code>null</code>.
+   * @param eMDAlgo
+   *        Message Digest Algorithm
    * @return Signature
    */
-  protected final byte [] signData (@Nonnull final byte [] aData)
+  protected final byte [] signData (@Nonnull final byte [] aData, @Nonnull final EMessageDigestAlgorithm eMDAlgo)
   {
     try
     {
       final Provider p = PBCProvider.getProvider ();
       final DigestCalculatorProvider aDigestCalculatorProvider = new JcaDigestCalculatorProviderBuilder ().setProvider (p)
                                                                                                           .build ();
-      final JcaContentSignerBuilder aJcaContentSignerBuilder = new JcaContentSignerBuilder ("SHA1with" +
+      final JcaContentSignerBuilder aJcaContentSignerBuilder = new JcaContentSignerBuilder (eMDAlgo.getContentSignerAlgorithm () +
+                                                                                            "with" +
                                                                                             m_aKeyPair.getPrivate ()
                                                                                                       .getAlgorithm ()).setProvider (p);
       final ContentSigner aContentSigner = aJcaContentSignerBuilder.build (m_aKeyPair.getPrivate ());
@@ -136,9 +139,9 @@ public class SignatureHelper
         LOG.debug (Base64.encodeBytes (aCMSSignedData.getEncoded ()));
       return aCMSSignedData.getEncoded ();
     }
-    catch (final OperatorCreationException | CertificateEncodingException | CMSException | IOException e)
+    catch (final OperatorCreationException | CertificateEncodingException | CMSException | IOException ex)
     {
-      throw new IllegalStateException ("Unable to sign: " + e.getMessage (), e);
+      throw new IllegalStateException ("Unable to sign with " + eMDAlgo, ex);
     }
   }
 
