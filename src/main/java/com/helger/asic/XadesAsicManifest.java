@@ -22,6 +22,7 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.crypto.dsig.CanonicalizationMethod;
 
 import com.helger.asic.jaxb.cades.XAdESSignaturesType;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
@@ -270,7 +271,7 @@ public class XadesAsicManifest extends AbstractAsicManifest
 
       // \XAdESSignature\Signature\SignedInfo\Reference\Transforms\Transform
       final TransformType aTransform = new TransformType ();
-      aTransform.setAlgorithm ("http://www.w3.org/TR/2001/REC-xml-c14n-20010315");
+      aTransform.setAlgorithm (CanonicalizationMethod.INCLUSIVE);
       aReference.getTransforms ().addTransform (aTransform);
 
       // \XAdESSignature\Signature\SignedInfo\Reference\DigestMethod
