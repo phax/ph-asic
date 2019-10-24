@@ -4,6 +4,15 @@
 
 # News and Noteworthy
 
+* v1.4.0 - 2019-10-24
+    * Removed hard coded "SHA1" in CAdES Signature method ([issue #1](https://github.com/phax/ph-asic/issues/1))
+    * Removed all utility methods from `ESignatureMethod`
+    * Removed factory methods using `ESignatureMethod`
+    * Added new constant `EMessageDigestAlgorithm.DEFAULT` which is now "SHA-256"
+    * Extended `EMessageDigestAlgorithm` with "SHA1" and "SHA224"
+    * Fixed invalid URI for `EMessageDigestAlgorithm.SHA384`
+    * Renamed `EMessageDigestAlgorithm.getAlgorithm` to `getMessageDigestAlgorithm`
+    * Constructors of `CadesAsicWriter` and `XadesAsicWriter` now take the message digest algorithm instead of the `ESignatureMethod`
 * v1.3.1 - 2019-05-07
     * Updated to Java 12
 * v1.3.0 - 2018-11-22
@@ -44,7 +53,7 @@ This implementation is based on difi's v0.9.2
 <dependency>
 	<groupId>com.helger</groupId>
 	<artifactId>ph-asic</artifactId>
-	<version>1.3.1</version>
+	<version>1.4.0</version>
 </dependency>
 ```
 
