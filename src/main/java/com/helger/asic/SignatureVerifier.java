@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import com.helger.asic.jaxb.asic.Certificate;
 import com.helger.bc.PBCProvider;
 import com.helger.commons.annotation.PresentForCodeCoverage;
+import com.helger.commons.timing.StopWatch;
 
 /**
  * @author erlend
@@ -47,25 +48,37 @@ public final class SignatureVerifier
   {
     Certificate ret = null;
 
+    if (LOG.isDebugEnabled ())
+      LOG.debug ("Starting to validate signature of data");
+
+    final StopWatch aSW = StopWatch.createdStarted ();
     try
     {
       final CMSSignedData aCMSSignedData = new CMSSignedData (new CMSProcessableByteArray (aData), aSignature);
+
+      if (LOG.isDebugEnabled ())
+        LOG.debug ("Received the signed data");
+
       final Store <X509CertificateHolder> aStore = aCMSSignedData.getCertificates ();
       final SignerInformationStore aSignerInformationStore = aCMSSignedData.getSignerInfos ();
       for (final SignerInformation aSignerInformation : aSignerInformationStore.getSigners ())
       {
-        final X509CertificateHolder x509Certificate = (X509CertificateHolder) aStore.getMatches (aSignerInformation.getSID ())
+        final X509CertificateHolder aX509CertHolder = (X509CertificateHolder) aStore.getMatches (aSignerInformation.getSID ())
                                                                                     .iterator ()
                                                                                     .next ();
         if (LOG.isDebugEnabled ())
-          LOG.debug (x509Certificate == null ? "null for " + aSignerInformation.getSID ()
-                                             : x509Certificate.getSubject ().toString ());
+          LOG.debug ("Using certificate subject " +
+                     (aX509CertHolder == null ? "null" : "'" + aX509CertHolder.getSubject ().toString () + "'") +
+                     " for '" +
+                     aSignerInformation.getSID () +
+                     "'");
 
-        if (aSignerInformation.verify (s_aJcaSimpleSignerInfoVerifierBuilder.build (x509Certificate)))
+        if (aSignerInformation.verify (s_aJcaSimpleSignerInfoVerifierBuilder.build (aX509CertHolder)))
         {
           ret = new Certificate ();
-          ret.setCertificate (x509Certificate.getEncoded ());
-          ret.setSubject (x509Certificate.getSubject ().toString ());
+          ret.setCertificate (aX509CertHolder.getEncoded ());
+          ret.setSubject (aX509CertHolder.getSubject ().toString ());
+          break;
         }
       }
     }
@@ -74,10 +87,14 @@ public final class SignatureVerifier
       LOG.warn ("Error in signature validation", ex);
       ret = null;
     }
-
+    finally
+    {
+      final long nMillis = aSW.stopAndGetMillis ();
+      if (nMillis > 100)
+        LOG.warn ("Certificate validation took " + nMillis + " which is too long");
+    }
     if (ret == null)
-      throw new IllegalStateException ("Unable to verify signature.");
-
+      throw new IllegalStateException ("Unable to verify signature. See log for details");
     return ret;
   }
 }
