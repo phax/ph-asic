@@ -26,7 +26,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.WillCloseWhenClosed;
 
-import org.bouncycastle.util.encoders.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,6 +33,7 @@ import com.helger.asic.jaxb.AsicReader;
 import com.helger.asic.jaxb.asic.AsicManifest;
 import com.helger.asic.jaxb.asic.Certificate;
 import com.helger.asic.jaxb.opendocument.manifest.Manifest;
+import com.helger.commons.base64.Base64;
 import com.helger.commons.collection.impl.CommonsHashMap;
 import com.helger.commons.collection.impl.ICommonsMap;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
@@ -79,7 +79,9 @@ public abstract class AbstractAsicReader implements Closeable
     }
     catch (final NoSuchAlgorithmException ex)
     {
-      throw new IllegalStateException ("Message Digest Algorithm '" + eMDAlgo.getMessageDigestAlgorithm () + "' is not supported",
+      throw new IllegalStateException ("Message Digest Algorithm '" +
+                                       eMDAlgo.getMessageDigestAlgorithm () +
+                                       "' is not supported",
                                        ex);
     }
 
@@ -165,7 +167,7 @@ public abstract class AbstractAsicReader implements Closeable
     {
       final byte [] aDigest = m_aMD.digest ();
       if (LOG.isDebugEnabled ())
-        LOG.debug ("Digest: " + Base64.encode (aDigest));
+        LOG.debug ("Digest: " + Base64.encodeBytes (aDigest));
       m_aManifestVerifier.update (m_aCurrentZipEntry.getName (), aDigest, null);
     }
 
