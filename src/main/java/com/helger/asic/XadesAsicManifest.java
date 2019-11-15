@@ -29,7 +29,10 @@ import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.mime.IMimeType;
 import com.helger.datetime.util.PDTXMLConverter;
 import com.helger.jaxb.JAXBContextCache;
+import com.helger.jaxb.JAXBMarshallerHelper;
+import com.helger.xml.namespace.MapBasedNamespaceContext;
 import com.helger.xml.transform.TransformSourceFactory;
+import com.helger.xsds.xades132.CXAdES132;
 import com.helger.xsds.xades132.CertIDListType;
 import com.helger.xsds.xades132.CertIDType;
 import com.helger.xsds.xades132.DataObjectFormatType;
@@ -38,6 +41,7 @@ import com.helger.xsds.xades132.QualifyingPropertiesType;
 import com.helger.xsds.xades132.SignedDataObjectPropertiesType;
 import com.helger.xsds.xades132.SignedPropertiesType;
 import com.helger.xsds.xades132.SignedSignaturePropertiesType;
+import com.helger.xsds.xmldsig.CXMLDSig;
 import com.helger.xsds.xmldsig.CanonicalizationMethodType;
 import com.helger.xsds.xmldsig.DigestMethodType;
 import com.helger.xsds.xmldsig.KeyInfoType;
@@ -161,7 +165,11 @@ public class XadesAsicManifest extends AbstractAsicManifest
     try
     {
       final Marshaller aMarshaller = s_aJaxbContext.createMarshaller ();
-      aMarshaller.setProperty (Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+      JAXBMarshallerHelper.setFormattedOutput (aMarshaller, true);
+      final MapBasedNamespaceContext aNSCtx = new MapBasedNamespaceContext ();
+      aNSCtx.addMapping (CXMLDSig.DEFAULT_PREFIX, CXMLDSig.NAMESPACE_URI);
+      aNSCtx.addMapping (CXAdES132.DEFAULT_PREFIX, CXAdES132.NAMESPACE_URI);
+      JAXBMarshallerHelper.setSunNamespacePrefixMapper (aMarshaller, aNSCtx);
 
       try (final NonBlockingByteArrayOutputStream aBAOS = new NonBlockingByteArrayOutputStream ())
       {
