@@ -28,7 +28,7 @@ import com.helger.xsds.xmldsig.DigestMethodType;
 
 public class CadesAsicManifest extends AbstractAsicManifest
 {
-  private static final Logger LOG = LoggerFactory.getLogger (AbstractAsicManifest.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (AbstractAsicManifest.class);
 
   private final ASiCManifestType m_aManifest = new ASiCManifestType ();
   private boolean m_bRootFilenameIsSet = false;
@@ -51,8 +51,8 @@ public class CadesAsicManifest extends AbstractAsicManifest
     aDataObjectRef.setDigestMethod (aDigestMethod);
 
     m_aManifest.addDataObjectReference (aDataObjectRef);
-    if (LOG.isDebugEnabled ())
-      LOG.debug ("Digest: " + Base64.encodeBytes (aDataObjectRef.getDigestValue ()));
+    if (LOGGER.isDebugEnabled ())
+      LOGGER.debug ("Digest: " + Base64.encodeBytes (aDataObjectRef.getDigestValue ()));
   }
 
   /**
@@ -110,9 +110,9 @@ public class CadesAsicManifest extends AbstractAsicManifest
     if (aManifest == null)
       throw new IllegalStateException ("Unable to read content as XML");
 
-    String sigReference = aManifest.getSigReference ().getURI ();
-    if (sigReference == null)
-      sigReference = "META-INF/signature.p7s";
+    String sSigReference = aManifest.getSigReference ().getURI ();
+    if (sSigReference == null)
+      sSigReference = "META-INF/signature.p7s";
 
     // Run through recorded objects
     for (final DataObjectReferenceType aDOR : aManifest.getDataObjectReference ())
@@ -121,11 +121,11 @@ public class CadesAsicManifest extends AbstractAsicManifest
                   aDOR.getMimeType (),
                   aDOR.getDigestValue (),
                   aDOR.getDigestMethod ().getAlgorithm (),
-                  sigReference);
+                  sSigReference);
       if (aDOR.isRootfile () == Boolean.TRUE)
         aMV.setRootFilename (aDOR.getURI ());
     }
 
-    return sigReference;
+    return sSigReference;
   }
 }

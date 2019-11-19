@@ -33,7 +33,7 @@ import com.helger.commons.timing.StopWatch;
  */
 public final class SignatureVerifier
 {
-  private static final Logger LOG = LoggerFactory.getLogger (SignatureHelper.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (SignatureHelper.class);
 
   private static final JcaSimpleSignerInfoVerifierBuilder s_aJcaSimpleSignerInfoVerifierBuilder = new JcaSimpleSignerInfoVerifierBuilder ().setProvider (PBCProvider.getProvider ());
 
@@ -48,16 +48,16 @@ public final class SignatureVerifier
   {
     Certificate ret = null;
 
-    if (LOG.isDebugEnabled ())
-      LOG.debug ("Starting to validate signature of data");
+    if (LOGGER.isDebugEnabled ())
+      LOGGER.debug ("Starting to validate signature of data");
 
     final StopWatch aSW = StopWatch.createdStarted ();
     try
     {
       final CMSSignedData aCMSSignedData = new CMSSignedData (new CMSProcessableByteArray (aData), aSignature);
 
-      if (LOG.isDebugEnabled ())
-        LOG.debug ("Received the signed data");
+      if (LOGGER.isDebugEnabled ())
+        LOGGER.debug ("Received the signed data");
 
       final Store <X509CertificateHolder> aStore = aCMSSignedData.getCertificates ();
       final SignerInformationStore aSignerInformationStore = aCMSSignedData.getSignerInfos ();
@@ -66,8 +66,8 @@ public final class SignatureVerifier
         final X509CertificateHolder aX509CertHolder = (X509CertificateHolder) aStore.getMatches (aSignerInformation.getSID ())
                                                                                     .iterator ()
                                                                                     .next ();
-        if (LOG.isDebugEnabled ())
-          LOG.debug ("Using certificate subject " +
+        if (LOGGER.isDebugEnabled ())
+          LOGGER.debug ("Using certificate subject " +
                      (aX509CertHolder == null ? "null" : "'" + aX509CertHolder.getSubject ().toString () + "'") +
                      " for '" +
                      aSignerInformation.getSID () +
@@ -84,14 +84,14 @@ public final class SignatureVerifier
     }
     catch (final Exception ex)
     {
-      LOG.warn ("Error in signature validation", ex);
+      LOGGER.warn ("Error in signature validation", ex);
       ret = null;
     }
     finally
     {
       final long nMillis = aSW.stopAndGetMillis ();
       if (nMillis > 100)
-        LOG.warn ("Certificate validation took " + nMillis + " which is too long");
+        LOGGER.warn ("Certificate validation took " + nMillis + " which is too long");
     }
     if (ret == null)
       throw new IllegalStateException ("Unable to verify signature. See log for details");

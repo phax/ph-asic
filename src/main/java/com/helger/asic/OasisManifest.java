@@ -41,19 +41,19 @@ public class OasisManifest implements Serializable
       throw new IllegalStateException ("Failed to read Manifest from IS");
   }
 
-  public void add (@Nonnull final String sPath, @Nonnull final IMimeType aMimeType)
+  public final void add (@Nonnull final String sPath, @Nonnull final IMimeType aMimeType)
   {
-    final FileEntry fileEntry = new FileEntry ();
-    fileEntry.setMediaType (aMimeType.getAsString ());
-    fileEntry.setFullPath (sPath);
-    m_aManifest.getFileEntry ().add (fileEntry);
+    final FileEntry aEntry = new FileEntry ();
+    aEntry.setMediaType (aMimeType.getAsString ());
+    aEntry.setFullPath (sPath);
+    m_aManifest.getFileEntry ().add (aEntry);
   }
 
   public void addAll (@Nonnull final OasisManifest aOther)
   {
-    for (final FileEntry fileEntry : aOther.m_aManifest.getFileEntry ())
-      if (!fileEntry.getFullPath ().equals ("/"))
-        m_aManifest.getFileEntry ().add (fileEntry);
+    for (final FileEntry aEntry : aOther.m_aManifest.getFileEntry ())
+      if (!aEntry.getFullPath ().equals ("/"))
+        m_aManifest.getFileEntry ().add (aEntry);
   }
 
   @Nonnegative

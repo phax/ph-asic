@@ -29,7 +29,7 @@ import com.helger.commons.ValueEnforcer;
  */
 public class AsicWriterFactory
 {
-  private static final Logger LOG = LoggerFactory.getLogger (AsicWriterFactory.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (AsicWriterFactory.class);
 
   private final ESignatureMethod m_eSM;
   private EMessageDigestAlgorithm m_eMDAlgo;
@@ -94,7 +94,7 @@ public class AsicWriterFactory
   {
     // Conformance to ETSI TS 102 918, 6.2.1 1)
     if (!AsicUtils.PATTERN_EXTENSION_ASICE.matcher (aPath.toString ()).matches ())
-      LOG.warn ("ASiC-E files should use \"asice\" as file extension.");
+      LOGGER.warn ("ASiC-E files should use \"asice\" as file extension.");
 
     return newContainer (Files.newOutputStream (aPath), true);
   }
@@ -132,14 +132,14 @@ public class AsicWriterFactory
   /**
    * Creates an AsicWriterFactory using the supplied signature method.
    *
-   * @param signatureMethod
+   * @param eSignatureMethod
    *        the signature method to be used.
    * @return instantiated AsicWriterFactory
    * @see ESignatureMethod
    */
   @Nonnull
-  public static AsicWriterFactory newFactory (@Nonnull final ESignatureMethod signatureMethod)
+  public static AsicWriterFactory newFactory (@Nonnull final ESignatureMethod eSignatureMethod)
   {
-    return new AsicWriterFactory (signatureMethod);
+    return new AsicWriterFactory (eSignatureMethod);
   }
 }

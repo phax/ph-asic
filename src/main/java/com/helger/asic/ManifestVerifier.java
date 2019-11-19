@@ -29,7 +29,6 @@ import com.helger.commons.collection.impl.ICommonsMap;
 public class ManifestVerifier implements Serializable
 {
   private final EMessageDigestAlgorithm m_eReferenceMD;
-
   private final AsicManifest m_aAsicManifest = new AsicManifest ();
   private final ICommonsMap <String, AsicFile> m_aAsicManifestMap = new CommonsHashMap <> ();
 

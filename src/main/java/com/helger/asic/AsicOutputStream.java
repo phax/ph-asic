@@ -30,7 +30,7 @@ import com.helger.commons.mime.IMimeType;
  */
 public class AsicOutputStream extends ZipOutputStream
 {
-  private static final Logger LOG = LoggerFactory.getLogger (AsicOutputStream.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (AsicOutputStream.class);
 
   public AsicOutputStream (@Nonnull final OutputStream aOS) throws IOException
   {
@@ -67,8 +67,8 @@ public class AsicOutputStream extends ZipOutputStream
   {
     try
     {
-      if (LOG.isDebugEnabled ())
-        LOG.debug ("Writing entry '" + aZipEntry.getName () + "' to container");
+      if (LOGGER.isDebugEnabled ())
+        LOGGER.debug ("Writing entry '" + aZipEntry.getName () + "' to container");
       putNextEntry (aZipEntry);
       write (bytes);
       closeEntry ();

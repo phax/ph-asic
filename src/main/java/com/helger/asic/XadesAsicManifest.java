@@ -59,7 +59,7 @@ import com.helger.xsds.xmldsig.X509IssuerSerialType;
 public class XadesAsicManifest extends AbstractAsicManifest
 {
   // Thread safe
-  private static final JAXBContext s_aJaxbContext;
+  private static final JAXBContext JAXB_CONTEXT;
   private static final com.helger.xsds.xades132.ObjectFactory OF_XADES = new com.helger.xsds.xades132.ObjectFactory ();
   private static final com.helger.asic.jaxb.cades.ObjectFactory OF_CADES = new com.helger.asic.jaxb.cades.ObjectFactory ();
   private static final com.helger.xsds.xmldsig.ObjectFactory OF_XMLDSIG = new com.helger.xsds.xmldsig.ObjectFactory ();
@@ -68,10 +68,10 @@ public class XadesAsicManifest extends AbstractAsicManifest
   {
     try
     {
-      s_aJaxbContext = false ? JAXBContextCache.getInstance ().getFromCache (XAdESSignaturesType.class)
-                             : JAXBContext.newInstance (XAdESSignaturesType.class,
-                                                        X509DataType.class,
-                                                        QualifyingPropertiesType.class);
+      JAXB_CONTEXT = false ? JAXBContextCache.getInstance ().getFromCache (XAdESSignaturesType.class)
+                           : JAXBContext.newInstance (XAdESSignaturesType.class,
+                                                      X509DataType.class,
+                                                      QualifyingPropertiesType.class);
     }
     catch (final JAXBException e)
     {
@@ -164,7 +164,7 @@ public class XadesAsicManifest extends AbstractAsicManifest
   {
     try
     {
-      final Marshaller aMarshaller = s_aJaxbContext.createMarshaller ();
+      final Marshaller aMarshaller = JAXB_CONTEXT.createMarshaller ();
       JAXBMarshallerHelper.setFormattedOutput (aMarshaller, true);
       final MapBasedNamespaceContext aNSCtx = new MapBasedNamespaceContext ();
       aNSCtx.addMapping (CXMLDSig.DEFAULT_PREFIX, CXMLDSig.NAMESPACE_URI);
@@ -338,7 +338,7 @@ public class XadesAsicManifest extends AbstractAsicManifest
 
     try
     {
-      final Unmarshaller aUnmarshaller = s_aJaxbContext.createUnmarshaller ();
+      final Unmarshaller aUnmarshaller = JAXB_CONTEXT.createUnmarshaller ();
       aXadesSignatures = aUnmarshaller.unmarshal (TransformSourceFactory.create (sRealXML), XAdESSignaturesType.class)
                                       .getValue ();
     }

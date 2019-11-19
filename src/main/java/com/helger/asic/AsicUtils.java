@@ -37,7 +37,7 @@ import com.helger.commons.mime.MimeTypeParser;
 
 public final class AsicUtils
 {
-  private static final Logger LOG = LoggerFactory.getLogger (AsicUtils.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (AsicUtils.class);
 
   /** The MIME type, which should be the very first entry in the container */
   public static final IMimeType MIMETYPE_ASICE = EMimeContentType.APPLICATION.buildMimeType ("vnd.etsi.asic-e+zip");
@@ -47,9 +47,15 @@ public final class AsicUtils
                                                                         ASIC_MANIFEST_BASENAME +
                                                                         "(.*)\\.xml",
                                                                         Pattern.CASE_INSENSITIVE);
-  public static final Pattern PATTERN_CADES_SIGNATURE = Pattern.compile ("META-INF/signature(.*)\\.p7s",
+  public static final String SIGNATURE_BASENAME = "signature";
+  public static final Pattern PATTERN_CADES_SIGNATURE = Pattern.compile ("META-INF/" +
+                                                                         SIGNATURE_BASENAME +
+                                                                         "(.*)\\.p7s",
                                                                          Pattern.CASE_INSENSITIVE);
-  public static final Pattern PATTERN_XADES_SIGNATURES = Pattern.compile ("META-INF/signatures(.*)\\.xml",
+  public static final String SIGNATURES_BASENAME = "signatures";
+  public static final Pattern PATTERN_XADES_SIGNATURES = Pattern.compile ("META-INF/" +
+                                                                          SIGNATURES_BASENAME +
+                                                                          "(.*)\\.xml",
                                                                           Pattern.CASE_INSENSITIVE);
   public static final Pattern PATTERN_OASIS_MANIFEST = Pattern.compile ("META-INF/manifest\\.xml",
                                                                         Pattern.CASE_INSENSITIVE);
@@ -128,7 +134,7 @@ public final class AsicUtils
               {
                 // Copy content to target container
                 ++nManifestCounter;
-                aAOS.putNextEntry (new ZipEntry ("META-INF/signatures" + nManifestCounter + ".xml"));
+                aAOS.putNextEntry (new ZipEntry ("META-INF/" + SIGNATURES_BASENAME + nManifestCounter + ".xml"));
                 copyStream (aAIS, aAOS);
               }
               else
@@ -179,7 +185,7 @@ public final class AsicUtils
     // Use URLConnection to find content type
     if (sMimeType == null)
     {
-      LOG.info ("Unable to determine MIME type of '" +
+      LOGGER.info ("Unable to determine MIME type of '" +
                 sFilename +
                 "' using Files.probeContentType(), trying URLConnection.getFileNameMap()");
       sMimeType = URLConnection.getFileNameMap ().getContentTypeFor (sFilename);

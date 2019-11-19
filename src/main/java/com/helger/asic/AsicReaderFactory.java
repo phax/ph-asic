@@ -21,18 +21,6 @@ import javax.annotation.Nonnull;
 
 public class AsicReaderFactory
 {
-  @Nonnull
-  public static AsicReaderFactory newFactory ()
-  {
-    return newFactory (EMessageDigestAlgorithm.SHA256);
-  }
-
-  @Nonnull
-  static AsicReaderFactory newFactory (final EMessageDigestAlgorithm eMD)
-  {
-    return new AsicReaderFactory (eMD);
-  }
-
   private final EMessageDigestAlgorithm m_eMDAlgo;
 
   protected AsicReaderFactory (@Nonnull final EMessageDigestAlgorithm eMDAlgo)
@@ -56,5 +44,17 @@ public class AsicReaderFactory
   public IAsicReader open (@Nonnull final InputStream aIS)
   {
     return new AsicReaderImpl (m_eMDAlgo, aIS);
+  }
+
+  @Nonnull
+  public static AsicReaderFactory newFactory ()
+  {
+    return newFactory (EMessageDigestAlgorithm.SHA256);
+  }
+
+  @Nonnull
+  static AsicReaderFactory newFactory (final EMessageDigestAlgorithm eMD)
+  {
+    return new AsicReaderFactory (eMD);
   }
 }

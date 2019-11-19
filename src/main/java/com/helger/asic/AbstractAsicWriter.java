@@ -31,7 +31,7 @@ import com.helger.commons.mime.IMimeType;
 @NotThreadSafe
 public abstract class AbstractAsicWriter implements IAsicWriter
 {
-  private static final Logger LOG = LoggerFactory.getLogger (AbstractAsicWriter.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (AbstractAsicWriter.class);
 
   protected boolean m_bFinished = false;
   protected OutputStream m_aContainerOS;
@@ -83,8 +83,8 @@ public abstract class AbstractAsicWriter implements IAsicWriter
       throw new IllegalStateException ("Adding files to META-INF is not allowed.");
 
     // Creates new zip entry
-    if (LOG.isDebugEnabled ())
-      LOG.debug ("Writing file '" + sFilename + "' to container");
+    if (LOGGER.isDebugEnabled ())
+      LOGGER.debug ("Writing file '" + sFilename + "' to container");
     m_aAsicOutputStream.putNextEntry (new ZipEntry (sFilename));
 
     // Prepare for calculation of message digest

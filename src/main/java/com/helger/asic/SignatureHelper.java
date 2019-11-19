@@ -55,7 +55,7 @@ import com.helger.security.keystore.LoadedKeyStore;
  */
 public class SignatureHelper
 {
-  private static final Logger LOG = LoggerFactory.getLogger (SignatureHelper.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (SignatureHelper.class);
 
   private final X509Certificate m_aX509Certificate;
   private final Certificate [] m_aCertificateChain;
@@ -135,8 +135,8 @@ public class SignatureHelper
       final CMSSignedData aCMSSignedData = aCMSSignedDataGenerator.generate (new CMSProcessableByteArray (aData),
                                                                              false);
 
-      if (LOG.isDebugEnabled ())
-        LOG.debug (Base64.encodeBytes (aCMSSignedData.getEncoded ()));
+      if (LOGGER.isDebugEnabled ())
+        LOGGER.debug (Base64.encodeBytes (aCMSSignedData.getEncoded ()));
       return aCMSSignedData.getEncoded ();
     }
     catch (final OperatorCreationException | CertificateEncodingException | CMSException | IOException ex)
