@@ -31,7 +31,7 @@ import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 
 public final class AsicCadesReferenceTest
 {
-  private static final Logger log = LoggerFactory.getLogger (AsicCadesReferenceTest.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (AsicCadesReferenceTest.class);
 
   private final AsicVerifierFactory m_aAsicVerifierFactory = AsicVerifierFactory.newFactory (EMessageDigestAlgorithm.DEFAULT);
   private final AsicReaderFactory m_aAsicRederFactory = AsicReaderFactory.newFactory (EMessageDigestAlgorithm.DEFAULT);
@@ -46,13 +46,14 @@ public final class AsicCadesReferenceTest
 
       // Printing internal manifest for reference.
       final JAXBContext jaxbContext = JAXBContext.newInstance (AsicManifest.class);
-      final Marshaller marshaller = jaxbContext.createMarshaller ();
-      marshaller.setProperty (Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+      final Marshaller aMarshaller = jaxbContext.createMarshaller ();
+      aMarshaller.setProperty (Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 
-      final NonBlockingByteArrayOutputStream byteArrayOutputStream = new NonBlockingByteArrayOutputStream ();
-      marshaller.marshal (asicVerifier.getAsicManifest (), byteArrayOutputStream);
-
-      log.info (byteArrayOutputStream.getAsString (StandardCharsets.UTF_8));
+      try (final NonBlockingByteArrayOutputStream aNBBAOS = new NonBlockingByteArrayOutputStream ())
+      {
+        aMarshaller.marshal (asicVerifier.getAsicManifest (), aNBBAOS);
+        LOGGER.info (aNBBAOS.getAsString (StandardCharsets.UTF_8));
+      }
     }
   }
 
@@ -92,7 +93,7 @@ public final class AsicCadesReferenceTest
     }
     catch (final IllegalStateException e)
     {
-      log.info (e.getMessage ());
+      LOGGER.info (e.getMessage ());
     }
   }
 

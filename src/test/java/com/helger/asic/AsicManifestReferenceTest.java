@@ -28,8 +28,7 @@ import com.helger.xsds.xmldsig.DigestMethodType;
  */
 public final class AsicManifestReferenceTest
 {
-
-  private static final Logger log = LoggerFactory.getLogger (AsicManifestReferenceTest.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (AsicManifestReferenceTest.class);
 
   @Test
   public void createSampleManifest () throws Exception
@@ -70,6 +69,6 @@ public final class AsicManifestReferenceTest
       asicManifest.getDataObjectReference ().add (obj2);
     }
 
-    log.info (AsicWriter.asicManifest ().getAsString (asicManifest));
+    LOGGER.info (AsicWriter.asicManifest ().getAsString (asicManifest));
   }
 }

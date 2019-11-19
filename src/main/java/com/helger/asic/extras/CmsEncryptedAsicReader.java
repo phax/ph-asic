@@ -121,6 +121,7 @@ public class CmsEncryptedAsicReader implements IAsicReader
     m_aAsicReader.close ();
   }
 
+  @Nonnull
   public AsicManifest getAsicManifest ()
   {
     final AsicManifest ret = m_aAsicReader.getAsicManifest ();

@@ -116,10 +116,12 @@ public final class AsicUtilsTest
     {
       assertEquals (zipInputStream.getNextEntry ().getName (), "mimetype");
       assertEquals (zipInputStream.getNextEntry ().getName (), "content1.txt");
-      assertEquals (zipInputStream.getNextEntry ().getName (), "META-INF/asicmanifest1.xml");
+      assertEquals (zipInputStream.getNextEntry ().getName (),
+                    "META-INF/" + AsicUtils.ASIC_MANIFEST_BASENAME + "1.xml");
       assertTrue (AsicUtils.PATTERN_CADES_SIGNATURE.matcher (zipInputStream.getNextEntry ().getName ()).matches ());
       assertEquals (zipInputStream.getNextEntry ().getName (), "content2.txt");
-      assertEquals (zipInputStream.getNextEntry ().getName (), "META-INF/asicmanifest2.xml");
+      assertEquals (zipInputStream.getNextEntry ().getName (),
+                    "META-INF/" + AsicUtils.ASIC_MANIFEST_BASENAME + "2.xml");
       assertTrue (AsicUtils.PATTERN_CADES_SIGNATURE.matcher (zipInputStream.getNextEntry ().getName ()).matches ());
       assertEquals (zipInputStream.getNextEntry ().getName (), "META-INF/manifest.xml");
       assertNull (zipInputStream.getNextEntry ());
@@ -173,10 +175,12 @@ public final class AsicUtilsTest
       {
         assertEquals (zipInputStream.getNextEntry ().getName (), "mimetype");
         assertEquals (zipInputStream.getNextEntry ().getName (), "content1.txt");
-        assertEquals (zipInputStream.getNextEntry ().getName (), "META-INF/asicmanifest1.xml");
+        assertEquals (zipInputStream.getNextEntry ().getName (),
+                      "META-INF/" + AsicUtils.ASIC_MANIFEST_BASENAME + "1.xml");
         assertTrue (AsicUtils.PATTERN_CADES_SIGNATURE.matcher (zipInputStream.getNextEntry ().getName ()).matches ());
         assertEquals (zipInputStream.getNextEntry ().getName (), "content2.txt");
-        assertEquals (zipInputStream.getNextEntry ().getName (), "META-INF/asicmanifest2.xml");
+        assertEquals (zipInputStream.getNextEntry ().getName (),
+                      "META-INF/" + AsicUtils.ASIC_MANIFEST_BASENAME + "2.xml");
         assertTrue (AsicUtils.PATTERN_CADES_SIGNATURE.matcher (zipInputStream.getNextEntry ().getName ()).matches ());
         assertNull (zipInputStream.getNextEntry ());
       }

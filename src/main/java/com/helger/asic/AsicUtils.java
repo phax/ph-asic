@@ -42,7 +42,10 @@ public final class AsicUtils
   /** The MIME type, which should be the very first entry in the container */
   public static final IMimeType MIMETYPE_ASICE = EMimeContentType.APPLICATION.buildMimeType ("vnd.etsi.asic-e+zip");
 
-  public static final Pattern PATTERN_CADES_MANIFEST = Pattern.compile ("META-INF/asicmanifest(.*)\\.xml",
+  public static final String ASIC_MANIFEST_BASENAME = "ASiCManifest";
+  public static final Pattern PATTERN_CADES_MANIFEST = Pattern.compile ("META-INF/" +
+                                                                        ASIC_MANIFEST_BASENAME +
+                                                                        "(.*)\\.xml",
                                                                         Pattern.CASE_INSENSITIVE);
   public static final Pattern PATTERN_CADES_SIGNATURE = Pattern.compile ("META-INF/signature(.*)\\.p7s",
                                                                          Pattern.CASE_INSENSITIVE);
@@ -100,11 +103,11 @@ public final class AsicUtils
                 copyStream (aAIS, aBAOS);
 
                 // Read manifest
-                final ManifestVerifier manifestVerifier = new ManifestVerifier (null);
-                CadesAsicManifest.extractAndVerify (aBAOS.getAsString (StandardCharsets.UTF_8), manifestVerifier);
+                final ManifestVerifier aManifestVerifier = new ManifestVerifier (null);
+                CadesAsicManifest.extractAndVerify (aBAOS.getAsString (StandardCharsets.UTF_8), aManifestVerifier);
 
                 // Make sure only on rootfile makes it to the source container
-                if (manifestVerifier.getAsicManifest ().getRootfile () != null)
+                if (aManifestVerifier.getAsicManifest ().getRootfile () != null)
                 {
                   if (bContainsRootFile)
                     throw new IllegalStateException ("Multiple rootfiles is not allowed when combining containers.");
@@ -113,7 +116,10 @@ public final class AsicUtils
 
                 // Write manifest to container
                 ++nManifestCounter;
-                aAOS.putNextEntry (new ZipEntry ("META-INF/asicmanifest" + nManifestCounter + ".xml"));
+                aAOS.putNextEntry (new ZipEntry ("META-INF/" +
+                                                 AsicUtils.ASIC_MANIFEST_BASENAME +
+                                                 nManifestCounter +
+                                                 ".xml"));
                 copyStream (aBAOS.getAsInputStream (), aAOS);
               }
             }
