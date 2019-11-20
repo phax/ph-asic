@@ -18,24 +18,27 @@ import com.helger.commons.annotation.Nonempty;
 
 public enum EMessageDigestAlgorithm
 {
-  SHA1 ("SHA-1", "SHA1", DigestMethod.SHA1),
-  SHA224 ("SHA-224", "SHA224", "http://www.w3.org/2001/04/xmldsig-more#sha224"),
-  SHA256 ("SHA-256", "SHA256", DigestMethod.SHA256),
-  SHA384 ("SHA-384", "SHA384", "http://www.w3.org/2001/04/xmldsig-more#sha384"),
-  SHA512 ("SHA-512", "SHA512", DigestMethod.SHA512);
+  SHA1 ("SHA-1", "SHA1","1.3.14.3.2.26", DigestMethod.SHA1),
+  SHA224 ("SHA-224", "SHA224","2.16.840.1.101.3.4.2.4", "http://www.w3.org/2001/04/xmldsig-more#sha224"),
+  SHA256 ("SHA-256", "SHA256","2.16.840.1.101.3.4.2.1", DigestMethod.SHA256),
+  SHA384 ("SHA-384", "SHA384","2.16.840.1.101.3.4.2.2", "http://www.w3.org/2001/04/xmldsig-more#sha384"),
+  SHA512 ("SHA-512", "SHA512","2.16.840.1.101.3.4.2.3", DigestMethod.SHA512);
 
   public static final EMessageDigestAlgorithm DEFAULT = SHA256;
 
   private final String m_sMessageDigestAlgorithm;
   private final String m_sContentSignerAlgorithm;
+  private final String m_Oid;
   private final String m_sURI;
 
   private EMessageDigestAlgorithm (@Nonnull @Nonempty final String sMessageDigestAlgorithm,
                                    @Nonnull @Nonempty final String sContentSignerAlgorithm,
+                                   @Nonnull @Nonempty final String sOid,
                                    @Nonnull @Nonempty final String sURI)
   {
     m_sMessageDigestAlgorithm = sMessageDigestAlgorithm;
     m_sContentSignerAlgorithm = sContentSignerAlgorithm;
+    m_Oid = sOid;
     m_sURI = sURI;
   }
 
@@ -69,5 +72,12 @@ public enum EMessageDigestAlgorithm
   public String getUri ()
   {
     return m_sURI;
+  }
+
+  @Nonnull
+  @Nonempty
+  public String getOid ()
+  {
+    return m_Oid;
   }
 }
