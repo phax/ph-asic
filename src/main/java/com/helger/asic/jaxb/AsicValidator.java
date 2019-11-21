@@ -52,6 +52,6 @@ public class AsicValidator <JAXBTYPE> extends JAXBValidationBuilder <JAXBTYPE, A
   @Nonnull
   public static AsicValidator <Manifest> oasisManifest ()
   {
-    return new AsicValidator <> (EAsicDocumentType.MANIFEST);
+    return new AsicValidator <> (EAsicDocumentType.OASIS_MANIFEST);
   }
 }

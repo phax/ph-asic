@@ -58,7 +58,10 @@ public final class AsicUtils
                                                                           SIGNATURES_BASENAME +
                                                                           "(.*)\\.xml",
                                                                           Pattern.CASE_INSENSITIVE);
-  public static final Pattern PATTERN_OASIS_MANIFEST = Pattern.compile ("META-INF/manifest\\.xml",
+  public static final String OASIS_MANIFEST_BASENAME = "manifest";
+  public static final Pattern PATTERN_OASIS_MANIFEST = Pattern.compile ("META-INF/" +
+                                                                        OASIS_MANIFEST_BASENAME +
+                                                                        "\\.xml",
                                                                         Pattern.CASE_INSENSITIVE);
 
   public static final Pattern PATTERN_EXTENSION_ASICE = Pattern.compile (".+\\.(asice|sce)", Pattern.CASE_INSENSITIVE);
@@ -172,7 +175,7 @@ public final class AsicUtils
 
       // Add manifest if it contains the same amount of files as the container.
       if (aOasisManifest.getFileEntryCount () == nFileCounter + 1)
-        aAOS.writeZipEntry ("META-INF/manifest.xml", aOasisManifest.getAsBytes ());
+        aAOS.writeZipEntry ("META-INF/" + OASIS_MANIFEST_BASENAME + ".xml", aOasisManifest.getAsBytes ());
 
       // Close target container
     }

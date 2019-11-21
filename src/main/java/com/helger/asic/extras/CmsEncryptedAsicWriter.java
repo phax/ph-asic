@@ -118,7 +118,7 @@ public class CmsEncryptedAsicWriter implements IAsicWriter
                                    final String sEntryName,
                                    final IMimeType aMimeType) throws IOException
   {
-    try (InputStream aIS = Files.newInputStream (aFile))
+    try (final InputStream aIS = Files.newInputStream (aFile))
     {
       addEncrypted (aIS, sEntryName, aMimeType);
     }

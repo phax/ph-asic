@@ -22,7 +22,15 @@ public class XadesAsicWriter extends AbstractAsicWriter
                           final boolean bCloseStreamOnSign,
                           @Nonnull final EMessageDigestAlgorithm eMDAlgo) throws IOException
   {
-    super (aOS, bCloseStreamOnSign, new XadesAsicManifest (eMDAlgo));
+    this (aOS, bCloseStreamOnSign, eMDAlgo, true);
+  }
+
+  public XadesAsicWriter (@Nonnull final OutputStream aOS,
+                          final boolean bCloseStreamOnSign,
+                          @Nonnull final EMessageDigestAlgorithm eMDAlgo,
+                          final boolean bWriteOasisManifest) throws IOException
+  {
+    super (aOS, bCloseStreamOnSign, new XadesAsicManifest (eMDAlgo), bWriteOasisManifest);
   }
 
   @Override
@@ -43,6 +51,6 @@ public class XadesAsicWriter extends AbstractAsicWriter
   {
     // Generate and write manifest (META-INF/signatures.xml)
     final byte [] manifestBytes = getAsicManifest ().getAsBytes (aSH);
-    m_aAsicOutputStream.writeZipEntry ("META-INF/signatures.xml", manifestBytes);
+    m_aAsicOutputStream.writeZipEntry ("META-INF/" + AsicUtils.SIGNATURES_BASENAME + ".xml", manifestBytes);
   }
 }

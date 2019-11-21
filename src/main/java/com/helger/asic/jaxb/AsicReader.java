@@ -52,6 +52,6 @@ public class AsicReader <JAXBTYPE> extends JAXBReaderBuilder <JAXBTYPE, AsicRead
   @Nonnull
   public static AsicReader <Manifest> oasisManifest ()
   {
-    return new AsicReader <> (EAsicDocumentType.MANIFEST, Manifest.class);
+    return new AsicReader <> (EAsicDocumentType.OASIS_MANIFEST, Manifest.class);
   }
 }

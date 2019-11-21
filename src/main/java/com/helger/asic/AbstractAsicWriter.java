@@ -18,6 +18,8 @@ import java.security.DigestOutputStream;
 import java.util.zip.ZipEntry;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.OverridingMethodsMustInvokeSuper;
 import javax.annotation.concurrent.NotThreadSafe;
 
 import org.slf4j.Logger;
@@ -34,11 +36,11 @@ public abstract class AbstractAsicWriter implements IAsicWriter
   private static final Logger LOGGER = LoggerFactory.getLogger (AbstractAsicWriter.class);
 
   protected boolean m_bFinished = false;
-  protected OutputStream m_aContainerOS;
-  protected AsicOutputStream m_aAsicOutputStream;
-  protected boolean m_bCloseStreamOnSign;
-  protected AbstractAsicManifest m_aAsicManifest;
-  protected OasisManifest m_aOasisManifest;
+  protected final OutputStream m_aContainerOS;
+  protected final AsicOutputStream m_aAsicOutputStream;
+  protected final boolean m_bCloseStreamOnSign;
+  protected final AbstractAsicManifest m_aAsicManifest;
+  private final OasisManifest m_aOasisManifest;
 
   /**
    * Prepares creation of a new container.
@@ -49,12 +51,16 @@ public abstract class AbstractAsicWriter implements IAsicWriter
    *        close output stream after signing
    * @param aAsicManifest
    *        The asic manifest to use
+   * @param bWriteOasisManifest
+   *        <code>true</code> if the OASIS OpenDocument Manifest XML should also
+   *        be created.
    * @throws IOException
    *         in case of IO error
    */
   protected AbstractAsicWriter (@Nonnull final OutputStream aOS,
                                 final boolean bCloseStreamOnSign,
-                                @Nonnull final AbstractAsicManifest aAsicManifest) throws IOException
+                                @Nonnull final AbstractAsicManifest aAsicManifest,
+                                final boolean bWriteOasisManifest) throws IOException
   {
     // Keep original output stream
     m_aContainerOS = aOS;
@@ -67,7 +73,7 @@ public abstract class AbstractAsicWriter implements IAsicWriter
     m_aAsicOutputStream = new AsicOutputStream (aOS);
 
     // Add mimetype to OASIS OpenDocument manifest
-    m_aOasisManifest = new OasisManifest (AsicUtils.MIMETYPE_ASICE);
+    m_aOasisManifest = bWriteOasisManifest ? new OasisManifest (AsicUtils.MIMETYPE_ASICE) : null;
   }
 
   @Nonnull
@@ -102,7 +108,8 @@ public abstract class AbstractAsicWriter implements IAsicWriter
     m_aAsicManifest.add (sFilename, aMimeType);
 
     // Add record of file to OASIS OpenDocument Manifest
-    m_aOasisManifest.add (sFilename, aMimeType);
+    if (m_aOasisManifest != null)
+      m_aOasisManifest.add (sFilename, aMimeType);
 
     return this;
   }
@@ -131,7 +138,9 @@ public abstract class AbstractAsicWriter implements IAsicWriter
     // Delegates the actual signature creation to the signature helper
     performSign (aSH);
 
-    m_aAsicOutputStream.writeZipEntry ("META-INF/manifest.xml", m_aOasisManifest.getAsBytes ());
+    if (m_aOasisManifest != null)
+      m_aAsicOutputStream.writeZipEntry ("META-INF/" + AsicUtils.OASIS_MANIFEST_BASENAME + ".xml",
+                                         m_aOasisManifest.getAsBytes ());
 
     // Close container
     try
@@ -160,9 +169,17 @@ public abstract class AbstractAsicWriter implements IAsicWriter
     return this;
   }
 
+  // Cannot be final
   @Nonnull
+  @OverridingMethodsMustInvokeSuper
   public AbstractAsicManifest getAsicManifest ()
   {
     return m_aAsicManifest;
+  }
+
+  @Nullable
+  protected final OasisManifest getOasisManifest ()
+  {
+    return m_aOasisManifest;
   }
 }

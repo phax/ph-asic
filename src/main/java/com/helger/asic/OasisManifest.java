@@ -26,6 +26,8 @@ import com.helger.commons.mime.IMimeType;
 
 public class OasisManifest implements Serializable
 {
+  public static final String NAMESPACE_URI = "urn:oasis:names:tc:opendocument:xmlns:manifest:1.0";
+
   private final Manifest m_aManifest;
 
   public OasisManifest (@Nonnull final IMimeType aMimeType)

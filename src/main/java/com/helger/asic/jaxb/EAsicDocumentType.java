@@ -38,8 +38,8 @@ public enum EAsicDocumentType implements IJAXBDocumentType
   ASIC_MANIFEST (ASiCManifestType.class,
                  new CommonsArrayList <> (CXMLDSig.getXSDResource (),
                                           new ClassPathResource ("/schemas/ts_102918v010201.xsd", _getCL ()))),
-  MANIFEST (Manifest.class,
-            new CommonsArrayList <> (new ClassPathResource ("/schemas/OpenDocument_manifest.xsd", _getCL ())));
+  OASIS_MANIFEST (Manifest.class,
+                  new CommonsArrayList <> (new ClassPathResource ("/schemas/OpenDocument_manifest.xsd", _getCL ())));
 
   @Nonnull
   private static final ClassLoader _getCL ()

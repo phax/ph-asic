@@ -14,6 +14,7 @@ package com.helger.asic.jaxb;
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.NotThreadSafe;
 
+import com.helger.asic.OasisManifest;
 import com.helger.asic.jaxb.cades.ASiCManifestType;
 import com.helger.asic.jaxb.opendocument.manifest.Manifest;
 import com.helger.jaxb.builder.JAXBWriterBuilder;
@@ -55,10 +56,10 @@ public class AsicWriter <JAXBTYPE> extends JAXBWriterBuilder <JAXBTYPE, AsicWrit
   @Nonnull
   public static AsicWriter <Manifest> oasisManifest ()
   {
-    final AsicWriter <Manifest> ret = new AsicWriter <> (EAsicDocumentType.MANIFEST);
+    final AsicWriter <Manifest> ret = new AsicWriter <> (EAsicDocumentType.OASIS_MANIFEST);
     final MapBasedNamespaceContext aCtx = new MapBasedNamespaceContext ();
     // Not default namespace because attribute form is qualified!
-    aCtx.addMapping ("manifest", "urn:oasis:names:tc:opendocument:xmlns:manifest:1.0");
+    aCtx.addMapping ("manifest", OasisManifest.NAMESPACE_URI);
     ret.setNamespaceContext (aCtx);
     ret.setFormattedOutput (true);
     return ret;

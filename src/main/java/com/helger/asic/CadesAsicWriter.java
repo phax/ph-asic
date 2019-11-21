@@ -41,12 +41,32 @@ public class CadesAsicWriter extends AbstractAsicWriter
                           final boolean bCloseStreamOnSign,
                           @Nonnull final EMessageDigestAlgorithm eMDAlgo) throws IOException
   {
-    super (aOS, bCloseStreamOnSign, new CadesAsicManifest (eMDAlgo));
+    this (aOS, bCloseStreamOnSign, eMDAlgo, true);
+  }
+
+  /**
+   * Prepares creation of a new container.
+   *
+   * @param aOS
+   *        Stream used to write container.
+   * @param bCloseStreamOnSign
+   *        close stream when this is signed
+   * @param eMDAlgo
+   *        Message Digest Algorithm
+   * @throws IOException
+   *         on IO error
+   */
+  public CadesAsicWriter (@Nonnull final OutputStream aOS,
+                          final boolean bCloseStreamOnSign,
+                          @Nonnull final EMessageDigestAlgorithm eMDAlgo,
+                          final boolean bWriteOasisManifest) throws IOException
+  {
+    super (aOS, bCloseStreamOnSign, new CadesAsicManifest (eMDAlgo), bWriteOasisManifest);
   }
 
   @Override
   @Nonnull
-  public CadesAsicManifest getAsicManifest ()
+  public final CadesAsicManifest getAsicManifest ()
   {
     return (CadesAsicManifest) super.getAsicManifest ();
   }
@@ -62,7 +82,11 @@ public class CadesAsicWriter extends AbstractAsicWriter
   protected void performSign (@Nonnull final SignatureHelper aSH) throws IOException
   {
     // Define signature filename containing UUID
-    final String sSignatureFilename = "META-INF/signature-" + UUID.randomUUID ().toString () + ".p7s";
+    final String sSignatureFilename = "META-INF/" +
+                                      AsicUtils.SIGNATURE_BASENAME +
+                                      "-" +
+                                      UUID.randomUUID ().toString () +
+                                      ".p7s";
 
     // Adding signature file to asic manifest before actual signing
     getAsicManifest ().setSignature (sSignatureFilename, "application/x-pkcs7-signature");
