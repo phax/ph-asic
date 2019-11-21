@@ -22,6 +22,7 @@ import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.WillNotClose;
 
 import org.slf4j.Logger;
@@ -177,6 +178,7 @@ public final class AsicUtils
     }
   }
 
+  @Nullable
   public static IMimeType detectMime (final String sFilename) throws IOException
   {
     // Use Files to find content type
@@ -186,8 +188,8 @@ public final class AsicUtils
     if (sMimeType == null)
     {
       LOGGER.info ("Unable to determine MIME type of '" +
-                sFilename +
-                "' using Files.probeContentType(), trying URLConnection.getFileNameMap()");
+                   sFilename +
+                   "' using Files.probeContentType(), trying URLConnection.getFileNameMap()");
       sMimeType = URLConnection.getFileNameMap ().getContentTypeFor (sFilename);
     }
 
