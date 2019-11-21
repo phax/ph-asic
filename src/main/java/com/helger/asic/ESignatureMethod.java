@@ -11,8 +11,12 @@
  */
 package com.helger.asic;
 
+import com.helger.commons.annotation.DevelopersNote;
+
 public enum ESignatureMethod
 {
   CAdES,
+  @Deprecated
+  @DevelopersNote ("Is not implemented correctly atm. See issue #2")
   XAdES;
 }
