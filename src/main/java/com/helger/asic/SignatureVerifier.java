@@ -68,10 +68,10 @@ public final class SignatureVerifier
                                                                                     .next ();
         if (LOGGER.isDebugEnabled ())
           LOGGER.debug ("Using certificate subject " +
-                     (aX509CertHolder == null ? "null" : "'" + aX509CertHolder.getSubject ().toString () + "'") +
-                     " for '" +
-                     aSignerInformation.getSID () +
-                     "'");
+                        (aX509CertHolder == null ? "null" : "'" + aX509CertHolder.getSubject ().toString () + "'") +
+                        " for '" +
+                        aSignerInformation.getSID () +
+                        "'");
 
         if (aSignerInformation.verify (s_aJcaSimpleSignerInfoVerifierBuilder.build (aX509CertHolder)))
         {
