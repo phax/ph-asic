@@ -4,7 +4,7 @@
 
 # News and Noteworthy
 
-* v1.4 1 - work in progress
+* v1.5.0 - work in progress
     * Fixed naming of Cades manifest file from `asicmanifest.xml` to `ASiCManifest.xml` ([issue #3](https://github.com/phax/ph-asic/issues/3))
     * Fixed ([issue #4](https://github.com/phax/ph-asic/issues/4)) and ([issue #5](https://github.com/phax/ph-asic/issues/5)) using ([PR #6](https://github.com/phax/ph-asic/pull/6))
 * v1.4.0 - 2019-10-24
