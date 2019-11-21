@@ -118,12 +118,21 @@ public class AsicWriterFactory
   @Nonnull
   public IAsicWriter newContainer (@Nonnull final OutputStream aOS, final boolean bCloseStreamOnSign) throws IOException
   {
+    return newContainer (aOS, bCloseStreamOnSign, true);
+  }
+
+  @SuppressWarnings ("deprecation")
+  @Nonnull
+  public IAsicWriter newContainer (@Nonnull final OutputStream aOS,
+                                   final boolean bCloseStreamOnSign,
+                                   final boolean bWriteOasisManifest) throws IOException
+  {
     switch (m_eSM)
     {
       case CAdES:
-        return new CadesAsicWriter (aOS, bCloseStreamOnSign, m_eMDAlgo);
+        return new CadesAsicWriter (aOS, bCloseStreamOnSign, m_eMDAlgo, bWriteOasisManifest);
       case XAdES:
-        return new XadesAsicWriter (aOS, bCloseStreamOnSign, m_eMDAlgo);
+        return new XadesAsicWriter (aOS, bCloseStreamOnSign, m_eMDAlgo, bWriteOasisManifest);
       default:
         throw new IllegalStateException ("Not implemented: " + m_eSM);
     }

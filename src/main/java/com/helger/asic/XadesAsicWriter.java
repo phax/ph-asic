@@ -18,13 +18,21 @@ import javax.annotation.Nonnull;
 
 public class XadesAsicWriter extends AbstractAsicWriter
 {
-  public XadesAsicWriter (@Nonnull final OutputStream aOS,
-                          final boolean bCloseStreamOnSign,
-                          @Nonnull final EMessageDigestAlgorithm eMDAlgo) throws IOException
-  {
-    this (aOS, bCloseStreamOnSign, eMDAlgo, true);
-  }
-
+  /**
+   * Prepares creation of a new container.
+   *
+   * @param aOS
+   *        Stream used to write container.
+   * @param bCloseStreamOnSign
+   *        close stream when this is signed
+   * @param eMDAlgo
+   *        Message Digest Algorithm
+   * @param bWriteOasisManifest
+   *        <code>true</code> if the OASIS OpenDocument Manifest XML should also
+   *        be created.
+   * @throws IOException
+   *         on IO error
+   */
   public XadesAsicWriter (@Nonnull final OutputStream aOS,
                           final boolean bCloseStreamOnSign,
                           @Nonnull final EMessageDigestAlgorithm eMDAlgo,
