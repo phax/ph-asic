@@ -4,7 +4,7 @@
 
 # News and Noteworthy
 
-* v1.5.0 - work in progress
+* v1.5.0 - 2019-11-22
     * Fixed naming of Cades manifest file from `asicmanifest.xml` to `ASiCManifest.xml` ([issue #3](https://github.com/phax/ph-asic/issues/3))
     * Fixed ([issue #4](https://github.com/phax/ph-asic/issues/4)) and ([issue #5](https://github.com/phax/ph-asic/issues/5)) using ([PR #6](https://github.com/phax/ph-asic/pull/6))
     * Made the creation of the OASIS Open Document optional ([issue #7](https://github.com/phax/ph-asic/issues/7))
@@ -57,7 +57,7 @@ This implementation is based on difi's v0.9.2
 <dependency>
 	<groupId>com.helger</groupId>
 	<artifactId>ph-asic</artifactId>
-	<version>1.4.0</version>
+	<version>1.5.0</version>
 </dependency>
 ```
 

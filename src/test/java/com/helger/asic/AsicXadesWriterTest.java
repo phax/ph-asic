@@ -50,6 +50,7 @@ public final class AsicXadesWriterTest
   private AsicWriterFactory m_aAsicWriterFactory;
 
   @Before
+  @SuppressWarnings ("deprecation")
   public void setUp ()
   {
     m_aEnvelopeFile = new ClassPathResource (BII_ENVELOPE_XML).getAsFile ();

@@ -222,6 +222,7 @@ public final class AsicUtilsTest
     }
   }
 
+  @SuppressWarnings ("deprecation")
   @Test
   public void simpleCombineXades () throws IOException
   {
