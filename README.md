@@ -211,4 +211,5 @@ set MAVEN_OPTS=-Xmx1024m -XX:MaxPermSize=512m
 ---
 
 My personal [Coding Styleguide](https://github.com/phax/meta/blob/master/CodingStyleguide.md) |
-On Twitter: <a href="https://twitter.com/philiphelger">@philiphelger</a>
+On Twitter: <a href="https://twitter.com/philiphelger">@philiphelger</a> |
+Kindly supported by [YourKit Java Profiler](https://www.yourkit.com)
