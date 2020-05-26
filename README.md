@@ -4,6 +4,8 @@
 
 # News and Noteworthy
 
+* v1.5.1 - 2020-05-26
+    * Updated to ph-xsds 2.3.0 (changed Maven groupId)
 * v1.5.0 - 2019-11-22
     * Fixed naming of Cades manifest file from `asicmanifest.xml` to `ASiCManifest.xml` ([issue #3](https://github.com/phax/ph-asic/issues/3))
     * Fixed ([issue #4](https://github.com/phax/ph-asic/issues/4)) and ([issue #5](https://github.com/phax/ph-asic/issues/5)) using ([PR #6](https://github.com/phax/ph-asic/pull/6))
@@ -53,11 +55,13 @@ This implementation is based on difi's v0.9.2
 
 ## Maven
 
+Replace `x.y.z` with the real version number.
+
 ```xml
 <dependency>
 	<groupId>com.helger</groupId>
 	<artifactId>ph-asic</artifactId>
-	<version>1.5.0</version>
+	<version>x.y.z</version>
 </dependency>
 ```
 
