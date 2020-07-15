@@ -39,8 +39,7 @@ public final class AsicCadesReferenceTest
   @Test
   public void valid () throws Exception
   {
-    try (
-        final AsicVerifier asicVerifier = m_aAsicVerifierFactory.verify (ClassPathResource.getInputStream ("/asic/asic-cades-test-valid.asice")))
+    try (final AsicVerifier asicVerifier = m_aAsicVerifierFactory.verify (ClassPathResource.getInputStream ("/asic/asic-cades-test-valid.asice")))
     {
       assertEquals (asicVerifier.getAsicManifest ().getFile ().size (), 2);
 
@@ -70,8 +69,7 @@ public final class AsicCadesReferenceTest
       // empty
     }
 
-    try (
-        final IAsicReader asicReader = m_aAsicRederFactory.open (ClassPathResource.getInputStream ("/asic/asic-cades-test-invalid-manifest.asice")))
+    try (final IAsicReader asicReader = m_aAsicRederFactory.open (ClassPathResource.getInputStream ("/asic/asic-cades-test-invalid-manifest.asice")))
     {
       asicReader.getNextFile ();
       fail ("Exception expected");

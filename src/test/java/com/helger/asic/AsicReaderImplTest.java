@@ -182,8 +182,7 @@ public class AsicReaderImplTest
   @Test
   public void exceptionOnInvalidMime () throws IOException
   {
-    try (
-        final IAsicReader asicReader = m_aAsicReaderFactory.open (ClassPathResource.getInputStream ("/asic/asic-general-test-invalid-mime.asice")))
+    try (final IAsicReader asicReader = m_aAsicReaderFactory.open (ClassPathResource.getInputStream ("/asic/asic-general-test-invalid-mime.asice")))
     {
       asicReader.getNextFile ();
       fail ("Didn't throw exception on wrong mimetype.");

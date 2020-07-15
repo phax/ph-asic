@@ -151,7 +151,7 @@ public final class AsicUtilsTest
     try (final NonBlockingByteArrayOutputStream source2simpler = new NonBlockingByteArrayOutputStream ())
     {
       try (final AsicInputStream source2input = new AsicInputStream (source2.getAsInputStream ());
-          final AsicOutputStream source2output = new AsicOutputStream (source2simpler))
+           final AsicOutputStream source2output = new AsicOutputStream (source2simpler))
       {
         ZipEntry zipEntry;
         while ((zipEntry = source2input.getNextEntry ()) != null)

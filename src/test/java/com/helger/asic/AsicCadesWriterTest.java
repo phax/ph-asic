@@ -79,7 +79,7 @@ public final class AsicCadesWriterTest
 
       assertTrue (aDestFile + " can not be read", aDestFile.exists () && aDestFile.isFile () && aDestFile.canRead ());
       try (final FileInputStream fileInputStream = new FileInputStream (aDestFile);
-          final NonBlockingBufferedInputStream is = new NonBlockingBufferedInputStream (fileInputStream))
+           final NonBlockingBufferedInputStream is = new NonBlockingBufferedInputStream (fileInputStream))
       {
         final byte [] buffer = new byte [BYTES_TO_CHECK];
         final int read = is.read (buffer, 0, BYTES_TO_CHECK);
