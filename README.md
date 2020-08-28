@@ -4,7 +4,7 @@
 
 # News and Noteworthy
 
-* v1.5.2 - work in progress
+* v1.5.2 - 2020-08-28
     * Updated to ph-xsds 2.4.0
 * v1.5.1 - 2020-05-26
     * Updated to ph-xsds 2.3.0 (changed Maven groupId)
