@@ -25,9 +25,9 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.crypto.dsig.CanonicalizationMethod;
 
 import com.helger.asic.jaxb.cades.XAdESSignaturesType;
+import com.helger.commons.datetime.PDTFactory;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.mime.IMimeType;
-import com.helger.datetime.util.PDTXMLConverter;
 import com.helger.jaxb.JAXBContextCache;
 import com.helger.jaxb.JAXBMarshallerHelper;
 import com.helger.xml.namespace.MapBasedNamespaceContext;
@@ -69,9 +69,7 @@ public class XadesAsicManifest extends AbstractAsicManifest
     try
     {
       JAXB_CONTEXT = false ? JAXBContextCache.getInstance ().getFromCache (XAdESSignaturesType.class)
-                           : JAXBContext.newInstance (XAdESSignaturesType.class,
-                                                      X509DataType.class,
-                                                      QualifyingPropertiesType.class);
+                           : JAXBContext.newInstance (XAdESSignaturesType.class, X509DataType.class, QualifyingPropertiesType.class);
     }
     catch (final JAXBException e)
     {
@@ -213,7 +211,7 @@ public class XadesAsicManifest extends AbstractAsicManifest
     final SignedSignaturePropertiesType aSignedSignatureProperties = new SignedSignaturePropertiesType ();
 
     // \XAdESSignature\Signature\Object\QualifyingProperties\SignedProperties\SignedSignatureProperties\SigningTime
-    aSignedSignatureProperties.setSigningTime (PDTXMLConverter.createNewCalendar ());
+    aSignedSignatureProperties.setSigningTime (PDTFactory.getCurrentLocalDateTime ());
 
     // \XAdESSignature\Signature\Object\QualifyingProperties\SignedProperties\SignedSignatureProperties\SigningCertificate
     final CertIDListType aCertIDList = new CertIDListType ();
@@ -339,8 +337,7 @@ public class XadesAsicManifest extends AbstractAsicManifest
     try
     {
       final Unmarshaller aUnmarshaller = JAXB_CONTEXT.createUnmarshaller ();
-      aXadesSignatures = aUnmarshaller.unmarshal (TransformSourceFactory.create (sRealXML), XAdESSignaturesType.class)
-                                      .getValue ();
+      aXadesSignatures = aUnmarshaller.unmarshal (TransformSourceFactory.create (sRealXML), XAdESSignaturesType.class).getValue ();
     }
     catch (final Exception ex)
     {
