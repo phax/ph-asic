@@ -67,8 +67,7 @@ public abstract class AbstractAsicReader implements Closeable
    */
   private final ICommonsMap <String, byte []> m_aSigningContent = new CommonsHashMap <> ();
 
-  protected AbstractAsicReader (@Nonnull final EMessageDigestAlgorithm eMDAlgo,
-                                @Nonnull @WillCloseWhenClosed final InputStream aIS)
+  protected AbstractAsicReader (@Nonnull final EMessageDigestAlgorithm eMDAlgo, @Nonnull @WillCloseWhenClosed final InputStream aIS)
   {
     m_aManifestVerifier = new ManifestVerifier (eMDAlgo);
 
@@ -79,10 +78,7 @@ public abstract class AbstractAsicReader implements Closeable
     }
     catch (final NoSuchAlgorithmException ex)
     {
-      throw new IllegalStateException ("Message Digest Algorithm '" +
-                                       eMDAlgo.getMessageDigestAlgorithm () +
-                                       "' is not supported",
-                                       ex);
+      throw new IllegalStateException ("Message Digest Algorithm '" + eMDAlgo.getMessageDigestAlgorithm () + "' is not supported", ex);
     }
 
     m_aZipInputStream = new AsicInputStream (aIS);
@@ -109,10 +105,8 @@ public abstract class AbstractAsicReader implements Closeable
 
   /**
    * Handles zip entries in the META-INF/ directory.
-   *
-   * @throws IOException
    */
-  private void _handleMetadataEntry () throws IOException
+  private void _handleMetadataEntry ()
   {
     final String sPathAndFilename = m_aCurrentZipEntry.getName ();
 
