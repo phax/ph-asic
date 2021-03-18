@@ -4,6 +4,9 @@
 
 # News and Noteworthy
 
+* v1.5.4 - 2021-03-18
+    * Updated to ph-commons 9.5.5
+    * Updated to ph-xsds 2.4.3
 * v1.5.3 - 2020-09-17
     * Updated to Jakarta JAXB 2.3.3
 * v1.5.2 - 2020-08-28
