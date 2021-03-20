@@ -4,6 +4,8 @@
 
 # News and Noteworthy
 
+* v1.5.5 - work in progress
+    * Updated to ph-commons 10
 * v1.5.4 - 2021-03-18
     * Updated to ph-commons 9.5.5
     * Updated to ph-xsds 2.4.3
