@@ -35,6 +35,7 @@ import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.mime.EMimeContentType;
 import com.helger.commons.mime.IMimeType;
 import com.helger.commons.mime.MimeTypeParser;
+import com.helger.commons.mime.MimeTypeParserException;
 
 public final class AsicUtils
 {
@@ -200,7 +201,14 @@ public final class AsicUtils
     if (sMimeType == null)
       throw new IllegalStateException ("Unable to determine MIME type of " + sFilename);
 
-    return MimeTypeParser.parseMimeType (sMimeType);
+    try
+    {
+      return MimeTypeParser.parseMimeType (sMimeType);
+    }
+    catch (final MimeTypeParserException ex)
+    {
+      throw new IOException ("Failed to parse MIME Type", ex);
+    }
   }
 
   public static void copyStream (@WillNotClose final InputStream aIS, @WillNotClose final OutputStream aOS)
