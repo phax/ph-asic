@@ -4,6 +4,8 @@
 
 # News and Noteworthy
 
+* v1.7.0 - 2021-05-02
+    * Updated to ph-commons 10.1
 * v1.6.0 - 2021-03-21
     * Updated to ph-commons 10
 * v1.5.4 - 2021-03-18

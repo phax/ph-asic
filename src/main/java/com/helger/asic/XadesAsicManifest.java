@@ -213,7 +213,7 @@ public class XadesAsicManifest extends AbstractAsicManifest
     final SignedSignaturePropertiesType aSignedSignatureProperties = new SignedSignaturePropertiesType ();
 
     // \XAdESSignature\Signature\Object\QualifyingProperties\SignedProperties\SignedSignatureProperties\SigningTime
-    aSignedSignatureProperties.setSigningTime (PDTFactory.getCurrentOffsetDateTime ());
+    aSignedSignatureProperties.setSigningTime (PDTFactory.getCurrentXMLOffsetDateTime ());
 
     // \XAdESSignature\Signature\Object\QualifyingProperties\SignedProperties\SignedSignatureProperties\SigningCertificate
     final CertIDListType aCertIDList = new CertIDListType ();
