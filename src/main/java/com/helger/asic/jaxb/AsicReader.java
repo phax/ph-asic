@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2015-2017 difi (www.difi.no)
  * Copyright (C) 2018-2021 Philip Helger (www.helger.com)
  * philip[at]helger[dot]com
