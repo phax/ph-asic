@@ -1,4 +1,3 @@
-[![Build Status](https://travis-ci.org/phax/ph-asic.svg?branch=master)](https://travis-ci.org/phax/ph-asic)
 [![CodeCov](https://codecov.io/gh/phax/ph-asic/branch/master/graph/badge.svg)](https://codecov.io/gh/phax/ph-asic)
 [![Maven Central](https://img.shields.io/maven-central/v/com.helger/ph-asic.svg)](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.helger%22%20AND%20a%3A%22ph-asic%22)
 
