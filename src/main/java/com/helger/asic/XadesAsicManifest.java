@@ -17,11 +17,6 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateEncodingException;
 
 import javax.annotation.Nonnull;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
 import javax.xml.crypto.dsig.CanonicalizationMethod;
 
 import com.helger.asic.jaxb.cades.XAdESSignaturesType;
@@ -55,6 +50,12 @@ import com.helger.xsds.xmldsig.TransformType;
 import com.helger.xsds.xmldsig.TransformsType;
 import com.helger.xsds.xmldsig.X509DataType;
 import com.helger.xsds.xmldsig.X509IssuerSerialType;
+
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Marshaller;
+import jakarta.xml.bind.Unmarshaller;
 
 public class XadesAsicManifest extends AbstractAsicManifest
 {
@@ -169,7 +170,7 @@ public class XadesAsicManifest extends AbstractAsicManifest
       final MapBasedNamespaceContext aNSCtx = new MapBasedNamespaceContext ();
       aNSCtx.addMapping (CXMLDSig.DEFAULT_PREFIX, CXMLDSig.NAMESPACE_URI);
       aNSCtx.addMapping (CXAdES132.DEFAULT_PREFIX, CXAdES132.NAMESPACE_URI);
-      JAXBMarshallerHelper.setSunNamespacePrefixMapper (aMarshaller, aNSCtx);
+      JAXBMarshallerHelper.setJakartaNamespacePrefixMapper (aMarshaller, aNSCtx);
 
       try (final NonBlockingByteArrayOutputStream aBAOS = new NonBlockingByteArrayOutputStream ())
       {

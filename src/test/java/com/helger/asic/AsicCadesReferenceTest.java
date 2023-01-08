@@ -18,9 +18,6 @@ import static org.junit.Assert.fail;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
-
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +25,9 @@ import org.slf4j.LoggerFactory;
 import com.helger.asic.jaxb.asic.AsicManifest;
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
+
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.Marshaller;
 
 public final class AsicCadesReferenceTest
 {
@@ -39,7 +39,8 @@ public final class AsicCadesReferenceTest
   @Test
   public void valid () throws Exception
   {
-    try (final AsicVerifier asicVerifier = m_aAsicVerifierFactory.verify (ClassPathResource.getInputStream ("/asic/asic-cades-test-valid.asice")))
+    try (
+        final AsicVerifier asicVerifier = m_aAsicVerifierFactory.verify (ClassPathResource.getInputStream ("/asic/asic-cades-test-valid.asice")))
     {
       assertEquals (asicVerifier.getAsicManifest ().getFile ().size (), 2);
 
@@ -69,7 +70,8 @@ public final class AsicCadesReferenceTest
       // empty
     }
 
-    try (final IAsicReader asicReader = m_aAsicRederFactory.open (ClassPathResource.getInputStream ("/asic/asic-cades-test-invalid-manifest.asice")))
+    try (
+        final IAsicReader asicReader = m_aAsicRederFactory.open (ClassPathResource.getInputStream ("/asic/asic-cades-test-invalid-manifest.asice")))
     {
       asicReader.getNextFile ();
       fail ("Exception expected");
