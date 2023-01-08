@@ -35,12 +35,6 @@
     <tag>HEAD</tag>
   </scm>
   
-  <properties>
-    <jaxb-plugin.group>com.helger.maven</jaxb-plugin.group>
-    <jaxb-plugin.artifact>jaxb40-maven-plugin</jaxb-plugin.artifact>
-    <jaxb-plugin.version>0.16.0</jaxb-plugin.version>
-  </properties>
-
   <organization>
     <name>Philip Helger</name>
     <url>http://www.helger.com</url>
@@ -78,6 +72,12 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
+
+  <properties>
+    <jaxb-plugin.group>com.helger.maven</jaxb-plugin.group>
+    <jaxb-plugin.artifact>jaxb40-maven-plugin</jaxb-plugin.artifact>
+    <jaxb-plugin.version>0.16.0</jaxb-plugin.version>
+  </properties>
   
   <dependencyManagement>
     <dependencies>
