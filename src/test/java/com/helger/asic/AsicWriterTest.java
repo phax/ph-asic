@@ -42,7 +42,7 @@ public class AsicWriterTest
 {
   private static final Logger log = LoggerFactory.getLogger (AsicWriterTest.class);
 
-  private static final String BII_ENVELOPE_XML = "/asic/bii-envelope.xml";
+  private static final String BII_ENVELOPE_XML = "external/asic/bii-envelope.xml";
   private static final String BII_MESSAGE_XML = TestUtil.BII_SAMPLE_MESSAGE_XML;
 
   private AsicVerifierFactory m_aAsicVerifierFactory;
@@ -170,7 +170,7 @@ public class AsicWriterTest
   @Test
   public void writeAndRead () throws Exception
   {
-    final File brochurePdfFile = ClassPathResource.getAsFile ("/asic/e-Delivery_target_architecture.pdf");
+    final File brochurePdfFile = ClassPathResource.getAsFile ("external/asic/e-Delivery_target_architecture.pdf");
     assertTrue (brochurePdfFile.canRead ());
 
     // Name of the file to hold the the ASiC archive

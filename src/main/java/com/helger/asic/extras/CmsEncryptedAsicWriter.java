@@ -66,7 +66,9 @@ public class CmsEncryptedAsicWriter implements IAsicWriter
   }
 
   @Nonnull
-  public IAsicWriter add (final InputStream aIS, final String sFilename, final IMimeType aMimeType) throws IOException
+  public IAsicWriter add (@Nonnull final InputStream aIS,
+                          @Nonnull final String sFilename,
+                          @Nonnull final IMimeType aMimeType) throws IOException
   {
     return m_aAsicWriter.add (aIS, sFilename, aMimeType);
   }

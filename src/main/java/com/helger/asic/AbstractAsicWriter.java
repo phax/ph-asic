@@ -25,6 +25,7 @@ import javax.annotation.concurrent.NotThreadSafe;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.commons.ValueEnforcer;
 import com.helger.commons.mime.IMimeType;
 
 /**
@@ -81,6 +82,10 @@ public abstract class AbstractAsicWriter implements IAsicWriter
                           @Nonnull final String sFilename,
                           @Nonnull final IMimeType aMimeType) throws IOException, IllegalStateException
   {
+    ValueEnforcer.notNull (aIS, "IS");
+    ValueEnforcer.notNull (sFilename, "Filename");
+    ValueEnforcer.notNull (aMimeType, "MimeType");
+
     // Check status
     if (m_bFinished)
       throw new IllegalStateException ("Adding content to container after signing container is not supported.");

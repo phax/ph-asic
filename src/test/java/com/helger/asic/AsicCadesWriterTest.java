@@ -46,7 +46,7 @@ public final class AsicCadesWriterTest
   private static final Logger log = LoggerFactory.getLogger (AsicCadesWriterTest.class);
 
   public static final int BYTES_TO_CHECK = 40;
-  public static final String BII_ENVELOPE_XML = "/asic/bii-envelope.xml";
+  public static final String BII_ENVELOPE_XML = "external/asic/bii-envelope.xml";
   public static final String BII_MESSAGE_XML = TestUtil.BII_SAMPLE_MESSAGE_XML;
   private File m_aEnvelopeFile;
   private File m_aMessageFile;
@@ -79,7 +79,7 @@ public final class AsicCadesWriterTest
 
       assertTrue (aDestFile + " can not be read", aDestFile.exists () && aDestFile.isFile () && aDestFile.canRead ());
       try (final FileInputStream fileInputStream = new FileInputStream (aDestFile);
-           final NonBlockingBufferedInputStream is = new NonBlockingBufferedInputStream (fileInputStream))
+          final NonBlockingBufferedInputStream is = new NonBlockingBufferedInputStream (fileInputStream))
       {
         final byte [] buffer = new byte [BYTES_TO_CHECK];
         final int read = is.read (buffer, 0, BYTES_TO_CHECK);

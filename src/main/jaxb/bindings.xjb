@@ -23,17 +23,17 @@
     <xjc:javaType name="com.helger.commons.datetime.XMLOffsetDate"     xmlType="xsd:date"     adapter="com.helger.jaxb.adapter.AdapterXMLOffsetDate" />
     <xjc:javaType name="com.helger.commons.datetime.XMLOffsetTime"     xmlType="xsd:time"     adapter="com.helger.jaxb.adapter.AdapterXMLOffsetTime" />
   </globalBindings>
-  <bindings schemaLocation="../resources/schemas/asic-model-1.0.xsd">
+  <bindings schemaLocation="../resources/external/schemas/asic-model-1.0.xsd">
     <schemaBindings>
       <package name="com.helger.asic.jaxb.asic" />
     </schemaBindings>
   </bindings>
-  <bindings schemaLocation="../resources/schemas/OpenDocument_manifest.xsd">
+  <bindings schemaLocation="../resources/external/schemas/OpenDocument_manifest.xsd">
     <schemaBindings>
       <package name="com.helger.asic.jaxb.opendocument.manifest" />
     </schemaBindings>
   </bindings>
-  <bindings schemaLocation="../resources/schemas/ts_102918v010201.xsd">
+  <bindings schemaLocation="../resources/external/schemas/ts_102918v010201.xsd">
     <schemaBindings>
       <package name="com.helger.asic.jaxb.cades" />
     </schemaBindings>

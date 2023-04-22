@@ -32,7 +32,8 @@ public final class AsicReaderTest
   public void readingContentWithWriteFile () throws IOException
   {
     // Testing using AsicReader::writeFile.
-    try (final IAsicReader asicReader = m_aAsicReaderFactory.open (ClassPathResource.getInputStream ("/asic/asic-cades-test-valid.asice")))
+    try (
+        final IAsicReader asicReader = m_aAsicReaderFactory.open (ClassPathResource.getInputStream ("external/asic/asic-cades-test-valid.asice")))
     {
       while (asicReader.getNextFile () != null)
         asicReader.writeFile (new NullOutputStream ());
@@ -44,7 +45,8 @@ public final class AsicReaderTest
   public void readingContentWithInputStream () throws IOException
   {
     // Testing using AsicReader::inputStream.
-    try (final IAsicReader asicReader = m_aAsicReaderFactory.open (ClassPathResource.getInputStream ("/asic/asic-cades-test-valid.asice")))
+    try (
+        final IAsicReader asicReader = m_aAsicReaderFactory.open (ClassPathResource.getInputStream ("external/asic/asic-cades-test-valid.asice")))
     {
       while (asicReader.getNextFile () != null)
         AsicUtils.copyStream (asicReader.inputStream (), new NullOutputStream ());
@@ -56,7 +58,8 @@ public final class AsicReaderTest
   public void readingContentWithoutReading () throws IOException
   {
     // Testing using no functionality to read content.
-    try (final IAsicReader asicReader = m_aAsicReaderFactory.open (ClassPathResource.getInputStream ("/asic/asic-cades-test-valid.asice")))
+    try (
+        final IAsicReader asicReader = m_aAsicReaderFactory.open (ClassPathResource.getInputStream ("external/asic/asic-cades-test-valid.asice")))
     {
       while (asicReader.getNextFile () != null)
       {
@@ -69,7 +72,7 @@ public final class AsicReaderTest
   @Test (expected = IllegalStateException.class)
   public void exceptionOnEmpty () throws IOException
   {
-    final IAsicReader asicReader = m_aAsicReaderFactory.open (ClassPathResource.getInputStream ("/asic/asic-cades-test-valid.asice"));
+    final IAsicReader asicReader = m_aAsicReaderFactory.open (ClassPathResource.getInputStream ("external/asic/asic-cades-test-valid.asice"));
     while (asicReader.getNextFile () != null)
       asicReader.writeFile (new NullOutputStream ());
 

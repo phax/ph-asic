@@ -18,7 +18,7 @@ import com.helger.xsds.xmldsig.CXMLDSig;
 public class ASiCManifestMarshaller extends GenericJAXBMarshaller <ASiCManifestType>
 {
   public static final List <ClassPathResource> XSDS = new CommonsArrayList <> (CXMLDSig.getXSDResource (),
-                                                                               new ClassPathResource ("/schemas/ts_102918v010201.xsd",
+                                                                               new ClassPathResource ("external/schemas/ts_102918v010201.xsd",
                                                                                                       ASiCManifestMarshaller.class.getClassLoader ())).getAsUnmodifiable ();
 
   public ASiCManifestMarshaller ()

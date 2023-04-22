@@ -21,7 +21,7 @@ import com.helger.xsds.xmldsig.CXMLDSig;
 public class OasisManifestMarshaller extends GenericJAXBMarshaller <Manifest>
 {
   public static final List <ClassPathResource> XSDS = new CommonsArrayList <> (CXMLDSig.getXSDResource (),
-                                                                               new ClassPathResource ("/schemas/OpenDocument_manifest.xsd",
+                                                                               new ClassPathResource ("external/schemas/OpenDocument_manifest.xsd",
                                                                                                       OasisManifestMarshaller.class.getClassLoader ())).getAsUnmodifiable ();
 
   private static final QName QN = new QName ("urn:oasis:names:tc:opendocument:xmlns:manifest:1.0", "manifest");

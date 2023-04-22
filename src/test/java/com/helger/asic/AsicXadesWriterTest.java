@@ -42,7 +42,7 @@ public final class AsicXadesWriterTest
 {
   private static final Logger LOG = LoggerFactory.getLogger (AsicXadesWriterTest.class);
 
-  public static final String BII_ENVELOPE_XML = "/asic/bii-envelope.xml";
+  public static final String BII_ENVELOPE_XML = "external/asic/bii-envelope.xml";
   public static final String BII_MESSAGE_XML = TestUtil.BII_SAMPLE_MESSAGE_XML;
   private File m_aEnvelopeFile;
   private File m_aMessageFile;

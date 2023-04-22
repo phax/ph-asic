@@ -65,10 +65,14 @@ public final class CmsEncryptedAsicTest
       final CmsEncryptedAsicWriter writer = new CmsEncryptedAsicWriter (asicWriter,
                                                                         certificate,
                                                                         CMSAlgorithm.AES128_GCM);
-      writer.add (ClassPathResource.getInputStream ("/asic/image.bmp"), "simple.bmp", CMimeType.IMAGE_BMP);
-      writer.addEncrypted (ClassPathResource.getInputStream ("/asic/image.bmp"), "encrypted.bmp", CMimeType.IMAGE_BMP);
-      writer.addEncrypted (ClassPathResource.getAsFile ("/asic/image.bmp"), "encrypted2.bmp", CMimeType.IMAGE_BMP);
-      writer.addEncrypted (ClassPathResource.getAsFile ("/asic/image.bmp"), "encrypted3.xml");
+      writer.add (ClassPathResource.getInputStream ("external/asic/image.bmp"), "simple.bmp", CMimeType.IMAGE_BMP);
+      writer.addEncrypted (ClassPathResource.getInputStream ("external/asic/image.bmp"),
+                           "encrypted.bmp",
+                           CMimeType.IMAGE_BMP);
+      writer.addEncrypted (ClassPathResource.getAsFile ("external/asic/image.bmp"),
+                           "encrypted2.bmp",
+                           CMimeType.IMAGE_BMP);
+      writer.addEncrypted (ClassPathResource.getAsFile ("external/asic/image.bmp"), "encrypted3.xml");
       writer.setRootEntryName ("encrypted.bmp");
       writer.sign (TestUtil.createSH ());
       // NonBlockingByteArrayOutputStream now contains a signed ASiC archive
@@ -137,7 +141,7 @@ public final class CmsEncryptedAsicTest
   {
     // Read JKS
     final KeyStore keyStore = KeyStore.getInstance ("JKS");
-    keyStore.load (ClassPathResource.getInputStream ("/asic/keystore.jks"), "changeit".toCharArray ());
+    keyStore.load (ClassPathResource.getInputStream ("external/asic/keystore.jks"), "changeit".toCharArray ());
     return keyStore;
   }
 
@@ -163,13 +167,17 @@ public final class CmsEncryptedAsicTest
       final CmsEncryptedAsicWriter writer = new CmsEncryptedAsicWriter (asicWriter, certificate);
 
       // Adds the SBDH
-      writer.add (ClassPathResource.getInputStream ("/asic/sample-sbdh.xml"), "sbdh.xml", CMimeType.APPLICATION_XML);
+      writer.add (ClassPathResource.getInputStream ("external/asic/sample-sbdh.xml"),
+                  "sbdh.xml",
+                  CMimeType.APPLICATION_XML);
 
       // Adds the plain text sample document
-      writer.add (ClassPathResource.getInputStream ("/asic/bii-trns081.xml"), "sample.xml", CMimeType.APPLICATION_XML);
+      writer.add (ClassPathResource.getInputStream ("external/asic/bii-trns081.xml"),
+                  "sample.xml",
+                  CMimeType.APPLICATION_XML);
 
       // Adds the encrypted version of the sample document
-      writer.addEncrypted (ClassPathResource.getInputStream ("/asic/bii-trns081.xml"),
+      writer.addEncrypted (ClassPathResource.getInputStream ("external/asic/bii-trns081.xml"),
                            "sample.xml",
                            CMimeType.APPLICATION_XML);
 
