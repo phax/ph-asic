@@ -33,6 +33,7 @@ import com.helger.xsds.xmldsig.CXMLDSig;
  *
  * @author Philip Helger
  */
+@Deprecated (since = "3.0.0", forRemoval = true)
 public enum EAsicDocumentType implements IJAXBDocumentType
 {
   ASIC_MANIFEST (ASiCManifestType.class,
@@ -49,7 +50,7 @@ public enum EAsicDocumentType implements IJAXBDocumentType
 
   private final JAXBDocumentType m_aDocType;
 
-  private EAsicDocumentType (@Nonnull final Class <?> aClass, @Nonnull final List <ClassPathResource> aXSDPath)
+  EAsicDocumentType (@Nonnull final Class <?> aClass, @Nonnull final List <ClassPathResource> aXSDPath)
   {
     m_aDocType = new JAXBDocumentType (aClass, aXSDPath, x -> StringHelper.trimEnd (x, "Type"));
   }

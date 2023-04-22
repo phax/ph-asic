@@ -17,8 +17,7 @@ import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.asic.jaxb.AsicReader;
-import com.helger.asic.jaxb.AsicWriter;
+import com.helger.asic.jaxb.ASiCManifestMarshaller;
 import com.helger.asic.jaxb.cades.ASiCManifestType;
 import com.helger.asic.jaxb.cades.DataObjectReferenceType;
 import com.helger.asic.jaxb.cades.SigReferenceType;
@@ -94,9 +93,10 @@ public class CadesAsicManifest extends AbstractAsicManifest
   @Nullable
   public byte [] getAsBytes ()
   {
-    return AsicWriter.asicManifest ().getAsBytes (m_aManifest);
+    return new ASiCManifestMarshaller ().getAsBytes (m_aManifest);
   }
 
+  @Nonnull
   public static String extractAndVerify (final String sXml, final ManifestVerifier aMV)
   {
     // Updating namespaces for compatibility with previous releases and other
@@ -106,7 +106,7 @@ public class CadesAsicManifest extends AbstractAsicManifest
     sRealXML = sRealXML.replace ("http://www.w3.org/2000/09/xmldsig#sha", "http://www.w3.org/2001/04/xmlenc#sha");
 
     // Read XML
-    final ASiCManifestType aManifest = AsicReader.asicManifest ().read (sRealXML);
+    final ASiCManifestType aManifest = new ASiCManifestMarshaller ().read (sRealXML);
     if (aManifest == null)
       throw new IllegalStateException ("Unable to read content as XML");
 

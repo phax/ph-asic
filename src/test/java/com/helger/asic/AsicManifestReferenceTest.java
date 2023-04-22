@@ -17,7 +17,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.asic.jaxb.AsicWriter;
+import com.helger.asic.jaxb.ASiCManifestMarshaller;
 import com.helger.asic.jaxb.cades.ASiCManifestType;
 import com.helger.asic.jaxb.cades.DataObjectReferenceType;
 import com.helger.asic.jaxb.cades.SigReferenceType;
@@ -69,6 +69,6 @@ public final class AsicManifestReferenceTest
       asicManifest.getDataObjectReference ().add (obj2);
     }
 
-    LOGGER.info (AsicWriter.asicManifest ().getAsString (asicManifest));
+    LOGGER.info (new ASiCManifestMarshaller ().getAsString (asicManifest));
   }
 }

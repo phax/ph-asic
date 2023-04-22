@@ -26,6 +26,7 @@ import com.helger.jaxb.builder.JAXBReaderBuilder;
  *        The Asic implementation class to be read
  */
 @NotThreadSafe
+@Deprecated (since = "3.0.0", forRemoval = true)
 public class AsicReader <JAXBTYPE> extends JAXBReaderBuilder <JAXBTYPE, AsicReader <JAXBTYPE>>
 {
   public AsicReader (@Nonnull final EAsicDocumentType eDocType, @Nonnull final Class <JAXBTYPE> aImplClass)

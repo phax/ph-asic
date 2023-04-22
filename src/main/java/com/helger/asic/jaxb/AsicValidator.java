@@ -26,6 +26,7 @@ import com.helger.jaxb.builder.JAXBValidationBuilder;
  *        The Asic implementation class to be read
  */
 @NotThreadSafe
+@Deprecated (since = "3.0.0", forRemoval = true)
 public class AsicValidator <JAXBTYPE> extends JAXBValidationBuilder <JAXBTYPE, AsicValidator <JAXBTYPE>>
 {
   public AsicValidator (@Nonnull final EAsicDocumentType eDocType)

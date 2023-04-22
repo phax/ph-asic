@@ -3,6 +3,8 @@
 
 # News and Noteworthy
 
+* v3.0.0 - 2023-04-22
+    * Deprecated classes `Asic(Reader|Writer|Validator)` and `EAsicDocumentType` in favour separate marshallers
 * v2.0.0 - 2023-01-08
     * Using Java 11 as the baseline
     * Updated to ph-commons 11

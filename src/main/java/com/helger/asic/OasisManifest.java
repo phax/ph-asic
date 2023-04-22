@@ -18,8 +18,7 @@ import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import com.helger.asic.jaxb.AsicReader;
-import com.helger.asic.jaxb.AsicWriter;
+import com.helger.asic.jaxb.OasisManifestMarshaller;
 import com.helger.asic.jaxb.opendocument.manifest.FileEntry;
 import com.helger.asic.jaxb.opendocument.manifest.Manifest;
 import com.helger.commons.mime.IMimeType;
@@ -38,7 +37,7 @@ public class OasisManifest implements Serializable
 
   public OasisManifest (@Nonnull final InputStream aIS)
   {
-    m_aManifest = AsicReader.oasisManifest ().read (aIS);
+    m_aManifest = new OasisManifestMarshaller ().read (aIS);
     if (m_aManifest == null)
       throw new IllegalStateException ("Failed to read Manifest from IS");
   }
@@ -67,12 +66,12 @@ public class OasisManifest implements Serializable
   @Nullable
   public byte [] getAsBytes ()
   {
-    return AsicWriter.oasisManifest ().getAsBytes (m_aManifest);
+    return new OasisManifestMarshaller ().getAsBytes (m_aManifest);
   }
 
   @Nullable
   public String getAsString ()
   {
-    return AsicWriter.oasisManifest ().getAsString (m_aManifest);
+    return new OasisManifestMarshaller ().getAsString (m_aManifest);
   }
 }

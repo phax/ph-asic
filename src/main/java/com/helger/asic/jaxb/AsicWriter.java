@@ -28,6 +28,7 @@ import com.helger.xml.namespace.MapBasedNamespaceContext;
  *        The Asic implementation class to be read
  */
 @NotThreadSafe
+@Deprecated (since = "3.0.0", forRemoval = true)
 public class AsicWriter <JAXBTYPE> extends JAXBWriterBuilder <JAXBTYPE, AsicWriter <JAXBTYPE>>
 {
   public AsicWriter (@Nonnull final EAsicDocumentType eDocType)

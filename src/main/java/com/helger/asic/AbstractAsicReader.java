@@ -29,7 +29,7 @@ import javax.annotation.WillCloseWhenClosed;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.asic.jaxb.AsicReader;
+import com.helger.asic.jaxb.OasisManifestMarshaller;
 import com.helger.asic.jaxb.asic.AsicManifest;
 import com.helger.asic.jaxb.asic.Certificate;
 import com.helger.asic.jaxb.opendocument.manifest.Manifest;
@@ -67,7 +67,8 @@ public abstract class AbstractAsicReader implements Closeable
    */
   private final ICommonsMap <String, byte []> m_aSigningContent = new CommonsHashMap <> ();
 
-  protected AbstractAsicReader (@Nonnull final EMessageDigestAlgorithm eMDAlgo, @Nonnull @WillCloseWhenClosed final InputStream aIS)
+  protected AbstractAsicReader (@Nonnull final EMessageDigestAlgorithm eMDAlgo,
+                                @Nonnull @WillCloseWhenClosed final InputStream aIS)
   {
     m_aManifestVerifier = new ManifestVerifier (eMDAlgo);
 
@@ -78,7 +79,10 @@ public abstract class AbstractAsicReader implements Closeable
     }
     catch (final NoSuchAlgorithmException ex)
     {
-      throw new IllegalStateException ("Message Digest Algorithm '" + eMDAlgo.getMessageDigestAlgorithm () + "' is not supported", ex);
+      throw new IllegalStateException ("Message Digest Algorithm '" +
+                                       eMDAlgo.getMessageDigestAlgorithm () +
+                                       "' is not supported",
+                                       ex);
     }
 
     m_aZipInputStream = new AsicInputStream (aIS);
@@ -140,7 +144,7 @@ public abstract class AbstractAsicReader implements Closeable
             if (AsicUtils.PATTERN_OASIS_MANIFEST.matcher (sPathAndFilename).matches ())
             {
               // Read manifest.
-              m_aManifest = AsicReader.oasisManifest ().read (aBAOS.getAsInputStream ());
+              m_aManifest = new OasisManifestMarshaller ().read (aBAOS.getAsInputStream ());
             }
             else
             {
