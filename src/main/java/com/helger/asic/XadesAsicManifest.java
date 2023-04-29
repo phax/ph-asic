@@ -24,6 +24,7 @@ import com.helger.commons.datetime.PDTFactory;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.mime.IMimeType;
 import com.helger.jaxb.JAXBContextCache;
+import com.helger.jaxb.JAXBContextCacheKey;
 import com.helger.jaxb.JAXBMarshallerHelper;
 import com.helger.xml.namespace.MapBasedNamespaceContext;
 import com.helger.xml.transform.TransformSourceFactory;
@@ -69,7 +70,8 @@ public class XadesAsicManifest extends AbstractAsicManifest
   {
     try
     {
-      JAXB_CONTEXT = false ? JAXBContextCache.getInstance ().getFromCache (XAdESSignaturesType.class)
+      JAXB_CONTEXT = false ? JAXBContextCache.getInstance ()
+                                             .getFromCache (JAXBContextCacheKey.createForClass (XAdESSignaturesType.class))
                            : JAXBContext.newInstance (XAdESSignaturesType.class,
                                                       X509DataType.class,
                                                       QualifyingPropertiesType.class);
