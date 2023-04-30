@@ -40,7 +40,7 @@ import com.helger.commons.mime.CMimeType;
  */
 public class AsicWriterTest
 {
-  private static final Logger log = LoggerFactory.getLogger (AsicWriterTest.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (AsicWriterTest.class);
 
   private static final String BII_ENVELOPE_XML = "external/asic/bii-envelope.xml";
   private static final String BII_MESSAGE_XML = TestUtil.BII_SAMPLE_MESSAGE_XML;
@@ -111,8 +111,7 @@ public class AsicWriterTest
 
     assertTrue ("ASiC container can not be read", archiveOutputFile.canRead ());
 
-    if (log.isInfoEnabled ())
-      log.info ("Generated file " + archiveOutputFile);
+    LOGGER.info ("Generated file " + archiveOutputFile);
 
     try (final ZipFile zipFile = new ZipFile (archiveOutputFile))
     {
@@ -132,7 +131,7 @@ public class AsicWriterTest
           {
             matchCount++;
           }
-        log.info ("Found " + name);
+        LOGGER.info ("Found " + name);
         try (final InputStream stream = zipFile.getInputStream (entry))
         {
           // empty
@@ -194,7 +193,7 @@ public class AsicWriterTest
                      // further changes.
                      .sign (TestUtil.createSH ());
 
-    log.debug ("Wrote ASiC-e container to " + archiveOutputFile);
+    LOGGER.debug ("Wrote ASiC-e container to " + archiveOutputFile);
     // Opens the generated archive and reads each entry
     try (final IAsicReader asicReader = AsicReaderFactory.newFactory ().open (archiveOutputFile))
     {
@@ -204,8 +203,8 @@ public class AsicWriterTest
       // same name as the entry
       while ((entryName = asicReader.getNextFile ()) != null)
       {
-        if (log.isDebugEnabled ())
-          log.debug ("Read entry " + entryName);
+        if (LOGGER.isDebugEnabled ())
+          LOGGER.debug ("Read entry " + entryName);
 
         // Creates file with same name as entry
         final File file = new File (entryName);
