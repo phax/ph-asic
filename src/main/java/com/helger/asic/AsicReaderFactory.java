@@ -53,7 +53,7 @@ public class AsicReaderFactory
   }
 
   @Nonnull
-  static AsicReaderFactory newFactory (final EMessageDigestAlgorithm eMD)
+  public static AsicReaderFactory newFactory (final EMessageDigestAlgorithm eMD)
   {
     return new AsicReaderFactory (eMD);
   }

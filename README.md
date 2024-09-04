@@ -8,6 +8,7 @@
 
 * v3.0.1 - work in progress
     * Switched JAXB Maven plugin to `org.jvnet.jaxb:jaxb-maven-plugin`
+    * Made `AsicReaderFactory.newFactory` public
 * v3.0.0 - 2023-04-22
     * Deprecated classes `Asic(Reader|Writer|Validator)` and `EAsicDocumentType` in favour separate marshallers
     * Moved XML schema to folder `external/...`
