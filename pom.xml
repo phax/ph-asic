@@ -21,7 +21,7 @@
   </parent>
 
   <artifactId>ph-asic</artifactId>
-  <version>3.0.1</version>
+  <version>3.0.2-SNAPSHOT</version>
   <packaging>bundle</packaging>
   <name>ph-asic</name>
   <description>Generic implementation of ASiC-E archives in accordance with ETSI 102 918 v1.3.1.</description>
@@ -32,7 +32,7 @@
     <connection>scm:git:https://github.com/phax/ph-asic.git</connection>
     <developerConnection>scm:git:https://github.com/phax/ph-asic.git</developerConnection>
     <url>https://github.com/phax/ph-asic</url>
-    <tag>ph-asic-3.0.1</tag>
+    <tag>HEAD</tag>
   </scm>
   
   <organization>
