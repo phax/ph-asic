@@ -90,21 +90,48 @@ public class SignatureHelper
    *        the alias referencing the private and public key pair.
    * @param sKeyPassword
    *        password protecting the private key
+   * @deprecated Use the version with char[] for passwords instead
    */
+  @Deprecated (forRemoval = true, since = "3.0.1")
   public SignatureHelper (@Nonnull final IKeyStoreType aKeyStoreType,
                           @Nonnull final String sKeyStorePath,
                           @Nonnull final String sKeyStorePassword,
                           @Nonnull final String sKeyAlias,
                           @Nonnull final String sKeyPassword)
   {
+    this (aKeyStoreType, sKeyStorePath, sKeyStorePassword.toCharArray (), sKeyAlias, sKeyPassword.toCharArray ());
+  }
+
+  /**
+   * Loads the keystore and obtains the private key, the public key and the
+   * associated certificate referenced by the alias.
+   *
+   * @param aKeyStoreType
+   *        Key store type.
+   * @param sKeyStorePath
+   *        Path to keystore.
+   * @param aKeyStorePassword
+   *        password of the key store itself
+   * @param sKeyAlias
+   *        the alias referencing the private and public key pair.
+   * @param aKeyPassword
+   *        password protecting the private key
+   * @since 3.0.1
+   */
+  public SignatureHelper (@Nonnull final IKeyStoreType aKeyStoreType,
+                          @Nonnull final String sKeyStorePath,
+                          @Nonnull final char [] aKeyStorePassword,
+                          @Nonnull final String sKeyAlias,
+                          @Nonnull final char [] aKeyPassword)
+  {
     ValueEnforcer.notNull (aKeyStoreType, "KeyStoreType");
     ValueEnforcer.notNull (sKeyStorePath, "KeyStorePath");
-    ValueEnforcer.notNull (sKeyStorePassword, "KeyStorePassword");
+    ValueEnforcer.notNull (aKeyStorePassword, "KeyStorePassword");
     ValueEnforcer.notNull (sKeyAlias, "KeyAlias");
-    ValueEnforcer.notNull (sKeyPassword, "KeyPassword");
+    ValueEnforcer.notNull (aKeyPassword, "KeyPassword");
 
     // Load key store
-    final LoadedKeyStore aLKS = KeyStoreHelper.loadKeyStore (aKeyStoreType, sKeyStorePath, sKeyStorePassword);
+    final LoadedKeyStore aLKS = KeyStoreHelper.loadKeyStore (aKeyStoreType, sKeyStorePath, aKeyStorePassword);
     if (aLKS.isFailure ())
       throw new IllegalStateException (aLKS.getErrorText (TextHelper.EN));
 
@@ -112,7 +139,7 @@ public class SignatureHelper
     final LoadedKey <KeyStore.PrivateKeyEntry> aLK = KeyStoreHelper.loadPrivateKey (aLKS.getKeyStore (),
                                                                                     sKeyStorePath,
                                                                                     sKeyAlias,
-                                                                                    sKeyPassword.toCharArray ());
+                                                                                    aKeyPassword);
     if (aLK.isFailure ())
       throw new IllegalStateException (aLK.getErrorText (TextHelper.EN));
     m_aCertificateChain = aLK.getKeyEntry ().getCertificateChain ();
@@ -134,12 +161,11 @@ public class SignatureHelper
     try
     {
       final Provider p = PBCProvider.getProvider ();
-      final DigestCalculatorProvider aDigestCalculatorProvider = new JcaDigestCalculatorProviderBuilder ().setProvider (p)
-                                                                                                          .build ();
+      final DigestCalculatorProvider aDigestCalculatorProvider = new JcaDigestCalculatorProviderBuilder ().setProvider (p).build ();
       final JcaContentSignerBuilder aJcaContentSignerBuilder = new JcaContentSignerBuilder (eMDAlgo.getContentSignerAlgorithm () +
                                                                                             "with" +
-                                                                                            m_aKeyPair.getPrivate ()
-                                                                                                      .getAlgorithm ()).setProvider (p);
+                                                                                            m_aKeyPair.getPrivate ().getAlgorithm ())
+                                                                                                                                     .setProvider (p);
 
       // Calculate signing certificate digest
       final MessageDigest aMD = MessageDigest.getInstance (eMDAlgo.getMessageDigestAlgorithm ());
@@ -168,8 +194,7 @@ public class SignatureHelper
                                                        aCertDigest,
                                                        aIssuerSerial);
         final SigningCertificateV2 aSigningCertificateV2 = new SigningCertificateV2 (aCertIdv2);
-        aAttribute = new Attribute (PKCSObjectIdentifiers.id_aa_signingCertificateV2,
-                                    new DERSet (aSigningCertificateV2));
+        aAttribute = new Attribute (PKCSObjectIdentifiers.id_aa_signingCertificateV2, new DERSet (aSigningCertificateV2));
       }
 
       // Add that attribute to a SignedAttributeTableGenerator
@@ -200,8 +225,7 @@ public class SignatureHelper
         aCMSSignedDataGenerator.addSignerInfoGenerator (aSignerInfoGenerator);
         aCMSSignedDataGenerator.addCertificates (new JcaCertStore (new CommonsArrayList <> (m_aX509Certificate)));
       }
-      final CMSSignedData aCMSSignedData = aCMSSignedDataGenerator.generate (new CMSProcessableByteArray (aData),
-                                                                             false);
+      final CMSSignedData aCMSSignedData = aCMSSignedDataGenerator.generate (new CMSProcessableByteArray (aData), false);
 
       if (LOGGER.isDebugEnabled ())
         LOGGER.debug (Base64.encodeBytes (aCMSSignedData.getEncoded ()));

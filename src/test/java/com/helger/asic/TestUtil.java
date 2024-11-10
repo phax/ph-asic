@@ -61,9 +61,9 @@ public final class TestUtil
   }
 
   @Nonnull
-  public static String keyStorePassword ()
+  public static char [] keyStorePassword ()
   {
-    return "changeit";
+    return "changeit".toCharArray ();
   }
 
   @Nonnull
@@ -73,18 +73,14 @@ public final class TestUtil
   }
 
   @Nonnull
-  public static String privateKeyPassword ()
+  public static char [] privateKeyPassword ()
   {
-    return "changeit";
+    return "changeit".toCharArray ();
   }
 
   @Nonnull
   public static SignatureHelper createSH ()
   {
-    return new SignatureHelper (EKeyStoreType.JKS,
-                                keyStorePathJKS (),
-                                keyStorePassword (),
-                                keyPairAlias (),
-                                privateKeyPassword ());
+    return new SignatureHelper (EKeyStoreType.JKS, keyStorePathJKS (), keyStorePassword (), keyPairAlias (), privateKeyPassword ());
   }
 }

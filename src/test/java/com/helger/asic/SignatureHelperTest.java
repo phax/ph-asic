@@ -18,6 +18,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.commons.collection.ArrayHelper;
 import com.helger.security.keystore.EKeyStoreType;
 
 public final class SignatureHelperTest
@@ -38,7 +39,7 @@ public final class SignatureHelperTest
     {
       new SignatureHelper (EKeyStoreType.JKS,
                            TestUtil.keyStorePathJKS (),
-                           TestUtil.keyStorePassword () + "?",
+                           ArrayHelper.getConcatenated (TestUtil.keyStorePassword (), 'x'),
                            TestUtil.keyPairAlias (),
                            TestUtil.privateKeyPassword ());
       fail ("Exception expected.");
@@ -78,7 +79,7 @@ public final class SignatureHelperTest
                            TestUtil.keyStorePathJKS (),
                            TestUtil.keyStorePassword (),
                            TestUtil.keyPairAlias (),
-                           TestUtil.privateKeyPassword () + "?");
+                           ArrayHelper.getConcatenated (TestUtil.privateKeyPassword (), 'x'));
       fail ("Exception expected.");
     }
     catch (final IllegalStateException ex)
