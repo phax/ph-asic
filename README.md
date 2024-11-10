@@ -6,7 +6,8 @@
 
 # News and Noteworthy
 
-* v3.0.1 - work in progress
+* v3.0.1 - 2024-11-10
+    * Updated to ph-commons 11.1.10
     * Switched JAXB Maven plugin to `org.jvnet.jaxb:jaxb-maven-plugin`
     * Made `AsicReaderFactory.newFactory` public
 * v3.0.0 - 2023-04-22
