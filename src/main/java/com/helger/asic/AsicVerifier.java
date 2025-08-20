@@ -14,10 +14,10 @@ package com.helger.asic;
 import java.io.IOException;
 import java.io.InputStream;
 
-import javax.annotation.Nonnull;
-import javax.annotation.WillClose;
+import com.helger.annotation.WillClose;
+import com.helger.base.io.stream.NullOutputStream;
 
-import com.helger.commons.io.stream.NullOutputStream;
+import jakarta.annotation.Nonnull;
 
 public class AsicVerifier extends AbstractAsicReader
 {

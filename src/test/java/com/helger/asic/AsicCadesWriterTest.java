@@ -31,12 +31,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.asic.jaxb.cades.DataObjectReferenceType;
-import com.helger.commons.io.file.FilenameHelper;
-import com.helger.commons.io.resource.ClassPathResource;
-import com.helger.commons.io.stream.NonBlockingBufferedInputStream;
-import com.helger.commons.io.stream.NonBlockingByteArrayInputStream;
-import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
-import com.helger.commons.mime.CMimeType;
+import com.helger.base.io.nonblocking.NonBlockingBufferedInputStream;
+import com.helger.base.io.nonblocking.NonBlockingByteArrayInputStream;
+import com.helger.base.io.nonblocking.NonBlockingByteArrayOutputStream;
+import com.helger.io.file.FilenameHelper;
+import com.helger.io.resource.ClassPathResource;
+import com.helger.mime.CMimeType;
 
 /**
  * @author steinar Date: 02.07.15 Time: 12.08

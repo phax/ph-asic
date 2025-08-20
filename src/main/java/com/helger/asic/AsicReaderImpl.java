@@ -15,8 +15,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import javax.annotation.Nonnull;
-import javax.annotation.WillCloseWhenClosed;
+import com.helger.annotation.WillCloseWhenClosed;
+
+import jakarta.annotation.Nonnull;
 
 public class AsicReaderImpl extends AbstractAsicReader implements IAsicReader
 {

@@ -15,8 +15,8 @@ import java.util.List;
 
 import com.helger.asic.jaxb.cades.ASiCManifestType;
 import com.helger.asic.jaxb.cades.ObjectFactory;
-import com.helger.commons.collection.impl.CommonsArrayList;
-import com.helger.commons.io.resource.ClassPathResource;
+import com.helger.collection.commons.CommonsArrayList;
+import com.helger.io.resource.ClassPathResource;
 import com.helger.jaxb.GenericJAXBMarshaller;
 import com.helger.xsds.xmldsig.CXMLDSig;
 

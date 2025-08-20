@@ -18,8 +18,8 @@ import java.io.IOException;
 
 import org.junit.Test;
 
-import com.helger.commons.io.resource.ClassPathResource;
-import com.helger.commons.io.stream.NullOutputStream;
+import com.helger.base.io.stream.NullOutputStream;
+import com.helger.io.resource.ClassPathResource;
 
 /**
  * Testing functionality.

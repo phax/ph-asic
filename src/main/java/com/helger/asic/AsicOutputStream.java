@@ -18,12 +18,12 @@ import java.util.zip.CRC32;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import javax.annotation.Nonnull;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.commons.mime.IMimeType;
+import com.helger.mime.IMimeType;
+
+import jakarta.annotation.Nonnull;
 
 /**
  * Stream handling requirements to ASiC files.

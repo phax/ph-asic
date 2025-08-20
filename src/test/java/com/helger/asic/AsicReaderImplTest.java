@@ -24,10 +24,10 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.commons.io.resource.ClassPathResource;
-import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
-import com.helger.commons.io.stream.StringInputStream;
-import com.helger.commons.mime.CMimeType;
+import com.helger.base.io.nonblocking.NonBlockingByteArrayOutputStream;
+import com.helger.base.io.stream.StringInputStream;
+import com.helger.io.resource.ClassPathResource;
+import com.helger.mime.CMimeType;
 
 public class AsicReaderImplTest
 {

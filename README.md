@@ -6,58 +6,80 @@
 
 # News and Noteworthy
 
-* v3.0.1 - 2024-11-10
-    * Updated to ph-commons 11.1.10
-    * Switched JAXB Maven plugin to `org.jvnet.jaxb:jaxb-maven-plugin`
-    * Made `AsicReaderFactory.newFactory` public
-* v3.0.0 - 2023-04-22
-    * Deprecated classes `Asic(Reader|Writer|Validator)` and `EAsicDocumentType` in favour separate marshallers
-    * Moved XML schema to folder `external/...`
-* v2.0.0 - 2023-01-08
-    * Using Java 11 as the baseline
-    * Updated to ph-commons 11
-    * Using JAXB 4.0 as the baseline
-* v1.7.0 - 2021-05-02
-    * Updated to ph-commons 10.1
-* v1.6.0 - 2021-03-21
-    * Updated to ph-commons 10
-* v1.5.4 - 2021-03-18
-    * Updated to ph-commons 9.5.5
-    * Updated to ph-xsds 2.4.3
-* v1.5.3 - 2020-09-17
-    * Updated to Jakarta JAXB 2.3.3
-* v1.5.2 - 2020-08-28
-    * Updated to ph-xsds 2.4.0
-* v1.5.1 - 2020-05-26
-    * Updated to ph-xsds 2.3.0 (changed Maven groupId)
-* v1.5.0 - 2019-11-22
-    * Fixed naming of Cades manifest file from `asicmanifest.xml` to `ASiCManifest.xml` ([issue #3](https://github.com/phax/ph-asic/issues/3))
-    * Fixed ([issue #4](https://github.com/phax/ph-asic/issues/4)) and ([issue #5](https://github.com/phax/ph-asic/issues/5)) using ([PR #6](https://github.com/phax/ph-asic/pull/6))
-    * Made the creation of the OASIS Open Document optional ([issue #7](https://github.com/phax/ph-asic/issues/7))
-* v1.4.0 - 2019-10-24
-    * Removed hard coded "SHA1" in CAdES Signature method ([issue #1](https://github.com/phax/ph-asic/issues/1))
-    * Removed all utility methods from `ESignatureMethod`
-    * Removed factory methods using `ESignatureMethod`
-    * Added new constant `EMessageDigestAlgorithm.DEFAULT` which is now "SHA-256"
-    * Extended `EMessageDigestAlgorithm` with "SHA1" and "SHA224"
-    * Fixed invalid URI for `EMessageDigestAlgorithm.SHA384`
-    * Renamed `EMessageDigestAlgorithm.getAlgorithm` to `getMessageDigestAlgorithm`
-    * Constructors of `CadesAsicWriter` and `XadesAsicWriter` now take the message digest algorithm instead of the `ESignatureMethod`
-* v1.3.1 - 2019-05-07
-    * Updated to Java 12
-* v1.3.0 - 2018-11-22
-    * Updated to ph-commons 9.2.0
-* v1.2.0 - 2018-07-10
-    * Changed SignatureHelper API to be more precise and to load keystores from different sources
-* v1.1.0 - 2018-06-20
-    * Updated to ph-commons 9.1.2
-* v1.0.2 - 2018-06-13
-    * Fixed dependency to external XMLSchema.dtd
-* v1.0.1 - 2018-02-20
-    * Less verbose logging
-    * Improved speed
-* v1.0.0 - 2018-02-13
-    * Initial version as rip of difi/asic
+v4.0.0 - work in progress
+* Requires Java 17 as the minimum version
+* Updated to ph-commons 12.0.0
+* Removed all deprecated methods marked for removal
+
+v3.0.1 - 2024-11-10
+* Updated to ph-commons 11.1.10
+* Switched JAXB Maven plugin to `org.jvnet.jaxb:jaxb-maven-plugin`
+* Made `AsicReaderFactory.newFactory` public
+
+v3.0.0 - 2023-04-22
+* Deprecated classes `Asic(Reader|Writer|Validator)` and `EAsicDocumentType` in favour separate marshallers
+* Moved XML schema to folder `external/...`
+
+v2.0.0 - 2023-01-08
+* Using Java 11 as the baseline
+* Updated to ph-commons 11
+* Using JAXB 4.0 as the baseline
+
+v1.7.0 - 2021-05-02
+* Updated to ph-commons 10.1
+
+v1.6.0 - 2021-03-21
+* Updated to ph-commons 10
+
+v1.5.4 - 2021-03-18
+* Updated to ph-commons 9.5.5
+* Updated to ph-xsds 2.4.3
+
+v1.5.3 - 2020-09-17
+* Updated to Jakarta JAXB 2.3.3
+
+v1.5.2 - 2020-08-28
+* Updated to ph-xsds 2.4.0
+
+v1.5.1 - 2020-05-26
+* Updated to ph-xsds 2.3.0 (changed Maven groupId)
+
+v1.5.0 - 2019-11-22
+* Fixed naming of Cades manifest file from `asicmanifest.xml` to `ASiCManifest.xml` ([issue #3](https://github.com/phax/ph-asic/issues/3))
+* Fixed ([issue #4](https://github.com/phax/ph-asic/issues/4)) and ([issue #5](https://github.com/phax/ph-asic/issues/5)) using ([PR #6](https://github.com/phax/ph-asic/pull/6))
+* Made the creation of the OASIS Open Document optional ([issue #7](https://github.com/phax/ph-asic/issues/7))
+
+v1.4.0 - 2019-10-24
+* Removed hard coded "SHA1" in CAdES Signature method ([issue #1](https://github.com/phax/ph-asic/issues/1))
+* Removed all utility methods from `ESignatureMethod`
+* Removed factory methods using `ESignatureMethod`
+* Added new constant `EMessageDigestAlgorithm.DEFAULT` which is now "SHA-256"
+* Extended `EMessageDigestAlgorithm` with "SHA1" and "SHA224"
+* Fixed invalid URI for `EMessageDigestAlgorithm.SHA384`
+* Renamed `EMessageDigestAlgorithm.getAlgorithm` to `getMessageDigestAlgorithm`
+* Constructors of `CadesAsicWriter` and `XadesAsicWriter` now take the message digest algorithm instead of the `ESignatureMethod`
+
+v1.3.1 - 2019-05-07
+* Updated to Java 12
+
+v1.3.0 - 2018-11-22
+* Updated to ph-commons 9.2.0
+
+v1.2.0 - 2018-07-10
+* Changed SignatureHelper API to be more precise and to load keystores from different sources
+
+v1.1.0 - 2018-06-20
+* Updated to ph-commons 9.1.2
+
+v1.0.2 - 2018-06-13
+* Fixed dependency to external XMLSchema.dtd
+
+v1.0.1 - 2018-02-20
+* Less verbose logging
+* Improved speed
+
+v1.0.0 - 2018-02-13
+* Initial version as rip of difi/asic
 
 # Associated Signature Container (ASiC)
 

@@ -31,15 +31,15 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.base.codec.base64.Base64;
 import com.helger.bc.PBCProvider;
-import com.helger.commons.base64.Base64;
 
 /**
  * @author steinar Date: 05.07.15 Time: 21.57
  */
 public final class BouncyCastleSignatureTest
 {
-  private static final Logger LOG = LoggerFactory.getLogger (BouncyCastleSignatureTest.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (BouncyCastleSignatureTest.class);
 
   @Test
   public void createSignature () throws Exception
@@ -72,7 +72,7 @@ public final class BouncyCastleSignatureTest
       cmsSignedDataGenerator.addCertificates (jcaCertStore);
       final CMSSignedData sigData = cmsSignedDataGenerator.generate (msg, false);
 
-      LOG.info (e + ": " + Base64.encodeBytes (sigData.getEncoded ()));
+      LOGGER.info (e + ": " + Base64.encodeBytes (sigData.getEncoded ()));
     }
   }
 }

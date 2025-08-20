@@ -17,10 +17,10 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import javax.annotation.Nonnull;
-import javax.annotation.WillNotClose;
+import com.helger.annotation.WillNotClose;
+import com.helger.mime.IMimeType;
 
-import com.helger.commons.mime.IMimeType;
+import jakarta.annotation.Nonnull;
 
 public interface IAsicWriter
 {

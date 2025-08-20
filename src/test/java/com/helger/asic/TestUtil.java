@@ -15,11 +15,11 @@ import static org.junit.Assert.assertNotNull;
 
 import java.io.InputStream;
 
-import javax.annotation.Nonnull;
-
-import com.helger.commons.io.stream.StreamHelper;
+import com.helger.base.io.stream.StreamHelper;
 import com.helger.security.keystore.EKeyStoreType;
 import com.helger.security.keystore.KeyStoreHelper;
+
+import jakarta.annotation.Nonnull;
 
 /**
  * @author steinar Date: 21.07.15 Time: 18.48

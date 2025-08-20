@@ -16,16 +16,15 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateEncodingException;
 
-import javax.annotation.Nonnull;
 import javax.xml.crypto.dsig.CanonicalizationMethod;
 
 import com.helger.asic.jaxb.cades.XAdESSignaturesType;
-import com.helger.commons.datetime.PDTFactory;
-import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
-import com.helger.commons.mime.IMimeType;
+import com.helger.base.io.nonblocking.NonBlockingByteArrayOutputStream;
+import com.helger.datetime.helper.PDTFactory;
 import com.helger.jaxb.JAXBContextCache;
 import com.helger.jaxb.JAXBContextCacheKey;
 import com.helger.jaxb.JAXBMarshallerHelper;
+import com.helger.mime.IMimeType;
 import com.helger.xml.namespace.MapBasedNamespaceContext;
 import com.helger.xml.transform.TransformSourceFactory;
 import com.helger.xsds.xades132.CXAdES132;
@@ -52,6 +51,7 @@ import com.helger.xsds.xmldsig.TransformsType;
 import com.helger.xsds.xmldsig.X509DataType;
 import com.helger.xsds.xmldsig.X509IssuerSerialType;
 
+import jakarta.annotation.Nonnull;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.JAXBException;

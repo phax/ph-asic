@@ -11,9 +11,6 @@
  */
 package com.helger.asic;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,9 +18,12 @@ import com.helger.asic.jaxb.ASiCManifestMarshaller;
 import com.helger.asic.jaxb.cades.ASiCManifestType;
 import com.helger.asic.jaxb.cades.DataObjectReferenceType;
 import com.helger.asic.jaxb.cades.SigReferenceType;
-import com.helger.commons.base64.Base64;
-import com.helger.commons.mime.IMimeType;
+import com.helger.base.codec.base64.Base64;
+import com.helger.mime.IMimeType;
 import com.helger.xsds.xmldsig.DigestMethodType;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 public class CadesAsicManifest extends AbstractAsicManifest
 {
@@ -55,12 +55,11 @@ public class CadesAsicManifest extends AbstractAsicManifest
   }
 
   /**
-   * Locates the DataObjectReference for the given file name and sets the
-   * attribute Rootfile to Boolean.TRUE
+   * Locates the DataObjectReference for the given file name and sets the attribute Rootfile to
+   * Boolean.TRUE
    *
    * @param sEntryName
-   *        name of entry for which the attribute <code>Rootfile</code> should
-   *        be set to "true".
+   *        name of entry for which the attribute <code>Rootfile</code> should be set to "true".
    */
   public void setRootfileForEntry (final String sEntryName)
   {

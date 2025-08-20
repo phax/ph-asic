@@ -21,8 +21,6 @@ import java.security.cert.X509Certificate;
 import java.util.Set;
 import java.util.TreeSet;
 
-import javax.annotation.Nonnull;
-
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.cms.CMSAlgorithm;
 import org.bouncycastle.cms.CMSEnvelopedData;
@@ -35,10 +33,12 @@ import org.bouncycastle.cms.jcajce.JceKeyTransRecipientInfoGenerator;
 import com.helger.asic.AsicUtils;
 import com.helger.asic.IAsicWriter;
 import com.helger.asic.SignatureHelper;
+import com.helger.base.io.nonblocking.NonBlockingByteArrayInputStream;
+import com.helger.base.io.nonblocking.NonBlockingByteArrayOutputStream;
 import com.helger.bc.PBCProvider;
-import com.helger.commons.io.stream.NonBlockingByteArrayInputStream;
-import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
-import com.helger.commons.mime.IMimeType;
+import com.helger.mime.IMimeType;
+
+import jakarta.annotation.Nonnull;
 
 /**
  * Wrapper to seamlessly encode specific files.

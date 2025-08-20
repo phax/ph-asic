@@ -11,14 +11,15 @@
  */
 package com.helger.asic;
 
-import javax.annotation.Nonnull;
 import javax.xml.crypto.dsig.DigestMethod;
 
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.nist.NISTObjectIdentifiers;
 import org.bouncycastle.asn1.oiw.OIWObjectIdentifiers;
 
-import com.helger.commons.annotation.Nonempty;
+import com.helger.annotation.Nonempty;
+
+import jakarta.annotation.Nonnull;
 
 public enum EMessageDigestAlgorithm
 {

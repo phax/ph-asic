@@ -14,10 +14,10 @@ package com.helger.asic;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.NotThreadSafe;
+import com.helger.annotation.concurrent.NotThreadSafe;
+import com.helger.mime.IMimeType;
 
-import com.helger.commons.mime.IMimeType;
+import jakarta.annotation.Nonnull;
 
 @NotThreadSafe
 public abstract class AbstractAsicManifest

@@ -17,10 +17,10 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import javax.annotation.Nonnull;
-import javax.annotation.WillCloseWhenClosed;
+import com.helger.annotation.WillCloseWhenClosed;
+import com.helger.base.enforce.ValueEnforcer;
 
-import com.helger.commons.ValueEnforcer;
+import jakarta.annotation.Nonnull;
 
 public class AsicVerifierFactory
 {

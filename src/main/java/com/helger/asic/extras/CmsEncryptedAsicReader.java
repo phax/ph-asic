@@ -22,8 +22,6 @@ import java.nio.file.Path;
 import java.security.PrivateKey;
 import java.util.Collection;
 
-import javax.annotation.Nonnull;
-
 import org.bouncycastle.cms.CMSEnvelopedDataParser;
 import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.RecipientInformation;
@@ -32,9 +30,11 @@ import org.bouncycastle.cms.jcajce.JceKeyTransEnvelopedRecipient;
 import com.helger.asic.AsicUtils;
 import com.helger.asic.IAsicReader;
 import com.helger.asic.jaxb.asic.AsicManifest;
+import com.helger.base.io.nonblocking.NonBlockingByteArrayInputStream;
+import com.helger.base.io.nonblocking.NonBlockingByteArrayOutputStream;
 import com.helger.bc.PBCProvider;
-import com.helger.commons.io.stream.NonBlockingByteArrayInputStream;
-import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
+
+import jakarta.annotation.Nonnull;
 
 /**
  * Wrapper to seamlessly decode encoded files.

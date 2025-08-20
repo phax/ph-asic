@@ -21,16 +21,16 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.commons.base64.Base64;
-import com.helger.commons.io.resource.ClassPathResource;
-import com.helger.commons.io.stream.NullOutputStream;
+import com.helger.base.codec.base64.Base64;
+import com.helger.base.io.stream.NullOutputStream;
+import com.helger.io.resource.ClassPathResource;
 
 /**
  * @author steinar Date: 03.07.15 Time: 14.47
  */
 public final class SignatureTest
 {
-  private static final Logger LOG = LoggerFactory.getLogger (SignatureTest.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (SignatureTest.class);
 
   @Test
   public void createSampleDigest () throws Exception
@@ -50,8 +50,8 @@ public final class SignatureTest
       }
 
       final byte [] digest = aMD.digest ();
-      if (LOG.isDebugEnabled ())
-        LOG.debug (Base64.encodeBytes (digest));
+      if (LOGGER.isDebugEnabled ())
+        LOGGER.debug (Base64.encodeBytes (digest));
     }
   }
 }

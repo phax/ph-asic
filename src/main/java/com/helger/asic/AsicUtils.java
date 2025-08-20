@@ -21,21 +21,21 @@ import java.nio.file.Paths;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.WillNotClose;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.commons.annotation.PresentForCodeCoverage;
-import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
-import com.helger.commons.io.stream.NonClosingInputStream;
-import com.helger.commons.io.stream.StreamHelper;
-import com.helger.commons.mime.EMimeContentType;
-import com.helger.commons.mime.IMimeType;
-import com.helger.commons.mime.MimeTypeParser;
-import com.helger.commons.mime.MimeTypeParserException;
+import com.helger.annotation.WillNotClose;
+import com.helger.annotation.style.PresentForCodeCoverage;
+import com.helger.base.io.nonblocking.NonBlockingByteArrayOutputStream;
+import com.helger.base.io.stream.NonClosingInputStream;
+import com.helger.base.io.stream.StreamHelper;
+import com.helger.mime.EMimeContentType;
+import com.helger.mime.IMimeType;
+import com.helger.mime.parse.MimeTypeParser;
+import com.helger.mime.parse.MimeTypeParserException;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 public final class AsicUtils
 {

@@ -11,8 +11,6 @@
  */
 package com.helger.asic;
 
-import javax.annotation.Nonnull;
-
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cms.CMSProcessableByteArray;
 import org.bouncycastle.cms.CMSSignedData;
@@ -23,10 +21,12 @@ import org.bouncycastle.util.Store;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.annotation.style.PresentForCodeCoverage;
 import com.helger.asic.jaxb.asic.Certificate;
+import com.helger.base.timing.StopWatch;
 import com.helger.bc.PBCProvider;
-import com.helger.commons.annotation.PresentForCodeCoverage;
-import com.helger.commons.timing.StopWatch;
+
+import jakarta.annotation.Nonnull;
 
 /**
  * @author erlend

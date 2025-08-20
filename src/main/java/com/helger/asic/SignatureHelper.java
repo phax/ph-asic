@@ -19,8 +19,6 @@ import java.security.Provider;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 
-import javax.annotation.Nonnull;
-
 import org.bouncycastle.asn1.ASN1EncodableVector;
 import org.bouncycastle.asn1.DERNull;
 import org.bouncycastle.asn1.DERSet;
@@ -51,15 +49,17 @@ import org.bouncycastle.operator.jcajce.JcaDigestCalculatorProviderBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.base.codec.base64.Base64;
+import com.helger.base.enforce.ValueEnforcer;
 import com.helger.bc.PBCProvider;
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.base64.Base64;
-import com.helger.commons.collection.impl.CommonsArrayList;
-import com.helger.commons.text.util.TextHelper;
+import com.helger.collection.commons.CommonsArrayList;
 import com.helger.security.keystore.IKeyStoreType;
 import com.helger.security.keystore.KeyStoreHelper;
 import com.helger.security.keystore.LoadedKey;
 import com.helger.security.keystore.LoadedKeyStore;
+import com.helger.text.util.TextHelper;
+
+import jakarta.annotation.Nonnull;
 
 /**
  * Helper class to assist when creating a signature.
@@ -77,8 +77,8 @@ public class SignatureHelper
   private final KeyPair m_aKeyPair;
 
   /**
-   * Loads the keystore and obtains the private key, the public key and the
-   * associated certificate referenced by the alias.
+   * Loads the keystore and obtains the private key, the public key and the associated certificate
+   * referenced by the alias.
    *
    * @param aKeyStoreType
    *        Key store type.
@@ -103,8 +103,8 @@ public class SignatureHelper
   }
 
   /**
-   * Loads the keystore and obtains the private key, the public key and the
-   * associated certificate referenced by the alias.
+   * Loads the keystore and obtains the private key, the public key and the associated certificate
+   * referenced by the alias.
    *
    * @param aKeyStoreType
    *        Key store type.
@@ -161,11 +161,12 @@ public class SignatureHelper
     try
     {
       final Provider p = PBCProvider.getProvider ();
-      final DigestCalculatorProvider aDigestCalculatorProvider = new JcaDigestCalculatorProviderBuilder ().setProvider (p).build ();
+      final DigestCalculatorProvider aDigestCalculatorProvider = new JcaDigestCalculatorProviderBuilder ().setProvider (p)
+                                                                                                          .build ();
       final JcaContentSignerBuilder aJcaContentSignerBuilder = new JcaContentSignerBuilder (eMDAlgo.getContentSignerAlgorithm () +
                                                                                             "with" +
-                                                                                            m_aKeyPair.getPrivate ().getAlgorithm ())
-                                                                                                                                     .setProvider (p);
+                                                                                            m_aKeyPair.getPrivate ()
+                                                                                                      .getAlgorithm ()).setProvider (p);
 
       // Calculate signing certificate digest
       final MessageDigest aMD = MessageDigest.getInstance (eMDAlgo.getMessageDigestAlgorithm ());
@@ -194,7 +195,8 @@ public class SignatureHelper
                                                        aCertDigest,
                                                        aIssuerSerial);
         final SigningCertificateV2 aSigningCertificateV2 = new SigningCertificateV2 (aCertIdv2);
-        aAttribute = new Attribute (PKCSObjectIdentifiers.id_aa_signingCertificateV2, new DERSet (aSigningCertificateV2));
+        aAttribute = new Attribute (PKCSObjectIdentifiers.id_aa_signingCertificateV2,
+                                    new DERSet (aSigningCertificateV2));
       }
 
       // Add that attribute to a SignedAttributeTableGenerator
@@ -225,7 +227,8 @@ public class SignatureHelper
         aCMSSignedDataGenerator.addSignerInfoGenerator (aSignerInfoGenerator);
         aCMSSignedDataGenerator.addCertificates (new JcaCertStore (new CommonsArrayList <> (m_aX509Certificate)));
       }
-      final CMSSignedData aCMSSignedData = aCMSSignedDataGenerator.generate (new CMSProcessableByteArray (aData), false);
+      final CMSSignedData aCMSSignedData = aCMSSignedDataGenerator.generate (new CMSProcessableByteArray (aData),
+                                                                             false);
 
       if (LOGGER.isDebugEnabled ())
         LOGGER.debug (Base64.encodeBytes (aCMSSignedData.getEncoded ()));

@@ -19,8 +19,8 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.commons.io.stream.NonBlockingByteArrayInputStream;
-import com.helger.commons.mime.CMimeType;
+import com.helger.base.io.nonblocking.NonBlockingByteArrayInputStream;
+import com.helger.mime.CMimeType;
 
 public final class OasisManifestTest
 {

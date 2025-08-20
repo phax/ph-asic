@@ -20,7 +20,7 @@ import java.io.IOException;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import com.helger.commons.io.resource.ClassPathResource;
+import com.helger.io.resource.ClassPathResource;
 
 public final class AsicXadesReferenceTest
 {

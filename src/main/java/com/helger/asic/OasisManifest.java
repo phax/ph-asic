@@ -14,14 +14,14 @@ package com.helger.asic;
 import java.io.InputStream;
 import java.io.Serializable;
 
-import javax.annotation.Nonnegative;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
+import com.helger.annotation.Nonnegative;
 import com.helger.asic.jaxb.OasisManifestMarshaller;
 import com.helger.asic.jaxb.opendocument.manifest.FileEntry;
 import com.helger.asic.jaxb.opendocument.manifest.Manifest;
-import com.helger.commons.mime.IMimeType;
+import com.helger.mime.IMimeType;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 public class OasisManifest implements Serializable
 {

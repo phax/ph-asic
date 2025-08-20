@@ -37,9 +37,9 @@ import com.helger.asic.ESignatureMethod;
 import com.helger.asic.IAsicReader;
 import com.helger.asic.IAsicWriter;
 import com.helger.asic.TestUtil;
-import com.helger.commons.io.resource.ClassPathResource;
-import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
-import com.helger.commons.mime.CMimeType;
+import com.helger.base.io.nonblocking.NonBlockingByteArrayOutputStream;
+import com.helger.io.resource.ClassPathResource;
+import com.helger.mime.CMimeType;
 
 public final class CmsEncryptedAsicTest
 {

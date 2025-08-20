@@ -13,7 +13,7 @@ package com.helger.asic;
 
 import org.junit.Test;
 
-import com.helger.commons.mime.CMimeType;
+import com.helger.mime.CMimeType;
 
 public final class CadesAsicManifestTest
 {

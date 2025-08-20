@@ -22,23 +22,23 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.zip.ZipEntry;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.WillCloseWhenClosed;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.annotation.WillCloseWhenClosed;
 import com.helger.asic.jaxb.OasisManifestMarshaller;
 import com.helger.asic.jaxb.asic.AsicManifest;
 import com.helger.asic.jaxb.asic.Certificate;
 import com.helger.asic.jaxb.opendocument.manifest.Manifest;
-import com.helger.commons.base64.Base64;
-import com.helger.commons.collection.impl.CommonsHashMap;
-import com.helger.commons.collection.impl.ICommonsMap;
-import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
-import com.helger.commons.io.stream.NullOutputStream;
-import com.helger.commons.io.stream.StreamHelper;
+import com.helger.base.codec.base64.Base64;
+import com.helger.base.io.nonblocking.NonBlockingByteArrayOutputStream;
+import com.helger.base.io.stream.NullOutputStream;
+import com.helger.base.io.stream.StreamHelper;
+import com.helger.collection.commons.CommonsHashMap;
+import com.helger.collection.commons.ICommonsMap;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * Skeleton implementation of ASiC archive reader.
@@ -62,8 +62,7 @@ public abstract class AbstractAsicReader implements Closeable
   private boolean m_bContentIsConsumed = true;
 
   /**
-   * Used to hold signature or manifest for CAdES as they are not in the same
-   * file.
+   * Used to hold signature or manifest for CAdES as they are not in the same file.
    */
   private final ICommonsMap <String, byte []> m_aSigningContent = new CommonsHashMap <> ();
 
@@ -249,8 +248,7 @@ public abstract class AbstractAsicReader implements Closeable
   /**
    * Property getter for the OpenDocument manifest.
    *
-   * @return value of property, <code>null</code> if document is not found in
-   *         container.
+   * @return value of property, <code>null</code> if document is not found in container.
    */
   @Nullable
   public final Manifest getOasisManifest ()

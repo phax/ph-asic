@@ -11,7 +11,7 @@
  */
 package com.helger.asic;
 
-import com.helger.commons.annotation.DevelopersNote;
+import com.helger.annotation.misc.DevelopersNote;
 
 public enum ESignatureMethod
 {
