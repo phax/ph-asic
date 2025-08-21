@@ -84,32 +84,6 @@ public class SignatureHelper
    *        Key store type.
    * @param sKeyStorePath
    *        Path to keystore.
-   * @param sKeyStorePassword
-   *        password of the key store itself
-   * @param sKeyAlias
-   *        the alias referencing the private and public key pair.
-   * @param sKeyPassword
-   *        password protecting the private key
-   * @deprecated Use the version with char[] for passwords instead
-   */
-  @Deprecated (forRemoval = true, since = "3.0.1")
-  public SignatureHelper (@Nonnull final IKeyStoreType aKeyStoreType,
-                          @Nonnull final String sKeyStorePath,
-                          @Nonnull final String sKeyStorePassword,
-                          @Nonnull final String sKeyAlias,
-                          @Nonnull final String sKeyPassword)
-  {
-    this (aKeyStoreType, sKeyStorePath, sKeyStorePassword.toCharArray (), sKeyAlias, sKeyPassword.toCharArray ());
-  }
-
-  /**
-   * Loads the keystore and obtains the private key, the public key and the associated certificate
-   * referenced by the alias.
-   *
-   * @param aKeyStoreType
-   *        Key store type.
-   * @param sKeyStorePath
-   *        Path to keystore.
    * @param aKeyStorePassword
    *        password of the key store itself
    * @param sKeyAlias
