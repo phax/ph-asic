@@ -26,15 +26,15 @@ import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 
 /**
- * Reader for ASiC arachives.
- * 
+ * Reader for ASiC archives.
+ *
  * @author Philip Helger
  */
 public interface IAsicReader extends Closeable
 {
   /**
-   * Provides the name of the next entry in the ASiC archive and positions the
-   * inputstream at the beginning of the data.
+   * Provides the name of the next entry in the ASiC archive and positions the InputStream at the
+   * beginning of the data.
    *
    * @return name of next entry in archive.
    * @throws IOException
@@ -91,9 +91,8 @@ public interface IAsicReader extends Closeable
   InputStream inputStream () throws IOException;
 
   /**
-   * Get the read Manifest. The return value of this method is only present,
-   * after the manifest ZIP entry was read, so the safest way to access this
-   * method is after iterating the ASiC entries.
+   * Get the read Manifest. The return value of this method is only present, after the manifest ZIP
+   * entry was read, so the safest way to access this method is after iterating the ASiC entries.
    *
    * @return The ASIC manifest. May be <code>null</code>.
    */
