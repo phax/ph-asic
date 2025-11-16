@@ -26,6 +26,7 @@ import org.bouncycastle.cms.CMSEnvelopedDataParser;
 import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.RecipientInformation;
 import org.bouncycastle.cms.jcajce.JceKeyTransEnvelopedRecipient;
+import org.jspecify.annotations.NonNull;
 
 import com.helger.asic.AsicUtils;
 import com.helger.asic.IAsicReader;
@@ -33,8 +34,6 @@ import com.helger.asic.jaxb.asic.AsicManifest;
 import com.helger.base.io.nonblocking.NonBlockingByteArrayInputStream;
 import com.helger.base.io.nonblocking.NonBlockingByteArrayOutputStream;
 import com.helger.bc.PBCProvider;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * Wrapper to seamlessly decode encoded files.
@@ -45,7 +44,7 @@ public class CmsEncryptedAsicReader implements IAsicReader
   private final PrivateKey m_aPrivateKey;
   private String m_sCurrentFile;
 
-  public CmsEncryptedAsicReader (@Nonnull final IAsicReader aAsicReader, final PrivateKey aPrivateKey)
+  public CmsEncryptedAsicReader (@NonNull final IAsicReader aAsicReader, final PrivateKey aPrivateKey)
   {
     m_aAsicReader = aAsicReader;
     m_aPrivateKey = aPrivateKey;
@@ -106,7 +105,7 @@ public class CmsEncryptedAsicReader implements IAsicReader
     }
   }
 
-  @Nonnull
+  @NonNull
   public InputStream inputStream () throws IOException
   {
     final PipedInputStream aPIS = new PipedInputStream ();
@@ -121,7 +120,7 @@ public class CmsEncryptedAsicReader implements IAsicReader
     m_aAsicReader.close ();
   }
 
-  @Nonnull
+  @NonNull
   public AsicManifest getAsicManifest ()
   {
     final AsicManifest ret = m_aAsicReader.getAsicManifest ();

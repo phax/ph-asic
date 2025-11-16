@@ -18,6 +18,7 @@ import org.bouncycastle.cms.SignerInformation;
 import org.bouncycastle.cms.SignerInformationStore;
 import org.bouncycastle.cms.jcajce.JcaSimpleSignerInfoVerifierBuilder;
 import org.bouncycastle.util.Store;
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,8 +26,6 @@ import com.helger.annotation.style.PresentForCodeCoverage;
 import com.helger.asic.jaxb.asic.Certificate;
 import com.helger.base.timing.StopWatch;
 import com.helger.bc.PBCProvider;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * @author erlend
@@ -43,8 +42,8 @@ public final class SignatureVerifier
   private SignatureVerifier ()
   {}
 
-  @Nonnull
-  public static Certificate validate (@Nonnull final byte [] aData, @Nonnull final byte [] aSignature)
+  @NonNull
+  public static Certificate validate (@NonNull final byte [] aData, @NonNull final byte [] aSignature)
   {
     Certificate ret = null;
 

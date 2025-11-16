@@ -11,6 +11,8 @@
  */
 package com.helger.asic;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,9 +24,6 @@ import com.helger.base.codec.base64.Base64;
 import com.helger.mime.IMimeType;
 import com.helger.xsds.xmldsig.DigestMethodType;
 
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
-
 public class CadesAsicManifest extends AbstractAsicManifest
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (AbstractAsicManifest.class);
@@ -32,13 +31,13 @@ public class CadesAsicManifest extends AbstractAsicManifest
   private final ASiCManifestType m_aManifest = new ASiCManifestType ();
   private boolean m_bRootFilenameIsSet = false;
 
-  public CadesAsicManifest (@Nonnull final EMessageDigestAlgorithm eMDAlgo)
+  public CadesAsicManifest (@NonNull final EMessageDigestAlgorithm eMDAlgo)
   {
     super (eMDAlgo);
   }
 
   @Override
-  public void add (@Nonnull final String sFilename, @Nonnull final IMimeType aMimeType)
+  public void add (@NonNull final String sFilename, @NonNull final IMimeType aMimeType)
   {
     final DataObjectReferenceType aDataObjectRef = new DataObjectReferenceType ();
     aDataObjectRef.setURI (sFilename);
@@ -83,7 +82,7 @@ public class CadesAsicManifest extends AbstractAsicManifest
     m_aManifest.setSigReference (aSigReference);
   }
 
-  @Nonnull
+  @NonNull
   public ASiCManifestType getASiCManifest ()
   {
     return m_aManifest;
@@ -95,7 +94,7 @@ public class CadesAsicManifest extends AbstractAsicManifest
     return new ASiCManifestMarshaller ().getAsBytes (m_aManifest);
   }
 
-  @Nonnull
+  @NonNull
   public static String extractAndVerify (final String sXml, final ManifestVerifier aMV)
   {
     // Updating namespaces for compatibility with previous releases and other

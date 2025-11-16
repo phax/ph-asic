@@ -18,6 +18,8 @@ import java.security.cert.CertificateEncodingException;
 
 import javax.xml.crypto.dsig.CanonicalizationMethod;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.asic.jaxb.cades.XAdESSignaturesType;
 import com.helger.base.io.nonblocking.NonBlockingByteArrayOutputStream;
 import com.helger.datetime.helper.PDTFactory;
@@ -51,7 +53,6 @@ import com.helger.xsds.xmldsig.TransformsType;
 import com.helger.xsds.xmldsig.X509DataType;
 import com.helger.xsds.xmldsig.X509IssuerSerialType;
 
-import jakarta.annotation.Nonnull;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.JAXBException;
@@ -87,7 +88,7 @@ public class XadesAsicManifest extends AbstractAsicManifest
   // \XAdESSignature\Signature\Object\QualifyingProperties\SignedProperties\SignedDataObjectProperties
   private final SignedDataObjectPropertiesType m_aSignedDataObjectProperties = new SignedDataObjectPropertiesType ();
 
-  public XadesAsicManifest (@Nonnull final EMessageDigestAlgorithm eMDAlgo)
+  public XadesAsicManifest (@NonNull final EMessageDigestAlgorithm eMDAlgo)
   {
     super (eMDAlgo);
 
@@ -106,7 +107,7 @@ public class XadesAsicManifest extends AbstractAsicManifest
   }
 
   @Override
-  public void add (final String sFilename, @Nonnull final IMimeType aMimeType)
+  public void add (final String sFilename, @NonNull final IMimeType aMimeType)
   {
     final String id = "ID_" + m_aSignedInfo.getReference ().size ();
 
@@ -135,8 +136,8 @@ public class XadesAsicManifest extends AbstractAsicManifest
     }
   }
 
-  @Nonnull
-  XAdESSignaturesType getCreateXAdESSignatures (@Nonnull final SignatureHelper aSH)
+  @NonNull
+  XAdESSignaturesType getCreateXAdESSignatures (@NonNull final SignatureHelper aSH)
   {
     // \XAdESSignature
     final XAdESSignaturesType xAdESSignaturesType = new XAdESSignaturesType ();
@@ -163,7 +164,7 @@ public class XadesAsicManifest extends AbstractAsicManifest
     return xAdESSignaturesType;
   }
 
-  public byte [] getAsBytes (@Nonnull final SignatureHelper aSH)
+  public byte [] getAsBytes (@NonNull final SignatureHelper aSH)
   {
     try
     {
@@ -187,8 +188,8 @@ public class XadesAsicManifest extends AbstractAsicManifest
     }
   }
 
-  @Nonnull
-  private JAXBElement <X509DataType> _getX509Data (@Nonnull final SignatureHelper aSH)
+  @NonNull
+  private JAXBElement <X509DataType> _getX509Data (@NonNull final SignatureHelper aSH)
   {
     // \XAdESSignature\Signature\KeyInfo\X509Data
     final X509DataType x509DataType = new X509DataType ();
@@ -210,7 +211,7 @@ public class XadesAsicManifest extends AbstractAsicManifest
     return OF_XMLDSIG.createX509Data (x509DataType);
   }
 
-  private JAXBElement <QualifyingPropertiesType> _getQualifyingProperties (@Nonnull final SignatureHelper aSH)
+  private JAXBElement <QualifyingPropertiesType> _getQualifyingProperties (@NonNull final SignatureHelper aSH)
   {
     // \XAdESSignature\Signature\Object\QualifyingProperties\SignedProperties\SignedSignatureProperties
     final SignedSignaturePropertiesType aSignedSignatureProperties = new SignedSignaturePropertiesType ();
@@ -330,7 +331,7 @@ public class XadesAsicManifest extends AbstractAsicManifest
     return new SignatureValueType ();
   }
 
-  public static void extractAndVerify (@Nonnull final String sXml, final ManifestVerifier aMV)
+  public static void extractAndVerify (@NonNull final String sXml, final ManifestVerifier aMV)
   {
     // Updating namespace
     String sRealXML = sXml.replace ("http://uri.etsi.org/02918/v1.1.1#", "http://uri.etsi.org/02918/v1.2.1#");

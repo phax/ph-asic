@@ -46,6 +46,7 @@ import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.DigestCalculatorProvider;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.bouncycastle.operator.jcajce.JcaDigestCalculatorProviderBuilder;
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,8 +59,6 @@ import com.helger.security.keystore.KeyStoreHelper;
 import com.helger.security.keystore.LoadedKey;
 import com.helger.security.keystore.LoadedKeyStore;
 import com.helger.text.util.TextHelper;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * Helper class to assist when creating a signature.
@@ -92,11 +91,11 @@ public class SignatureHelper
    *        password protecting the private key
    * @since 3.0.1
    */
-  public SignatureHelper (@Nonnull final IKeyStoreType aKeyStoreType,
-                          @Nonnull final String sKeyStorePath,
-                          @Nonnull final char [] aKeyStorePassword,
-                          @Nonnull final String sKeyAlias,
-                          @Nonnull final char [] aKeyPassword)
+  public SignatureHelper (@NonNull final IKeyStoreType aKeyStoreType,
+                          @NonNull final String sKeyStorePath,
+                          @NonNull final char [] aKeyStorePassword,
+                          @NonNull final String sKeyAlias,
+                          @NonNull final char [] aKeyPassword)
   {
     ValueEnforcer.notNull (aKeyStoreType, "KeyStoreType");
     ValueEnforcer.notNull (sKeyStorePath, "KeyStorePath");
@@ -130,7 +129,7 @@ public class SignatureHelper
    *        Message Digest Algorithm
    * @return Signature
    */
-  protected final byte [] signData (@Nonnull final byte [] aData, @Nonnull final EMessageDigestAlgorithm eMDAlgo)
+  protected final byte [] signData (@NonNull final byte [] aData, @NonNull final EMessageDigestAlgorithm eMDAlgo)
   {
     try
     {
@@ -214,19 +213,19 @@ public class SignatureHelper
     }
   }
 
-  @Nonnull
+  @NonNull
   protected final X509Certificate getX509Certificate ()
   {
     return m_aX509Certificate;
   }
 
-  @Nonnull
+  @NonNull
   protected final Certificate [] getCertificateChain ()
   {
     return m_aCertificateChain;
   }
 
-  @Nonnull
+  @NonNull
   protected final KeyPair getKeyPair ()
   {
     return m_aKeyPair;

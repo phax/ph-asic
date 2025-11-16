@@ -29,6 +29,7 @@ import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.CMSProcessableByteArray;
 import org.bouncycastle.cms.jcajce.JceCMSContentEncryptorBuilder;
 import org.bouncycastle.cms.jcajce.JceKeyTransRecipientInfoGenerator;
+import org.jspecify.annotations.NonNull;
 
 import com.helger.asic.AsicUtils;
 import com.helger.asic.IAsicWriter;
@@ -37,8 +38,6 @@ import com.helger.base.io.nonblocking.NonBlockingByteArrayInputStream;
 import com.helger.base.io.nonblocking.NonBlockingByteArrayOutputStream;
 import com.helger.bc.PBCProvider;
 import com.helger.mime.IMimeType;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * Wrapper to seamlessly encode specific files.
@@ -65,33 +64,33 @@ public class CmsEncryptedAsicWriter implements IAsicWriter
     m_aCmsAlgorithm = aCMSAlgorithm;
   }
 
-  @Nonnull
-  public IAsicWriter add (@Nonnull final InputStream aIS,
-                          @Nonnull final String sFilename,
-                          @Nonnull final IMimeType aMimeType) throws IOException
+  @NonNull
+  public IAsicWriter add (@NonNull final InputStream aIS,
+                          @NonNull final String sFilename,
+                          @NonNull final IMimeType aMimeType) throws IOException
   {
     return m_aAsicWriter.add (aIS, sFilename, aMimeType);
   }
 
-  @Nonnull
+  @NonNull
   public IAsicWriter addEncrypted (final File aFile) throws IOException
   {
     return addEncrypted (aFile.toPath ());
   }
 
-  @Nonnull
+  @NonNull
   public IAsicWriter addEncrypted (final File aFile, final String sEntryName) throws IOException
   {
     return addEncrypted (aFile.toPath (), sEntryName);
   }
 
-  @Nonnull
+  @NonNull
   public IAsicWriter addEncrypted (final Path aFile) throws IOException
   {
     return addEncrypted (aFile, aFile.toFile ().getName ());
   }
 
-  @Nonnull
+  @NonNull
   public IAsicWriter addEncrypted (final Path aFile, final String sEntryName) throws IOException
   {
     try (final InputStream aIS = Files.newInputStream (aFile))
@@ -101,13 +100,13 @@ public class CmsEncryptedAsicWriter implements IAsicWriter
     return this;
   }
 
-  @Nonnull
+  @NonNull
   public IAsicWriter addEncrypted (final InputStream aIS, final String sFilename) throws IOException
   {
     return addEncrypted (aIS, sFilename, AsicUtils.detectMime (sFilename));
   }
 
-  @Nonnull
+  @NonNull
   public IAsicWriter addEncrypted (final File aFile,
                                    final String sEntryName,
                                    final IMimeType aMimeType) throws IOException
@@ -115,7 +114,7 @@ public class CmsEncryptedAsicWriter implements IAsicWriter
     return addEncrypted (aFile.toPath (), sEntryName, aMimeType);
   }
 
-  @Nonnull
+  @NonNull
   public IAsicWriter addEncrypted (final Path aFile,
                                    final String sEntryName,
                                    final IMimeType aMimeType) throws IOException
@@ -127,7 +126,7 @@ public class CmsEncryptedAsicWriter implements IAsicWriter
     return this;
   }
 
-  @Nonnull
+  @NonNull
   public IAsicWriter addEncrypted (final InputStream aIS,
                                    final String sFilename,
                                    final IMimeType aMimeType) throws IOException
@@ -154,7 +153,7 @@ public class CmsEncryptedAsicWriter implements IAsicWriter
     }
   }
 
-  @Nonnull
+  @NonNull
   public IAsicWriter setRootEntryName (final String sName)
   {
     String name = sName;
@@ -164,8 +163,8 @@ public class CmsEncryptedAsicWriter implements IAsicWriter
     return m_aAsicWriter.setRootEntryName (name);
   }
 
-  @Nonnull
-  public IAsicWriter sign (@Nonnull final SignatureHelper aSH) throws IOException
+  @NonNull
+  public IAsicWriter sign (@NonNull final SignatureHelper aSH) throws IOException
   {
     return m_aAsicWriter.sign (aSH);
   }

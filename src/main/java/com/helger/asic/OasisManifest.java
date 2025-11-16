@@ -14,14 +14,14 @@ package com.helger.asic;
 import java.io.InputStream;
 import java.io.Serializable;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import com.helger.annotation.Nonnegative;
 import com.helger.asic.jaxb.OasisManifestMarshaller;
 import com.helger.asic.jaxb.opendocument.manifest.FileEntry;
 import com.helger.asic.jaxb.opendocument.manifest.Manifest;
 import com.helger.mime.IMimeType;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 public class OasisManifest implements Serializable
 {
@@ -29,20 +29,20 @@ public class OasisManifest implements Serializable
 
   private final Manifest m_aManifest;
 
-  public OasisManifest (@Nonnull final IMimeType aMimeType)
+  public OasisManifest (@NonNull final IMimeType aMimeType)
   {
     m_aManifest = new Manifest ();
     add ("/", aMimeType);
   }
 
-  public OasisManifest (@Nonnull final InputStream aIS)
+  public OasisManifest (@NonNull final InputStream aIS)
   {
     m_aManifest = new OasisManifestMarshaller ().read (aIS);
     if (m_aManifest == null)
       throw new IllegalStateException ("Failed to read Manifest from IS");
   }
 
-  public final void add (@Nonnull final String sPath, @Nonnull final IMimeType aMimeType)
+  public final void add (@NonNull final String sPath, @NonNull final IMimeType aMimeType)
   {
     final FileEntry aEntry = new FileEntry ();
     aEntry.setMediaType (aMimeType.getAsString ());
@@ -50,7 +50,7 @@ public class OasisManifest implements Serializable
     m_aManifest.getFileEntry ().add (aEntry);
   }
 
-  public void addAll (@Nonnull final OasisManifest aOther)
+  public void addAll (@NonNull final OasisManifest aOther)
   {
     for (final FileEntry aEntry : aOther.m_aManifest.getFileEntry ())
       if (!aEntry.getFullPath ().equals ("/"))

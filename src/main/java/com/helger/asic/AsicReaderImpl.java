@@ -15,26 +15,26 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import com.helger.annotation.WillCloseWhenClosed;
+import org.jspecify.annotations.NonNull;
 
-import jakarta.annotation.Nonnull;
+import com.helger.annotation.WillCloseWhenClosed;
 
 public class AsicReaderImpl extends AbstractAsicReader implements IAsicReader
 {
-  protected AsicReaderImpl (@Nonnull final EMessageDigestAlgorithm eMDAlgo,
-                            @Nonnull @WillCloseWhenClosed final InputStream aIS)
+  protected AsicReaderImpl (@NonNull final EMessageDigestAlgorithm eMDAlgo,
+                            @NonNull @WillCloseWhenClosed final InputStream aIS)
   {
     super (eMDAlgo, aIS);
   }
 
   @Override
-  public void writeFile (@Nonnull final OutputStream aOS) throws IOException
+  public void writeFile (@NonNull final OutputStream aOS) throws IOException
   {
     super.internalWriteFile (aOS);
   }
 
   @Override
-  @Nonnull
+  @NonNull
   public InputStream inputStream ()
   {
     return super.internalInputStream ();

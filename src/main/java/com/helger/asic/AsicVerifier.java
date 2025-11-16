@@ -14,15 +14,15 @@ package com.helger.asic;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.annotation.WillClose;
 import com.helger.base.io.stream.NullOutputStream;
 
-import jakarta.annotation.Nonnull;
-
 public class AsicVerifier extends AbstractAsicReader
 {
-  protected AsicVerifier (@Nonnull final EMessageDigestAlgorithm eMDAlgo,
-                          @Nonnull @WillClose final InputStream aIS) throws IOException
+  protected AsicVerifier (@NonNull final EMessageDigestAlgorithm eMDAlgo,
+                          @NonNull @WillClose final InputStream aIS) throws IOException
   {
     super (eMDAlgo, aIS);
 

@@ -17,47 +17,47 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.annotation.WillCloseWhenClosed;
 import com.helger.base.enforce.ValueEnforcer;
-
-import jakarta.annotation.Nonnull;
 
 public class AsicVerifierFactory
 {
   private final EMessageDigestAlgorithm m_eMDAlgo;
 
-  @Nonnull
+  @NonNull
   public static AsicVerifierFactory newFactory ()
   {
     return newFactory (EMessageDigestAlgorithm.DEFAULT);
   }
 
-  @Nonnull
-  public static AsicVerifierFactory newFactory (@Nonnull final EMessageDigestAlgorithm eMDAlgo)
+  @NonNull
+  public static AsicVerifierFactory newFactory (@NonNull final EMessageDigestAlgorithm eMDAlgo)
   {
     return new AsicVerifierFactory (eMDAlgo);
   }
 
-  protected AsicVerifierFactory (@Nonnull final EMessageDigestAlgorithm eMDAlgo)
+  protected AsicVerifierFactory (@NonNull final EMessageDigestAlgorithm eMDAlgo)
   {
     ValueEnforcer.notNull (eMDAlgo, "MDAlgo");
     m_eMDAlgo = eMDAlgo;
   }
 
-  @Nonnull
-  public AsicVerifier verify (@Nonnull final File aFile) throws IOException
+  @NonNull
+  public AsicVerifier verify (@NonNull final File aFile) throws IOException
   {
     return verify (aFile.toPath ());
   }
 
-  @Nonnull
-  public AsicVerifier verify (@Nonnull final Path aFile) throws IOException
+  @NonNull
+  public AsicVerifier verify (@NonNull final Path aFile) throws IOException
   {
     return verify (Files.newInputStream (aFile));
   }
 
-  @Nonnull
-  public AsicVerifier verify (@Nonnull @WillCloseWhenClosed final InputStream aIS) throws IOException
+  @NonNull
+  public AsicVerifier verify (@NonNull @WillCloseWhenClosed final InputStream aIS) throws IOException
   {
     return new AsicVerifier (m_eMDAlgo, aIS);
   }

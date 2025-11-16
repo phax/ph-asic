@@ -17,10 +17,10 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.annotation.WillNotClose;
 import com.helger.mime.IMimeType;
-
-import jakarta.annotation.Nonnull;
 
 public interface IAsicWriter
 {
@@ -34,8 +34,8 @@ public interface IAsicWriter
    * @throws IOException
    *         in case of IO error
    */
-  @Nonnull
-  default IAsicWriter add (@Nonnull final File aFile) throws IOException
+  @NonNull
+  default IAsicWriter add (@NonNull final File aFile) throws IOException
   {
     return add (aFile.toPath ());
   }
@@ -52,8 +52,8 @@ public interface IAsicWriter
    * @throws IOException
    *         in case of error
    */
-  @Nonnull
-  default IAsicWriter add (@Nonnull final File aFile, @Nonnull final String sFilename) throws IOException
+  @NonNull
+  default IAsicWriter add (@NonNull final File aFile, @NonNull final String sFilename) throws IOException
   {
     return add (aFile.toPath (), sFilename);
   }
@@ -68,8 +68,8 @@ public interface IAsicWriter
    *         in case of an IO error
    * @see #add(File)
    */
-  @Nonnull
-  default IAsicWriter add (@Nonnull final Path aFile) throws IOException
+  @NonNull
+  default IAsicWriter add (@NonNull final Path aFile) throws IOException
   {
     return add (aFile, aFile.toFile ().getName ());
   }
@@ -87,8 +87,8 @@ public interface IAsicWriter
    *         in case of an IO error
    * @see #add(File, String)
    */
-  @Nonnull
-  default IAsicWriter add (@Nonnull final Path aFile, @Nonnull final String sFilename) throws IOException
+  @NonNull
+  default IAsicWriter add (@NonNull final Path aFile, @NonNull final String sFilename) throws IOException
   {
     try (final InputStream inputStream = Files.newInputStream (aFile))
     {
@@ -110,9 +110,9 @@ public interface IAsicWriter
    * @throws IOException
    *         in case of an IO error
    */
-  @Nonnull
-  default IAsicWriter add (@Nonnull @WillNotClose final InputStream aIS,
-                           @Nonnull final String sFilename) throws IOException
+  @NonNull
+  default IAsicWriter add (@NonNull @WillNotClose final InputStream aIS,
+                           @NonNull final String sFilename) throws IOException
   {
     // Add file to container
     return add (aIS, sFilename, AsicUtils.detectMime (sFilename));
@@ -132,10 +132,10 @@ public interface IAsicWriter
    * @throws IOException
    *         in case of an IO error
    */
-  @Nonnull
-  default IAsicWriter add (@Nonnull final File aFile,
-                           @Nonnull final String sFilename,
-                           @Nonnull final IMimeType aMimeType) throws IOException
+  @NonNull
+  default IAsicWriter add (@NonNull final File aFile,
+                           @NonNull final String sFilename,
+                           @NonNull final IMimeType aMimeType) throws IOException
   {
     return add (aFile.toPath (), sFilename, aMimeType);
   }
@@ -154,10 +154,10 @@ public interface IAsicWriter
    * @throws IOException
    *         on IO error
    */
-  @Nonnull
-  default IAsicWriter add (@Nonnull final Path aFile,
-                           @Nonnull final String sFilename,
-                           @Nonnull final IMimeType aMimeType) throws IOException
+  @NonNull
+  default IAsicWriter add (@NonNull final Path aFile,
+                           @NonNull final String sFilename,
+                           @NonNull final IMimeType aMimeType) throws IOException
   {
     try (final InputStream aIS = Files.newInputStream (aFile))
     {
@@ -180,10 +180,10 @@ public interface IAsicWriter
    * @throws IOException
    *         on IO error
    */
-  @Nonnull
-  IAsicWriter add (@Nonnull InputStream aIS,
-                   @Nonnull String sFilename,
-                   @Nonnull IMimeType aMimeType) throws IOException;
+  @NonNull
+  IAsicWriter add (@NonNull InputStream aIS,
+                   @NonNull String sFilename,
+                   @NonNull IMimeType aMimeType) throws IOException;
 
   /**
    * Specifies which entry (file) represents the "root" document, i.e. which
@@ -193,7 +193,7 @@ public interface IAsicWriter
    *        of entry holding the root document.
    * @return reference to this AsicWriter
    */
-  @Nonnull
+  @NonNull
   IAsicWriter setRootEntryName (String name);
 
   /**
@@ -206,6 +206,6 @@ public interface IAsicWriter
    * @throws IOException
    *         in case of an IO error
    */
-  @Nonnull
-  IAsicWriter sign (@Nonnull SignatureHelper aSH) throws IOException;
+  @NonNull
+  IAsicWriter sign (@NonNull SignatureHelper aSH) throws IOException;
 }

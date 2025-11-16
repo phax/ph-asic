@@ -18,12 +18,11 @@ import java.util.zip.CRC32;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.mime.IMimeType;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * Stream handling requirements to ASiC files.
@@ -32,7 +31,7 @@ public class AsicOutputStream extends ZipOutputStream
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (AsicOutputStream.class);
 
-  public AsicOutputStream (@Nonnull final OutputStream aOS) throws IOException
+  public AsicOutputStream (@NonNull final OutputStream aOS) throws IOException
   {
     super (aOS);
 
@@ -40,7 +39,7 @@ public class AsicOutputStream extends ZipOutputStream
     _putMimeTypeAsFirstEntry (AsicUtils.MIMETYPE_ASICE);
   }
 
-  private void _putMimeTypeAsFirstEntry (@Nonnull final IMimeType aMimeType) throws IOException
+  private void _putMimeTypeAsFirstEntry (@NonNull final IMimeType aMimeType) throws IOException
   {
     final String sMimeType = aMimeType.getAsString ();
     final ZipEntry aZipEntry = new ZipEntry (AsicInputStream.ZIPENTRY_NAME_MIMETYPE);
@@ -57,13 +56,13 @@ public class AsicOutputStream extends ZipOutputStream
     writeZipEntry (aZipEntry, aContentBytes);
   }
 
-  protected final void writeZipEntry (@Nonnull final String sFilename, @Nonnull final byte [] bytes) throws IOException
+  protected final void writeZipEntry (@NonNull final String sFilename, @NonNull final byte [] bytes) throws IOException
   {
     writeZipEntry (new ZipEntry (sFilename), bytes);
   }
 
-  protected final void writeZipEntry (@Nonnull final ZipEntry aZipEntry,
-                                      @Nonnull final byte [] bytes) throws IOException
+  protected final void writeZipEntry (@NonNull final ZipEntry aZipEntry,
+                                      @NonNull final byte [] bytes) throws IOException
   {
     try
     {

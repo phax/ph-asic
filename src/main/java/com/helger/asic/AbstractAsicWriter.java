@@ -17,6 +17,8 @@ import java.io.OutputStream;
 import java.security.DigestOutputStream;
 import java.util.zip.ZipEntry;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,9 +26,6 @@ import com.helger.annotation.OverridingMethodsMustInvokeSuper;
 import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.mime.IMimeType;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * Abstract implementation of {@link IAsicWriter}.
@@ -58,9 +57,9 @@ public abstract class AbstractAsicWriter implements IAsicWriter
    * @throws IOException
    *         in case of IO error
    */
-  protected AbstractAsicWriter (@Nonnull final OutputStream aOS,
+  protected AbstractAsicWriter (@NonNull final OutputStream aOS,
                                 final boolean bCloseStreamOnSign,
-                                @Nonnull final AbstractAsicManifest aAsicManifest,
+                                @NonNull final AbstractAsicManifest aAsicManifest,
                                 final boolean bWriteOasisManifest) throws IOException
   {
     // Keep original output stream
@@ -77,10 +76,10 @@ public abstract class AbstractAsicWriter implements IAsicWriter
     m_aOasisManifest = bWriteOasisManifest ? new OasisManifest (AsicUtils.MIMETYPE_ASICE) : null;
   }
 
-  @Nonnull
-  public IAsicWriter add (@Nonnull final InputStream aIS,
-                          @Nonnull final String sFilename,
-                          @Nonnull final IMimeType aMimeType) throws IOException, IllegalStateException
+  @NonNull
+  public IAsicWriter add (@NonNull final InputStream aIS,
+                          @NonNull final String sFilename,
+                          @NonNull final IMimeType aMimeType) throws IOException, IllegalStateException
   {
     ValueEnforcer.notNull (aIS, "IS");
     ValueEnforcer.notNull (sFilename, "Filename");
@@ -128,10 +127,10 @@ public abstract class AbstractAsicWriter implements IAsicWriter
    * @throws IOException
    *         in case of IO error
    */
-  protected abstract void performSign (@Nonnull SignatureHelper aSH) throws IOException;
+  protected abstract void performSign (@NonNull SignatureHelper aSH) throws IOException;
 
-  @Nonnull
-  public IAsicWriter sign (@Nonnull final SignatureHelper aSH) throws IOException
+  @NonNull
+  public IAsicWriter sign (@NonNull final SignatureHelper aSH) throws IOException
   {
     // You may only sign once
     if (m_bFinished)
@@ -175,7 +174,7 @@ public abstract class AbstractAsicWriter implements IAsicWriter
   }
 
   // Cannot be final
-  @Nonnull
+  @NonNull
   @OverridingMethodsMustInvokeSuper
   public AbstractAsicManifest getAsicManifest ()
   {

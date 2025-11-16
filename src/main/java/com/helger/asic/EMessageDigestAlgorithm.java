@@ -16,10 +16,9 @@ import javax.xml.crypto.dsig.DigestMethod;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.nist.NISTObjectIdentifiers;
 import org.bouncycastle.asn1.oiw.OIWObjectIdentifiers;
+import org.jspecify.annotations.NonNull;
 
 import com.helger.annotation.Nonempty;
-
-import jakarta.annotation.Nonnull;
 
 public enum EMessageDigestAlgorithm
 {
@@ -36,10 +35,10 @@ public enum EMessageDigestAlgorithm
   private final ASN1ObjectIdentifier m_aOID;
   private final String m_sURI;
 
-  private EMessageDigestAlgorithm (@Nonnull @Nonempty final String sMessageDigestAlgorithm,
-                                   @Nonnull @Nonempty final String sContentSignerAlgorithm,
-                                   @Nonnull final ASN1ObjectIdentifier aOID,
-                                   @Nonnull @Nonempty final String sURI)
+  private EMessageDigestAlgorithm (@NonNull @Nonempty final String sMessageDigestAlgorithm,
+                                   @NonNull @Nonempty final String sContentSignerAlgorithm,
+                                   @NonNull final ASN1ObjectIdentifier aOID,
+                                   @NonNull @Nonempty final String sURI)
   {
     m_sMessageDigestAlgorithm = sMessageDigestAlgorithm;
     m_sContentSignerAlgorithm = sContentSignerAlgorithm;
@@ -53,7 +52,7 @@ public enum EMessageDigestAlgorithm
    * @return The name of the algorithm to be used for <code>MessageDigest</code>
    *         instances. Never <code>null</code> nor empty.
    */
-  @Nonnull
+  @NonNull
   @Nonempty
   public String getMessageDigestAlgorithm ()
   {
@@ -70,14 +69,14 @@ public enum EMessageDigestAlgorithm
    *         instances. Never <code>null</code> nor empty.
    * @since 1.4.0
    */
-  @Nonnull
+  @NonNull
   @Nonempty
   public String getContentSignerAlgorithm ()
   {
     return m_sContentSignerAlgorithm;
   }
 
-  @Nonnull
+  @NonNull
   @Nonempty
   public String getUri ()
   {
@@ -88,7 +87,7 @@ public enum EMessageDigestAlgorithm
    * @return The OID of the algorithm. Never <code>null</code>.
    * @since 1.4.1
    */
-  @Nonnull
+  @NonNull
   public ASN1ObjectIdentifier getOID ()
   {
     return m_aOID;

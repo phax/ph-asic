@@ -14,6 +14,9 @@ package com.helger.asic;
 import java.io.Serializable;
 import java.util.Arrays;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.asic.jaxb.asic.AsicFile;
 import com.helger.asic.jaxb.asic.AsicManifest;
@@ -21,9 +24,6 @@ import com.helger.asic.jaxb.asic.Certificate;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.collection.commons.CommonsHashMap;
 import com.helger.collection.commons.ICommonsMap;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 @NotThreadSafe
 public class ManifestVerifier implements Serializable
@@ -43,16 +43,16 @@ public class ManifestVerifier implements Serializable
     return m_eReferenceMD;
   }
 
-  public void update (@Nonnull final String sFilename,
-                      @Nonnull final byte [] aDigest,
+  public void update (@NonNull final String sFilename,
+                      @NonNull final byte [] aDigest,
                       @Nullable final String sSigReference)
   {
     update (sFilename, null, aDigest, null, sSigReference);
   }
 
-  public void update (@Nonnull final String sFilename,
+  public void update (@NonNull final String sFilename,
                       @Nullable final String sMimeType,
-                      @Nonnull final byte [] aDigest,
+                      @NonNull final byte [] aDigest,
                       @Nullable final String sDigestAlgorithm,
                       @Nullable final String sSigReference)
   {
@@ -86,7 +86,7 @@ public class ManifestVerifier implements Serializable
       aAsicFile.getCertRef ().add (sSigReference);
   }
 
-  public void addCertificate (@Nonnull final Certificate aCertificate)
+  public void addCertificate (@NonNull final Certificate aCertificate)
   {
     ValueEnforcer.notNull (aCertificate, "Certificate");
     m_aAsicManifest.addCertificate (aCertificate);
@@ -104,7 +104,7 @@ public class ManifestVerifier implements Serializable
         throw new IllegalStateException ("File not verified: " + aAsicFile.getName ());
   }
 
-  @Nonnull
+  @NonNull
   public final AsicManifest getAsicManifest ()
   {
     return m_aAsicManifest;

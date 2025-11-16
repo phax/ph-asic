@@ -21,6 +21,8 @@ import java.nio.file.Paths;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,9 +35,6 @@ import com.helger.mime.EMimeContentType;
 import com.helger.mime.IMimeType;
 import com.helger.mime.parse.MimeTypeParser;
 import com.helger.mime.parse.MimeTypeParserException;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 public final class AsicUtils
 {
@@ -84,7 +83,7 @@ public final class AsicUtils
    * @throws IOException
    *         in case of error
    */
-  public static void combine (@Nonnull final OutputStream aOS, @Nonnull final InputStream... aISs) throws IOException
+  public static void combine (@NonNull final OutputStream aOS, @NonNull final InputStream... aISs) throws IOException
   {
     // Statuses
     int nManifestCounter = 0;

@@ -17,12 +17,11 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.base.enforce.ValueEnforcer;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * Creates AsicWriter instances according to the supplied parameters.
@@ -34,21 +33,21 @@ public class AsicWriterFactory
   private final ESignatureMethod m_eSM;
   private EMessageDigestAlgorithm m_eMDAlgo;
 
-  protected AsicWriterFactory (@Nonnull final ESignatureMethod eSM)
+  protected AsicWriterFactory (@NonNull final ESignatureMethod eSM)
   {
     ValueEnforcer.notNull (eSM, "SM");
     m_eSM = eSM;
     m_eMDAlgo = EMessageDigestAlgorithm.DEFAULT;
   }
 
-  @Nonnull
+  @NonNull
   public final EMessageDigestAlgorithm getMDAlgo ()
   {
     return m_eMDAlgo;
   }
 
-  @Nonnull
-  public final AsicWriterFactory setMDAlgo (@Nonnull final EMessageDigestAlgorithm eMDAlgo)
+  @NonNull
+  public final AsicWriterFactory setMDAlgo (@NonNull final EMessageDigestAlgorithm eMDAlgo)
   {
     ValueEnforcer.notNull (eMDAlgo, "MDAlgo");
     m_eMDAlgo = eMDAlgo;
@@ -67,8 +66,8 @@ public class AsicWriterFactory
    * @throws IOException
    *         on IO error
    */
-  @Nonnull
-  public IAsicWriter newContainer (@Nonnull final File aOutputDir, @Nonnull final String sFilename) throws IOException
+  @NonNull
+  public IAsicWriter newContainer (@NonNull final File aOutputDir, @NonNull final String sFilename) throws IOException
   {
     return newContainer (new File (aOutputDir, sFilename));
   }
@@ -83,14 +82,14 @@ public class AsicWriterFactory
    * @throws IOException
    *         on IO error
    */
-  @Nonnull
-  public IAsicWriter newContainer (@Nonnull final File aFile) throws IOException
+  @NonNull
+  public IAsicWriter newContainer (@NonNull final File aFile) throws IOException
   {
     return newContainer (aFile.toPath ());
   }
 
-  @Nonnull
-  public IAsicWriter newContainer (@Nonnull final Path aPath) throws IOException
+  @NonNull
+  public IAsicWriter newContainer (@NonNull final Path aPath) throws IOException
   {
     // Conformance to ETSI TS 102 918, 6.2.1 1)
     if (!AsicUtils.PATTERN_EXTENSION_ASICE.matcher (aPath.toString ()).matches ())
@@ -109,21 +108,21 @@ public class AsicWriterFactory
    * @throws IOException
    *         on IO error
    */
-  @Nonnull
-  public IAsicWriter newContainer (@Nonnull final OutputStream aOS) throws IOException
+  @NonNull
+  public IAsicWriter newContainer (@NonNull final OutputStream aOS) throws IOException
   {
     return newContainer (aOS, false);
   }
 
-  @Nonnull
-  public IAsicWriter newContainer (@Nonnull final OutputStream aOS, final boolean bCloseStreamOnSign) throws IOException
+  @NonNull
+  public IAsicWriter newContainer (@NonNull final OutputStream aOS, final boolean bCloseStreamOnSign) throws IOException
   {
     return newContainer (aOS, bCloseStreamOnSign, true);
   }
 
   @SuppressWarnings ("deprecation")
-  @Nonnull
-  public IAsicWriter newContainer (@Nonnull final OutputStream aOS,
+  @NonNull
+  public IAsicWriter newContainer (@NonNull final OutputStream aOS,
                                    final boolean bCloseStreamOnSign,
                                    final boolean bWriteOasisManifest) throws IOException
   {
@@ -146,8 +145,8 @@ public class AsicWriterFactory
    * @return instantiated AsicWriterFactory
    * @see ESignatureMethod
    */
-  @Nonnull
-  public static AsicWriterFactory newFactory (@Nonnull final ESignatureMethod eSignatureMethod)
+  @NonNull
+  public static AsicWriterFactory newFactory (@NonNull final ESignatureMethod eSignatureMethod)
   {
     return new AsicWriterFactory (eSignatureMethod);
   }

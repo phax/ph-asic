@@ -17,19 +17,18 @@ import java.nio.charset.StandardCharsets;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.base.io.nonblocking.NonBlockingByteArrayOutputStream;
-
-import jakarta.annotation.Nonnull;
 
 public class AsicInputStream extends ZipInputStream
 {
   public static final String ZIPENTRY_NAME_MIMETYPE = "mimetype";
   private static final Logger LOGGER = LoggerFactory.getLogger (AsicInputStream.class);
 
-  public AsicInputStream (@Nonnull final InputStream aIS)
+  public AsicInputStream (@NonNull final InputStream aIS)
   {
     super (aIS);
   }

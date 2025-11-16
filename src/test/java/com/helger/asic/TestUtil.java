@@ -15,11 +15,11 @@ import static org.junit.Assert.assertNotNull;
 
 import java.io.InputStream;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.base.io.stream.StreamHelper;
 import com.helger.security.keystore.EKeyStoreType;
 import com.helger.security.keystore.KeyStoreHelper;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * @author steinar Date: 21.07.15 Time: 18.48
@@ -54,31 +54,31 @@ public final class TestUtil
    *
    * @return JKS key store path
    */
-  @Nonnull
+  @NonNull
   public static String keyStorePathJKS ()
   {
     return KEY_STORE_RESOURCE_NAME;
   }
 
-  @Nonnull
+  @NonNull
   public static char [] keyStorePassword ()
   {
     return "changeit".toCharArray ();
   }
 
-  @Nonnull
+  @NonNull
   public static String keyPairAlias ()
   {
     return "selfsigned";
   }
 
-  @Nonnull
+  @NonNull
   public static char [] privateKeyPassword ()
   {
     return "changeit".toCharArray ();
   }
 
-  @Nonnull
+  @NonNull
   public static SignatureHelper createSH ()
   {
     return new SignatureHelper (EKeyStoreType.JKS, keyStorePathJKS (), keyStorePassword (), keyPairAlias (), privateKeyPassword ());

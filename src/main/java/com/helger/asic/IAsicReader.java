@@ -19,11 +19,11 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import com.helger.annotation.WillNotClose;
 import com.helger.asic.jaxb.asic.AsicManifest;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * Reader for ASiC archives.
@@ -50,7 +50,7 @@ public interface IAsicReader extends Closeable
    * @throws IOException
    *         in case of an IO error
    */
-  default void writeFile (@Nonnull final File aFile) throws IOException
+  default void writeFile (@NonNull final File aFile) throws IOException
   {
     writeFile (aFile.toPath ());
   }
@@ -63,7 +63,7 @@ public interface IAsicReader extends Closeable
    * @throws IOException
    *         in case of an IO error
    */
-  default void writeFile (@Nonnull final Path aFile) throws IOException
+  default void writeFile (@NonNull final Path aFile) throws IOException
   {
     try (final OutputStream aOS = Files.newOutputStream (aFile))
     {
@@ -79,7 +79,7 @@ public interface IAsicReader extends Closeable
    * @throws IOException
    *         in case of an IO error
    */
-  void writeFile (@Nonnull @WillNotClose OutputStream aOS) throws IOException;
+  void writeFile (@NonNull @WillNotClose OutputStream aOS) throws IOException;
 
   /**
    * Returns InputStream to read the content.

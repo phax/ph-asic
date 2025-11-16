@@ -14,10 +14,10 @@ package com.helger.asic;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.mime.IMimeType;
-
-import jakarta.annotation.Nonnull;
 
 @NotThreadSafe
 public abstract class AbstractAsicManifest
@@ -25,7 +25,7 @@ public abstract class AbstractAsicManifest
   private final EMessageDigestAlgorithm m_eMDAlgo;
   private MessageDigest m_aMD;
 
-  public AbstractAsicManifest (@Nonnull final EMessageDigestAlgorithm eMDAlgo)
+  public AbstractAsicManifest (@NonNull final EMessageDigestAlgorithm eMDAlgo)
   {
     m_eMDAlgo = eMDAlgo;
 
@@ -41,19 +41,19 @@ public abstract class AbstractAsicManifest
     }
   }
 
-  @Nonnull
+  @NonNull
   public final EMessageDigestAlgorithm getMessageDigestAlgorithm ()
   {
     return m_eMDAlgo;
   }
 
-  @Nonnull
+  @NonNull
   protected final MessageDigest internalGetMessageDigest ()
   {
     return m_aMD;
   }
 
-  @Nonnull
+  @NonNull
   public MessageDigest getNewMessageDigest ()
   {
     m_aMD.reset ();

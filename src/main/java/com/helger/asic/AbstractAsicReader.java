@@ -22,6 +22,8 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.zip.ZipEntry;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,9 +38,6 @@ import com.helger.base.io.stream.NullOutputStream;
 import com.helger.base.io.stream.StreamHelper;
 import com.helger.collection.commons.CommonsHashMap;
 import com.helger.collection.commons.ICommonsMap;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * Skeleton implementation of ASiC archive reader.
@@ -66,8 +65,8 @@ public abstract class AbstractAsicReader implements Closeable
    */
   private final ICommonsMap <String, byte []> m_aSigningContent = new CommonsHashMap <> ();
 
-  protected AbstractAsicReader (@Nonnull final EMessageDigestAlgorithm eMDAlgo,
-                                @Nonnull @WillCloseWhenClosed final InputStream aIS)
+  protected AbstractAsicReader (@NonNull final EMessageDigestAlgorithm eMDAlgo,
+                                @NonNull @WillCloseWhenClosed final InputStream aIS)
   {
     m_aManifestVerifier = new ManifestVerifier (eMDAlgo);
 
@@ -199,7 +198,7 @@ public abstract class AbstractAsicReader implements Closeable
     return null;
   }
 
-  protected final void internalWriteFile (@Nonnull final OutputStream aOS) throws IOException
+  protected final void internalWriteFile (@NonNull final OutputStream aOS) throws IOException
   {
     if (m_aCurrentZipEntry == null)
       throw new IllegalStateException ("No file to read.");
@@ -214,7 +213,7 @@ public abstract class AbstractAsicReader implements Closeable
     m_bContentIsConsumed = true;
   }
 
-  @Nonnull
+  @NonNull
   protected InputStream internalInputStream ()
   {
     if (m_aCurrentZipEntry == null)
@@ -239,7 +238,7 @@ public abstract class AbstractAsicReader implements Closeable
    *
    * @return value of property.
    */
-  @Nonnull
+  @NonNull
   public final AsicManifest getAsicManifest ()
   {
     return m_aManifestVerifier.getAsicManifest ();

@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.UUID;
 
-import jakarta.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 
 /**
  * Builds an ASiC-E Cades container using a variation of "builder pattern". This
@@ -40,16 +40,16 @@ public class CadesAsicWriter extends AbstractAsicWriter
    * @throws IOException
    *         on IO error
    */
-  public CadesAsicWriter (@Nonnull final OutputStream aOS,
+  public CadesAsicWriter (@NonNull final OutputStream aOS,
                           final boolean bCloseStreamOnSign,
-                          @Nonnull final EMessageDigestAlgorithm eMDAlgo,
+                          @NonNull final EMessageDigestAlgorithm eMDAlgo,
                           final boolean bWriteOasisManifest) throws IOException
   {
     super (aOS, bCloseStreamOnSign, new CadesAsicManifest (eMDAlgo), bWriteOasisManifest);
   }
 
   @Override
-  @Nonnull
+  @NonNull
   public final CadesAsicManifest getAsicManifest ()
   {
     return (CadesAsicManifest) super.getAsicManifest ();
@@ -63,7 +63,7 @@ public class CadesAsicWriter extends AbstractAsicWriter
   }
 
   @Override
-  protected void performSign (@Nonnull final SignatureHelper aSH) throws IOException
+  protected void performSign (@NonNull final SignatureHelper aSH) throws IOException
   {
     // Define signature filename containing UUID
     final String sSignatureFilename = "META-INF/" +

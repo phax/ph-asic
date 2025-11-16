@@ -17,42 +17,42 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import jakarta.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 
 public class AsicReaderFactory
 {
   private final EMessageDigestAlgorithm m_eMDAlgo;
 
-  protected AsicReaderFactory (@Nonnull final EMessageDigestAlgorithm eMDAlgo)
+  protected AsicReaderFactory (@NonNull final EMessageDigestAlgorithm eMDAlgo)
   {
     m_eMDAlgo = eMDAlgo;
   }
 
-  @Nonnull
-  public IAsicReader open (@Nonnull final File aFile) throws IOException
+  @NonNull
+  public IAsicReader open (@NonNull final File aFile) throws IOException
   {
     return open (aFile.toPath ());
   }
 
-  @Nonnull
-  public IAsicReader open (@Nonnull final Path aFile) throws IOException
+  @NonNull
+  public IAsicReader open (@NonNull final Path aFile) throws IOException
   {
     return open (Files.newInputStream (aFile));
   }
 
-  @Nonnull
-  public IAsicReader open (@Nonnull final InputStream aIS)
+  @NonNull
+  public IAsicReader open (@NonNull final InputStream aIS)
   {
     return new AsicReaderImpl (m_eMDAlgo, aIS);
   }
 
-  @Nonnull
+  @NonNull
   public static AsicReaderFactory newFactory ()
   {
     return newFactory (EMessageDigestAlgorithm.SHA256);
   }
 
-  @Nonnull
+  @NonNull
   public static AsicReaderFactory newFactory (final EMessageDigestAlgorithm eMD)
   {
     return new AsicReaderFactory (eMD);
