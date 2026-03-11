@@ -62,7 +62,6 @@ public class AsicWriterTest
   @Test
   public void createSampleContainer () throws Exception
   {
-
     // PART 1 - creates the ASiC archive
 
     // Name of the file to hold the the ASiC archive
@@ -72,33 +71,31 @@ public class AsicWriterTest
     final AsicWriterFactory asicWriterFactory = AsicWriterFactory.newFactory (ESignatureMethod.CAdES);
 
     /*
-     * Creates the actual container with all the data objects (files) and signs
-     * it.
+     * Creates the actual container with all the data objects (files) and signs it.
      */
-    final IAsicWriter asicWriter = asicWriterFactory.newContainer (archiveOutputFile);
+    final IAsicWriter aAsicWriter = asicWriterFactory.newContainer (archiveOutputFile);
     /*
      * Adds an ordinary file, using the file name as the entry name
      */
-    asicWriter.add (m_aEnvelopeFile);
+    aAsicWriter.add (m_aEnvelopeFile);
     /*
-     * Adds another file, explicitly naming the entry and specifying the MIME
-     * type
+     * Adds another file, explicitly naming the entry and specifying the MIME type
      */
-    asicWriter.add (m_aMessageFile, BII_MESSAGE_XML, CMimeType.APPLICATION_XML);
+    aAsicWriter.add (m_aMessageFile, BII_MESSAGE_XML, CMimeType.APPLICATION_XML);
     /*
      * Indicates that the BII message is the root document
      */
-    asicWriter.setRootEntryName (BII_MESSAGE_XML);
+    aAsicWriter.setRootEntryName (BII_MESSAGE_XML);
     /*
      * Signing the contents of the archive, closes it for further changes.
      */
-    asicWriter.sign (TestUtil.createSH ());
+    aAsicWriter.sign (TestUtil.createSignatureHelper ());
 
     // PART 2 - verify the contents of the archive.
 
     {
       int matchCount = 0;
-      final CadesAsicManifest asicManifest = ((CadesAsicWriter) asicWriter).getAsicManifest ();
+      final CadesAsicManifest asicManifest = ((CadesAsicWriter) aAsicWriter).getAsicManifest ();
       for (final DataObjectReferenceType dataObject : asicManifest.getASiCManifest ().getDataObjectReference ())
       {
         if (dataObject.getURI ().equals (FilenameHelper.getWithoutPath (BII_ENVELOPE_XML)))
@@ -106,7 +103,7 @@ public class AsicWriterTest
         if (dataObject.getURI ().equals (BII_MESSAGE_XML))
           matchCount++;
       }
-      assertEquals ("Entries were not added properly into list", matchCount, 2);
+      assertEquals ("Entries were not added properly into list", 2, matchCount);
     }
 
     assertTrue ("ASiC container can not be read", archiveOutputFile.canRead ());
@@ -117,19 +114,19 @@ public class AsicWriterTest
     {
       final Enumeration <? extends ZipEntry> entries = zipFile.entries ();
 
-      int matchCount = 0;
+      int nMatchCount = 0;
       while (entries.hasMoreElements ())
       {
         final ZipEntry entry = entries.nextElement ();
         final String name = entry.getName ();
         if (FilenameHelper.getWithoutPath (BII_ENVELOPE_XML).equals (name))
         {
-          matchCount++;
+          nMatchCount++;
         }
         else
           if (BII_MESSAGE_XML.equals (name))
           {
-            matchCount++;
+            nMatchCount++;
           }
         LOGGER.info ("Found " + name);
         try (final InputStream stream = zipFile.getInputStream (entry))
@@ -137,12 +134,12 @@ public class AsicWriterTest
           // empty
         }
       }
-      assertEquals ("Number of items in archive did not match", matchCount, 2);
+      assertEquals ("Number of items in archive did not match", nMatchCount, 2);
     }
 
     try
     {
-      asicWriter.add (m_aEnvelopeFile);
+      aAsicWriter.add (m_aEnvelopeFile);
       fail ("Exception expected");
     }
     catch (final IllegalStateException e)
@@ -152,7 +149,7 @@ public class AsicWriterTest
 
     try
     {
-      asicWriter.sign (TestUtil.createSH ());
+      aAsicWriter.sign (TestUtil.createSignatureHelper ());
       fail ("Exception expected");
     }
     catch (final IllegalStateException e)
@@ -162,7 +159,7 @@ public class AsicWriterTest
 
     try (final AsicVerifier asicVerifier = m_aAsicVerifierFactory.verify (archiveOutputFile))
     {
-      assertEquals (asicVerifier.getAsicManifest ().getFile ().size (), 2);
+      assertEquals (2, asicVerifier.getAsicManifest ().getFile ().size ());
     }
   }
 
@@ -191,7 +188,7 @@ public class AsicWriterTest
                      .add (brochurePdfFile)
                      // Signing the contents of the archive, closes it for
                      // further changes.
-                     .sign (TestUtil.createSH ());
+                     .sign (TestUtil.createSignatureHelper ());
 
     LOGGER.debug ("Wrote ASiC-e container to " + archiveOutputFile);
     // Opens the generated archive and reads each entry

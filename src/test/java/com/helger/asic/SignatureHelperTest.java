@@ -28,7 +28,7 @@ public final class SignatureHelperTest
   @Test
   public void loadNoProblems ()
   {
-    assertNotNull (TestUtil.createSH ());
+    assertNotNull (TestUtil.createSignatureHelper ());
   }
 
   @SuppressWarnings ("unused")

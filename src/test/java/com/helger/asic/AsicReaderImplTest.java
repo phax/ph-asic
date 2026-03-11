@@ -35,7 +35,7 @@ public class AsicReaderImplTest
 
   private final AsicReaderFactory m_aAsicReaderFactory = AsicReaderFactory.newFactory ();
   private final AsicWriterFactory m_aAsicWriterFactory = AsicWriterFactory.newFactory (ESignatureMethod.CAdES);
-  private static final SignatureHelper m_aSignatureHelper = TestUtil.createSH ();
+  private static final SignatureHelper m_aSignatureHelper = TestUtil.createSignatureHelper ();
 
   private static final String FILE_CONTENT_1 = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam arcu eros, fermentum vel molestie ut, sagittis vel velit.";
   private static final String FILE_CONTENT_2 = "Fusce eu risus ipsum. Sed mattis laoreet justo. Fusce nisi magna, posuere ac placerat tincidunt, dignissim non lacus.";

@@ -46,11 +46,9 @@ public final class TestUtil
   }
 
   /**
-   * Provides simple access to the KeyStore file provided as part of the
-   * distribution.
+   * Provides simple access to the KeyStore file provided as part of the distribution.
    * <p/>
-   * The key store provides a private key and a certificate, which is used for
-   * testing purposes.
+   * The key store provides a private key and a certificate, which is used for testing purposes.
    *
    * @return JKS key store path
    */
@@ -69,7 +67,7 @@ public final class TestUtil
   @NonNull
   public static String keyPairAlias ()
   {
-    return "selfsigned";
+    return "selfsigned2026";
   }
 
   @NonNull
@@ -79,8 +77,12 @@ public final class TestUtil
   }
 
   @NonNull
-  public static SignatureHelper createSH ()
+  public static SignatureHelper createSignatureHelper ()
   {
-    return new SignatureHelper (EKeyStoreType.JKS, keyStorePathJKS (), keyStorePassword (), keyPairAlias (), privateKeyPassword ());
+    return new SignatureHelper (EKeyStoreType.JKS,
+                                keyStorePathJKS (),
+                                keyStorePassword (),
+                                keyPairAlias (),
+                                privateKeyPassword ());
   }
 }

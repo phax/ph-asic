@@ -69,7 +69,7 @@ public final class AsicXadesWriterTest
     {
       m_aAsicWriterFactory.setMDAlgo (EMessageDigestAlgorithm.SHA384)
                           .newContainer (outputStream)
-                          .sign (TestUtil.createSH ());
+                          .sign (TestUtil.createSignatureHelper ());
 
       final byte [] buffer = outputStream.toByteArray ();
       assertEquals ("Byte 28 should be 0", buffer[28], (byte) 0);
@@ -82,7 +82,7 @@ public final class AsicXadesWriterTest
   @Test
   public void createSampleContainer () throws Exception
   {
-    final SignatureHelper signatureHelper = TestUtil.createSH ();
+    final SignatureHelper signatureHelper = TestUtil.createSignatureHelper ();
 
     final IAsicWriter asicWriter = m_aAsicWriterFactory.newContainer (new File (System.getProperty ("java.io.tmpdir")),
                                                                       "asic-sample-xades.zip")
@@ -150,7 +150,7 @@ public final class AsicXadesWriterTest
 
     try
     {
-      asicWriter.sign (TestUtil.createSH ());
+      asicWriter.sign (TestUtil.createSignatureHelper ());
       fail ("Exception expected");
     }
     catch (final IllegalStateException e)

@@ -75,7 +75,7 @@ public final class AsicCadesWriterTest
       final File aDestFile = new File (System.getProperty ("java.io.tmpdir"), "asic-empty-sample-cades.zip");
 
       // A container MUST contain any entry
-      m_aWriterFactory.setMDAlgo (e).newContainer (aDestFile).add (m_aMessageFile).sign (TestUtil.createSH ());
+      m_aWriterFactory.setMDAlgo (e).newContainer (aDestFile).add (m_aMessageFile).sign (TestUtil.createSignatureHelper ());
 
       assertTrue (aDestFile + " can not be read", aDestFile.exists () && aDestFile.isFile () && aDestFile.canRead ());
       try (final FileInputStream fileInputStream = new FileInputStream (aDestFile);
@@ -113,7 +113,7 @@ public final class AsicCadesWriterTest
                                                    // type
                                                    .add (m_aMessageFile, BII_MESSAGE_XML, CMimeType.APPLICATION_XML)
                                                    .setRootEntryName (m_aEnvelopeFile.toURI ().toString ())
-                                                   .sign (TestUtil.createSH ());
+                                                   .sign (TestUtil.createSignatureHelper ());
 
     // Verifies that both files have been added.
     {
@@ -171,7 +171,7 @@ public final class AsicCadesWriterTest
 
     try
     {
-      asicWriter.sign (TestUtil.createSH ());
+      asicWriter.sign (TestUtil.createSignatureHelper ());
       fail ("Exception expected");
     }
     catch (final IllegalStateException e)

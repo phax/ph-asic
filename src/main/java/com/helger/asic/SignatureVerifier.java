@@ -34,10 +34,10 @@ public final class SignatureVerifier
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (SignatureHelper.class);
 
-  private static final JcaSimpleSignerInfoVerifierBuilder s_aJcaSimpleSignerInfoVerifierBuilder = new JcaSimpleSignerInfoVerifierBuilder ().setProvider (PBCProvider.getProvider ());
+  private static final JcaSimpleSignerInfoVerifierBuilder VERIFIER_BUILDER = new JcaSimpleSignerInfoVerifierBuilder ().setProvider (PBCProvider.getProvider ());
 
   @PresentForCodeCoverage
-  private static final SignatureVerifier s_aInstance = new SignatureVerifier ();
+  private static final SignatureVerifier INSTANCE = new SignatureVerifier ();
 
   private SignatureVerifier ()
   {}
@@ -60,6 +60,7 @@ public final class SignatureVerifier
 
       final Store <X509CertificateHolder> aStore = aCMSSignedData.getCertificates ();
       final SignerInformationStore aSignerInformationStore = aCMSSignedData.getSignerInfos ();
+      int nSIs = 0;
       for (final SignerInformation aSignerInformation : aSignerInformationStore.getSigners ())
       {
         final X509CertificateHolder aX509CertHolder = (X509CertificateHolder) aStore.getMatches (aSignerInformation.getSID ())
@@ -72,7 +73,8 @@ public final class SignatureVerifier
                         aSignerInformation.getSID () +
                         "'");
 
-        if (aSignerInformation.verify (s_aJcaSimpleSignerInfoVerifierBuilder.build (aX509CertHolder)))
+        ++nSIs;
+        if (aSignerInformation.verify (VERIFIER_BUILDER.build (aX509CertHolder)))
         {
           ret = new Certificate ();
           ret.setCertificate (aX509CertHolder.getEncoded ());
@@ -80,6 +82,9 @@ public final class SignatureVerifier
           break;
         }
       }
+
+      if (ret == null)
+        LOGGER.warn ("Found no matching SignerInformation in the provided " + nSIs + " instances");
     }
     catch (final Exception ex)
     {

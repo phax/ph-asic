@@ -46,7 +46,7 @@ public final class BouncyCastleSignatureTest
   {
     // Reads private key and certificate from our own
     // keystore
-    final SignatureHelper aSH = TestUtil.createSH ();
+    final SignatureHelper aSH = TestUtil.createSignatureHelper ();
     final X509Certificate aX509Certificate = aSH.getX509Certificate ();
     final KeyPair aKeyPair = aSH.getKeyPair ();
 

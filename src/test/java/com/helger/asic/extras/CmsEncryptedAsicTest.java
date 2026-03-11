@@ -52,7 +52,7 @@ public final class CmsEncryptedAsicTest
     final KeyStore keyStore = loadKeyStore ();
 
     // Fetching certificate
-    final X509Certificate certificate = (X509Certificate) keyStore.getCertificate ("selfsigned");
+    final X509Certificate certificate = (X509Certificate) keyStore.getCertificate (TestUtil.keyPairAlias ());
 
     // Store result in NonBlockingByteArrayOutputStream
     try (final NonBlockingByteArrayOutputStream byteArrayOutputStream = new NonBlockingByteArrayOutputStream ())
@@ -74,7 +74,7 @@ public final class CmsEncryptedAsicTest
                            CMimeType.IMAGE_BMP);
       writer.addEncrypted (ClassPathResource.getAsFile ("external/asic/image.bmp"), "encrypted3.xml");
       writer.setRootEntryName ("encrypted.bmp");
-      writer.sign (TestUtil.createSH ());
+      writer.sign (TestUtil.createSignatureHelper ());
       // NonBlockingByteArrayOutputStream now contains a signed ASiC archive
       // containing one
       // encrypted file
@@ -82,7 +82,8 @@ public final class CmsEncryptedAsicTest
       // READ FROM ASIC
 
       // Fetch private key from keystore
-      final PrivateKey privateKey = (PrivateKey) keyStore.getKey ("selfsigned", "changeit".toCharArray ());
+      final PrivateKey privateKey = (PrivateKey) keyStore.getKey (TestUtil.keyPairAlias (),
+                                                                  TestUtil.privateKeyPassword ());
 
       // Open content of NonBlockingByteArrayOutputStream for reading
       try (final IAsicReader asicReader = AsicReaderFactory.newFactory ()
@@ -141,7 +142,7 @@ public final class CmsEncryptedAsicTest
   {
     // Read JKS
     final KeyStore keyStore = KeyStore.getInstance ("JKS");
-    keyStore.load (ClassPathResource.getInputStream ("external/asic/keystore.jks"), "changeit".toCharArray ());
+    keyStore.load (ClassPathResource.getInputStream (TestUtil.KEY_STORE_RESOURCE_NAME), TestUtil.keyStorePassword ());
     return keyStore;
   }
 
@@ -149,14 +150,13 @@ public final class CmsEncryptedAsicTest
   @Ignore
   public void createSampleForBits () throws Exception
   {
-
     // Obtains the keystore
     final KeyStore keyStore = loadKeyStore ();
 
     // Fetching certificate
-    final X509Certificate certificate = (X509Certificate) keyStore.getCertificate ("selfsigned");
+    final X509Certificate certificate = (X509Certificate) keyStore.getCertificate (TestUtil.keyPairAlias ());
 
-    // Store result in outputfile
+    // Store result in output file
     final File sample = File.createTempFile ("sample-bits", ".asice");
     try (final FileOutputStream fileOutputStream = new FileOutputStream (sample))
     {
@@ -185,7 +185,7 @@ public final class CmsEncryptedAsicTest
       writer.setRootEntryName ("sample.xml");
 
       // Signs the archive
-      writer.sign (TestUtil.createSH ());
+      writer.sign (TestUtil.createSignatureHelper ());
     }
 
     LOGGER.info ("Wrote sample ASiC to " + sample);
