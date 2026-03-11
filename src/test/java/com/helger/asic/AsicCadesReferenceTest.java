@@ -37,7 +37,7 @@ public final class AsicCadesReferenceTest
   private final AsicReaderFactory m_aAsicRederFactory = AsicReaderFactory.newFactory (EMessageDigestAlgorithm.DEFAULT);
 
   @Test
-  public void valid () throws Exception
+  public void testValid () throws Exception
   {
     try (
         final AsicVerifier asicVerifier = m_aAsicVerifierFactory.verify (ClassPathResource.getInputStream ("external/asic/asic-cades-test-valid.asice")))
@@ -58,7 +58,7 @@ public final class AsicCadesReferenceTest
   }
 
   @Test
-  public void invalidManifest () throws IOException
+  public void testInvalidManifest () throws IOException
   {
     try
     {
@@ -84,7 +84,7 @@ public final class AsicCadesReferenceTest
   }
 
   @Test
-  public void invalidSignature () throws IOException
+  public void testInvalidSignature () throws IOException
   {
     try
     {
@@ -98,7 +98,7 @@ public final class AsicCadesReferenceTest
   }
 
   @Test
-  public void invalidMetadataFile () throws IOException
+  public void testInvalidMetadataFile () throws IOException
   {
     try
     {
@@ -112,7 +112,7 @@ public final class AsicCadesReferenceTest
   }
 
   @Test // (enabled = false)
-  public void invalidSigReference () throws IOException
+  public void testInvalidSigReference () throws IOException
   {
     try
     {

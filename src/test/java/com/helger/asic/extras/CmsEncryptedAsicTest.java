@@ -26,6 +26,7 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
 import org.bouncycastle.cms.CMSAlgorithm;
+import org.jspecify.annotations.NonNull;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -46,10 +47,10 @@ public final class CmsEncryptedAsicTest
   private static final Logger LOGGER = LoggerFactory.getLogger (CmsEncryptedAsicTest.class);
 
   @Test
-  public void simple () throws Exception
+  public void testSimple () throws Exception
   {
     // WRITE TO ASIC
-    final KeyStore keyStore = loadKeyStore ();
+    final KeyStore keyStore = _loadKeyStore ();
 
     // Fetching certificate
     final X509Certificate certificate = (X509Certificate) keyStore.getCertificate (TestUtil.keyPairAlias ());
@@ -138,7 +139,11 @@ public final class CmsEncryptedAsicTest
     }
   }
 
-  private KeyStore loadKeyStore () throws KeyStoreException, IOException, NoSuchAlgorithmException, CertificateException
+  @NonNull
+  private static KeyStore _loadKeyStore () throws KeyStoreException,
+                                           IOException,
+                                           NoSuchAlgorithmException,
+                                           CertificateException
   {
     // Read JKS
     final KeyStore keyStore = KeyStore.getInstance ("JKS");
@@ -148,10 +153,10 @@ public final class CmsEncryptedAsicTest
 
   @Test
   @Ignore
-  public void createSampleForBits () throws Exception
+  public void testCreateSampleForBits () throws Exception
   {
     // Obtains the keystore
-    final KeyStore keyStore = loadKeyStore ();
+    final KeyStore keyStore = _loadKeyStore ();
 
     // Fetching certificate
     final X509Certificate certificate = (X509Certificate) keyStore.getCertificate (TestUtil.keyPairAlias ());
@@ -190,5 +195,4 @@ public final class CmsEncryptedAsicTest
 
     LOGGER.info ("Wrote sample ASiC to " + sample);
   }
-
 }
