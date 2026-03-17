@@ -1,8 +1,9 @@
 # ph-asic
 
-[![Maven Central](https://img.shields.io/maven-central/v/com.helger/ph-asic.svg)](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.helger%22%20AND%20a%3A%22ph-asic%22)
+<!-- ph-badge-start -->
+[![Sonatype Central](https://maven-badges.sml.io/sonatype-central/com.helger/ph-asic/badge.svg)](https://maven-badges.sml.io/sonatype-central/com.helger/ph-asic/)
 [![javadoc](https://javadoc.io/badge2/com.helger/ph-asic/javadoc.svg)](https://javadoc.io/doc/com.helger/ph-asic)
-[![CodeCov](https://codecov.io/gh/phax/ph-asic/branch/master/graph/badge.svg)](https://codecov.io/gh/phax/ph-asic)
+<!-- ph-badge-end -->
 
 # News and Noteworthy
 
