@@ -7,6 +7,9 @@
 
 # News and Noteworthy
 
+v4.1.1 - work in progress
+* Removed OSGI bundling
+
 v4.1.0 - 2025-11-16
 * Updated to ph-commons 12.1.0
 * Using JSpecify annotations
