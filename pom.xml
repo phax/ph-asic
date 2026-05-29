@@ -17,7 +17,7 @@
   <parent>
     <groupId>com.helger</groupId>
     <artifactId>parent-pom</artifactId>
-    <version>3.0.3</version>
+    <version>3.0.5</version>
   </parent>
   <artifactId>ph-asic</artifactId>
   <version>4.1.1-SNAPSHOT</version>
