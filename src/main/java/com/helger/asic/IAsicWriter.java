@@ -28,8 +28,8 @@ public interface IAsicWriter
    * Adds another data object to the ASiC archive.
    *
    * @param aFile
-   *        references the file to be added as a data object. The name of the
-   *        entry is extracted from the File object.
+   *        references the file to be added as a data object. The name of the entry is extracted
+   *        from the File object.
    * @return reference to this AsicWriter
    * @throws IOException
    *         in case of IO error
@@ -41,8 +41,7 @@ public interface IAsicWriter
   }
 
   /**
-   * Adds another data object to the ASiC container, using the supplied name as
-   * the zip entry name
+   * Adds another data object to the ASiC container, using the supplied name as the zip entry name
    *
    * @param aFile
    *        references the file to be added as a data object.
@@ -75,8 +74,7 @@ public interface IAsicWriter
   }
 
   /**
-   * Adds another data object to the ASiC container under the entry name
-   * provided.
+   * Adds another data object to the ASiC container under the entry name provided.
    *
    * @param aFile
    *        reference to this AsicWriter.
@@ -98,14 +96,14 @@ public interface IAsicWriter
   }
 
   /**
-   * Adds the data provided by the stream into the ASiC archive, using the name
-   * of the supplied file as the entry name.
+   * Adds the data provided by the stream into the ASiC archive, using the name of the supplied file
+   * as the entry name.
    *
    * @param aIS
    *        input stream of data.
    * @param sFilename
-   *        the name of a file, which must be available in the file system in
-   *        order to determine the MIME type.
+   *        the name of a file, which must be available in the file system in order to determine the
+   *        MIME type.
    * @return reference to this AsicWriter
    * @throws IOException
    *         in case of an IO error
@@ -119,8 +117,7 @@ public interface IAsicWriter
   }
 
   /**
-   * Adds the contents of a file into the ASiC archive using the supplied entry
-   * name and MIME type.
+   * Adds the contents of a file into the ASiC archive using the supplied entry name and MIME type.
    *
    * @param aFile
    *        references the file to be added as a data object.
@@ -141,8 +138,7 @@ public interface IAsicWriter
   }
 
   /**
-   * Adds the contents of a file into the ASiC archive using the supplied entry
-   * name and MIME type.
+   * Adds the contents of a file into the ASiC archive using the supplied entry name and MIME type.
    *
    * @param aFile
    *        references the file to be added as a data object.
@@ -167,8 +163,8 @@ public interface IAsicWriter
   }
 
   /**
-   * Adds the contents of an input stream into the ASiC archive, under a given
-   * entry name and explicitly identifying the MIME type.
+   * Adds the contents of an input stream into the ASiC archive, under a given entry name and
+   * explicitly identifying the MIME type.
    *
    * @param aIS
    *        Input stream to add
@@ -186,8 +182,8 @@ public interface IAsicWriter
                    @NonNull IMimeType aMimeType) throws IOException;
 
   /**
-   * Specifies which entry (file) represents the "root" document, i.e. which
-   * business document to read first.
+   * Specifies which entry (file) represents the "root" document, i.e. which business document to
+   * read first.
    *
    * @param name
    *        of entry holding the root document.
@@ -197,8 +193,8 @@ public interface IAsicWriter
   IAsicWriter setRootEntryName (String name);
 
   /**
-   * Allows re-use of the same SignatureHelper object when creating multiple
-   * ASiC archive and hence the need to create multiple signatures.
+   * Allows re-use of the same SignatureHelper object when creating multiple ASiC archive and hence
+   * the need to create multiple signatures.
    *
    * @param aSH
    *        instantiated SignatureHelper

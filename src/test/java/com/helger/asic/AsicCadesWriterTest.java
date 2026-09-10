@@ -75,11 +75,14 @@ public final class AsicCadesWriterTest
       final File aDestFile = new File (System.getProperty ("java.io.tmpdir"), "asic-empty-sample-cades.zip");
 
       // A container MUST contain any entry
-      m_aWriterFactory.setMDAlgo (e).newContainer (aDestFile).add (m_aMessageFile).sign (TestUtil.createSignatureHelper ());
+      m_aWriterFactory.setMDAlgo (e)
+                      .newContainer (aDestFile)
+                      .add (m_aMessageFile)
+                      .sign (TestUtil.createSignatureHelper ());
 
       assertTrue (aDestFile + " can not be read", aDestFile.exists () && aDestFile.isFile () && aDestFile.canRead ());
       try (final FileInputStream fileInputStream = new FileInputStream (aDestFile);
-          final NonBlockingBufferedInputStream is = new NonBlockingBufferedInputStream (fileInputStream))
+           final NonBlockingBufferedInputStream is = new NonBlockingBufferedInputStream (fileInputStream))
       {
         final byte [] buffer = new byte [BYTES_TO_CHECK];
         final int read = is.read (buffer, 0, BYTES_TO_CHECK);
@@ -102,7 +105,6 @@ public final class AsicCadesWriterTest
   @Test
   public void createSampleContainer () throws Exception
   {
-
     final File asicOutputFile = new File (System.getProperty ("java.io.tmpdir"), "asic-sample-cades.zip");
 
     final IAsicWriter asicWriter = m_aWriterFactory.newContainer (asicOutputFile)

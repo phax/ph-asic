@@ -49,8 +49,8 @@ public enum EMessageDigestAlgorithm
   /**
    * Note: was called "getAlgorithm" prior to v1.4.0
    *
-   * @return The name of the algorithm to be used for <code>MessageDigest</code>
-   *         instances. Never <code>null</code> nor empty.
+   * @return The name of the algorithm to be used for <code>MessageDigest</code> instances. Never
+   *         <code>null</code> nor empty.
    */
   @NonNull
   @Nonempty
@@ -65,8 +65,8 @@ public enum EMessageDigestAlgorithm
   }
 
   /**
-   * @return The name of the algorithm to be used for JCA content signer
-   *         instances. Never <code>null</code> nor empty.
+   * @return The name of the algorithm to be used for JCA content signer instances. Never
+   *         <code>null</code> nor empty.
    * @since 1.4.0
    */
   @NonNull

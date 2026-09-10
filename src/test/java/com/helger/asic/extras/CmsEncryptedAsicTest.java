@@ -140,10 +140,7 @@ public final class CmsEncryptedAsicTest
   }
 
   @NonNull
-  private static KeyStore _loadKeyStore () throws KeyStoreException,
-                                           IOException,
-                                           NoSuchAlgorithmException,
-                                           CertificateException
+  private static KeyStore _loadKeyStore () throws KeyStoreException, IOException, NoSuchAlgorithmException, CertificateException
   {
     // Read JKS
     final KeyStore keyStore = KeyStore.getInstance ("JKS");

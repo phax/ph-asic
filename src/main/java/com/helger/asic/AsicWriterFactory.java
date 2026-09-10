@@ -55,8 +55,8 @@ public class AsicWriterFactory
   }
 
   /**
-   * Factory method creating a new AsicWriter, which will create an ASiC archive
-   * in the supplied directory with the supplied file name
+   * Factory method creating a new AsicWriter, which will create an ASiC archive in the supplied
+   * directory with the supplied file name
    *
    * @param aOutputDir
    *        the directory in which the archive will be created.
@@ -73,8 +73,7 @@ public class AsicWriterFactory
   }
 
   /**
-   * Creates a new AsicWriter, which will create an ASiC archive in the supplied
-   * file.
+   * Creates a new AsicWriter, which will create an ASiC archive in the supplied file.
    *
    * @param aFile
    *        the file reference to the archive.
@@ -99,8 +98,8 @@ public class AsicWriterFactory
   }
 
   /**
-   * Creates a new AsicWriter, which will write the container contents to the
-   * supplied output stream.
+   * Creates a new AsicWriter, which will write the container contents to the supplied output
+   * stream.
    *
    * @param aOS
    *        stream into which the archive will be written.

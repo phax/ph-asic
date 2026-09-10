@@ -52,8 +52,7 @@ public abstract class AbstractAsicWriter implements IAsicWriter
    * @param aAsicManifest
    *        The asic manifest to use
    * @param bWriteOasisManifest
-   *        <code>true</code> if the OASIS OpenDocument Manifest XML should also
-   *        be created.
+   *        <code>true</code> if the OASIS OpenDocument Manifest XML should also be created.
    * @throws IOException
    *         in case of IO error
    */
@@ -119,8 +118,8 @@ public abstract class AbstractAsicWriter implements IAsicWriter
   }
 
   /**
-   * Creating the signature and writing it into the archive is delegated to the
-   * actual implementation
+   * Creating the signature and writing it into the archive is delegated to the actual
+   * implementation
    *
    * @param aSH
    *        Signature helper for signing details

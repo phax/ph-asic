@@ -73,8 +73,8 @@ public final class AsicUtils
   {}
 
   /**
-   * Combine multiple containers to one container. OASIS OpenDocument manifest
-   * is regenerated if all source containers contains valid manifest.
+   * Combine multiple containers to one container. OASIS OpenDocument manifest is regenerated if all
+   * source containers contains valid manifest.
    *
    * @param aOS
    *        Stream for target container.

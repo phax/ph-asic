@@ -28,8 +28,7 @@ public class XadesAsicWriter extends AbstractAsicWriter
    * @param eMDAlgo
    *        Message Digest Algorithm
    * @param bWriteOasisManifest
-   *        <code>true</code> if the OASIS OpenDocument Manifest XML should also
-   *        be created.
+   *        <code>true</code> if the OASIS OpenDocument Manifest XML should also be created.
    * @throws IOException
    *         on IO error
    */

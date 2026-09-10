@@ -18,8 +18,8 @@ import java.util.UUID;
 import org.jspecify.annotations.NonNull;
 
 /**
- * Builds an ASiC-E Cades container using a variation of "builder pattern". This
- * class is not thread safe, as it indirectly holds a MessageDigest object.
+ * Builds an ASiC-E Cades container using a variation of "builder pattern". This class is not thread
+ * safe, as it indirectly holds a MessageDigest object.
  *
  * @author steinar Date: 02.07.15 Time: 12.09
  */
@@ -35,8 +35,7 @@ public class CadesAsicWriter extends AbstractAsicWriter
    * @param eMDAlgo
    *        Message Digest Algorithm
    * @param bWriteOasisManifest
-   *        <code>true</code> if the OASIS OpenDocument Manifest XML should also
-   *        be created.
+   *        <code>true</code> if the OASIS OpenDocument Manifest XML should also be created.
    * @throws IOException
    *         on IO error
    */
