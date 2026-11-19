@@ -20,11 +20,14 @@ import java.nio.file.Path;
 import org.jspecify.annotations.NonNull;
 
 import com.helger.annotation.WillCloseWhenClosed;
+import com.helger.annotation.style.ReturnsMutableCopy;
 import com.helger.base.enforce.ValueEnforcer;
+import com.helger.io.zip.ZipWalkerSettings;
 
 public class AsicVerifierFactory
 {
   private final EMessageDigestAlgorithm m_eMDAlgo;
+  private ZipWalkerSettings m_aZipSettings = new ZipWalkerSettings ();
 
   @NonNull
   public static AsicVerifierFactory newFactory ()
@@ -44,6 +47,35 @@ public class AsicVerifierFactory
     m_eMDAlgo = eMDAlgo;
   }
 
+  /**
+   * @return A copy of the limits for reading the container as ZIP archive (number of entries, total
+   *         uncompressed size). Never <code>null</code>.
+   * @since 4.1.1
+   */
+  @NonNull
+  @ReturnsMutableCopy
+  public final ZipWalkerSettings getZipSettings ()
+  {
+    return m_aZipSettings.getClone ();
+  }
+
+  /**
+   * Set the limits for reading the container as ZIP archive (number of entries, total uncompressed
+   * size).
+   *
+   * @param aZipSettings
+   *        The settings to use. They are copied. May not be <code>null</code>.
+   * @return this for chaining
+   * @since 4.1.1
+   */
+  @NonNull
+  public final AsicVerifierFactory setZipSettings (@NonNull final ZipWalkerSettings aZipSettings)
+  {
+    ValueEnforcer.notNull (aZipSettings, "ZipSettings");
+    m_aZipSettings = aZipSettings.getClone ();
+    return this;
+  }
+
   @NonNull
   public AsicVerifier verify (@NonNull final File aFile) throws IOException
   {
@@ -59,6 +91,6 @@ public class AsicVerifierFactory
   @NonNull
   public AsicVerifier verify (@NonNull @WillCloseWhenClosed final InputStream aIS) throws IOException
   {
-    return new AsicVerifier (m_eMDAlgo, aIS);
+    return new AsicVerifier (m_eMDAlgo, aIS, m_aZipSettings);
   }
 }

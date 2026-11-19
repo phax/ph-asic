@@ -18,6 +18,7 @@ import java.io.OutputStream;
 import org.jspecify.annotations.NonNull;
 
 import com.helger.annotation.WillCloseWhenClosed;
+import com.helger.io.zip.ZipWalkerSettings;
 
 public class AsicReaderImpl extends AbstractAsicReader implements IAsicReader
 {
@@ -25,6 +26,24 @@ public class AsicReaderImpl extends AbstractAsicReader implements IAsicReader
                             @NonNull @WillCloseWhenClosed final InputStream aIS)
   {
     super (eMDAlgo, aIS);
+  }
+
+  /**
+   * Constructor.
+   *
+   * @param eMDAlgo
+   *        The message digest algorithm to use. May not be <code>null</code>.
+   * @param aIS
+   *        The ASiC container to read. May not be <code>null</code>.
+   * @param aZipSettings
+   *        The limits for reading the container as ZIP archive. May not be <code>null</code>.
+   * @since 4.1.1
+   */
+  protected AsicReaderImpl (@NonNull final EMessageDigestAlgorithm eMDAlgo,
+                            @NonNull @WillCloseWhenClosed final InputStream aIS,
+                            @NonNull final ZipWalkerSettings aZipSettings)
+  {
+    super (eMDAlgo, aIS, aZipSettings);
   }
 
   @Override

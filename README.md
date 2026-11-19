@@ -11,6 +11,10 @@
 
 v4.1.1 - work in progress
 * Removed OSGI bundling
+* Requires at least ph-commons 12.7.2
+* ASiC containers are now read with `LimitedZipInputStream` from ph-commons: content that is not a ZIP archive is refused, and the number of entries and the total uncompressed size are limited (defaults of `ZipWalkerSettings`: 100.000 entries, 1 GiB). A violation is reported as `InvalidZipException`. The limits can be changed with `AsicReaderFactory.setZipSettings` and `AsicVerifierFactory.setZipSettings`
+* The `mimetype` entry is limited to 1 KB (`AsicInputStream.MAX_MIMETYPE_ENTRY_BYTES`) and each `META-INF/` entry to 10 MB (`AbstractAsicReader.MAX_METADATA_ENTRY_BYTES`), because they are read into memory
+* A read error while reading the content of an entry is no longer silently ignored (which truncated the content) but thrown as `IOException`
 
 v4.1.0 - 2025-11-16
 * Updated to ph-commons 12.1.0

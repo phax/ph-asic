@@ -18,13 +18,34 @@ import org.jspecify.annotations.NonNull;
 
 import com.helger.annotation.WillClose;
 import com.helger.base.io.stream.NullOutputStream;
+import com.helger.io.zip.ZipWalkerSettings;
 
 public class AsicVerifier extends AbstractAsicReader
 {
   protected AsicVerifier (@NonNull final EMessageDigestAlgorithm eMDAlgo,
                           @NonNull @WillClose final InputStream aIS) throws IOException
   {
-    super (eMDAlgo, aIS);
+    this (eMDAlgo, aIS, new ZipWalkerSettings ());
+  }
+
+  /**
+   * Constructor. Reads and verifies the complete container.
+   *
+   * @param eMDAlgo
+   *        The message digest algorithm to use. May not be <code>null</code>.
+   * @param aIS
+   *        The ASiC container to verify. Is closed. May not be <code>null</code>.
+   * @param aZipSettings
+   *        The limits for reading the container as ZIP archive. May not be <code>null</code>.
+   * @throws IOException
+   *         On read error, or if the container is not a ZIP archive or exceeds a limit
+   * @since 4.1.1
+   */
+  protected AsicVerifier (@NonNull final EMessageDigestAlgorithm eMDAlgo,
+                          @NonNull @WillClose final InputStream aIS,
+                          @NonNull final ZipWalkerSettings aZipSettings) throws IOException
+  {
+    super (eMDAlgo, aIS, aZipSettings);
 
     try
     {

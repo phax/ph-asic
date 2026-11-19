@@ -34,10 +34,12 @@ import com.helger.asic.jaxb.asic.Certificate;
 import com.helger.asic.jaxb.opendocument.manifest.Manifest;
 import com.helger.base.codec.base64.Base64;
 import com.helger.base.io.nonblocking.NonBlockingByteArrayOutputStream;
+import com.helger.base.io.stream.NonClosingInputStream;
 import com.helger.base.io.stream.NullOutputStream;
 import com.helger.base.io.stream.StreamHelper;
 import com.helger.collection.commons.CommonsHashMap;
 import com.helger.collection.commons.ICommonsMap;
+import com.helger.io.zip.ZipWalkerSettings;
 
 /**
  * Skeleton implementation of ASiC archive reader.
@@ -46,6 +48,14 @@ import com.helger.collection.commons.ICommonsMap;
  */
 public abstract class AbstractAsicReader implements Closeable
 {
+  /**
+   * The maximum size in bytes of a single entry in the META-INF directory (manifest, signature),
+   * because these entries are read into memory.
+   *
+   * @since 4.1.1
+   */
+  public static final int MAX_METADATA_ENTRY_BYTES = 10 * 1024 * 1024;
+
   private static final String PREFIX_META_INF = "META-INF/";
   private static final Logger LOG = LoggerFactory.getLogger (AbstractAsicReader.class);
 
@@ -68,6 +78,25 @@ public abstract class AbstractAsicReader implements Closeable
   protected AbstractAsicReader (@NonNull final EMessageDigestAlgorithm eMDAlgo,
                                 @NonNull @WillCloseWhenClosed final InputStream aIS)
   {
+    this (eMDAlgo, aIS, new ZipWalkerSettings ());
+  }
+
+  /**
+   * Constructor.
+   *
+   * @param eMDAlgo
+   *        The message digest algorithm to use. May not be <code>null</code>.
+   * @param aIS
+   *        The ASiC container to read. May not be <code>null</code>.
+   * @param aZipSettings
+   *        The limits for reading the container as ZIP archive (number of entries, total
+   *        uncompressed size). May not be <code>null</code>.
+   * @since 4.1.1
+   */
+  protected AbstractAsicReader (@NonNull final EMessageDigestAlgorithm eMDAlgo,
+                                @NonNull @WillCloseWhenClosed final InputStream aIS,
+                                @NonNull final ZipWalkerSettings aZipSettings)
+  {
     m_aManifestVerifier = new ManifestVerifier (eMDAlgo);
 
     try
@@ -83,7 +112,7 @@ public abstract class AbstractAsicReader implements Closeable
                                        ex);
     }
 
-    m_aZipInputStream = new AsicInputStream (aIS);
+    m_aZipInputStream = new AsicInputStream (aIS, aZipSettings);
     // Comment in ZIP is stored in Central Directory in the end of the file.
   }
 
@@ -108,14 +137,21 @@ public abstract class AbstractAsicReader implements Closeable
   /**
    * Handles zip entries in the META-INF/ directory.
    */
-  private void _handleMetadataEntry ()
+  private void _handleMetadataEntry () throws IOException
   {
     final String sPathAndFilename = m_aCurrentZipEntry.getName ();
 
-    // Read content in file
+    // Read content in file - at most one byte more than allowed, to detect a too large entry
+    final byte [] aBytes = m_aZipInputStream.readNBytes (MAX_METADATA_ENTRY_BYTES + 1);
+    if (aBytes.length > MAX_METADATA_ENTRY_BYTES)
+      throw new IllegalStateException ("The ASiC metadata file '" +
+                                       sPathAndFilename +
+                                       "' exceeds " +
+                                       MAX_METADATA_ENTRY_BYTES +
+                                       " bytes");
     try (final NonBlockingByteArrayOutputStream aBAOS = new NonBlockingByteArrayOutputStream ())
     {
-      AsicUtils.copyStream (m_aZipInputStream, aBAOS);
+      aBAOS.write (aBytes);
 
       if (AsicUtils.PATTERN_CADES_MANIFEST.matcher (sPathAndFilename).matches ())
       {
@@ -173,15 +209,12 @@ public abstract class AbstractAsicReader implements Closeable
         LOG.debug ("Found file: " + m_aCurrentZipEntry.getName ());
 
       // Files used for validation are not exposed
-      if (m_aCurrentZipEntry.getName ().startsWith (PREFIX_META_INF))
-      {
-        _handleMetadataEntry ();
-      }
-      else
+      if (!m_aCurrentZipEntry.getName ().startsWith (PREFIX_META_INF))
       {
         m_bContentIsConsumed = false;
         return m_aCurrentZipEntry.getName ();
       }
+      _handleMetadataEntry ();
     }
 
     // Making sure signatures are used and all files are signed after reading
@@ -198,6 +231,7 @@ public abstract class AbstractAsicReader implements Closeable
     return null;
   }
 
+  @SuppressWarnings ("resource")
   protected final void internalWriteFile (@NonNull final OutputStream aOS) throws IOException
   {
     if (m_aCurrentZipEntry == null)
@@ -206,7 +240,8 @@ public abstract class AbstractAsicReader implements Closeable
     // Calculate digest while reading file
     m_aMD.reset ();
     final DigestOutputStream aDOS = new DigestOutputStream (aOS, m_aMD);
-    AsicUtils.copyStream (m_aZipInputStream, aDOS);
+    // Not AsicUtils.copyStream, because a read error (e.g. an exceeded limit) must not be swallowed
+    new NonClosingInputStream (m_aZipInputStream).transferTo (aDOS);
 
     m_aZipInputStream.closeEntry ();
 
